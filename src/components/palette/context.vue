@@ -1,16 +1,18 @@
 <template>
 	<div class="context-wrap">
-		<canvas 
-			class="pointer-line-canvas"
-			ref="canvas"
+		<pointer-line
 			v-visible="showPointerLine"
-		></canvas>
+			:from="position"
+			:to="referencePoint"
+		></pointer-line>
 		<div 
 			class="context"
+			ref="context"
 			v-outside:mousedown="{callback: close, enabled: !locked}"
 			:style="css"
 			:data-id="id"
-			:data-parentid="parentId"
+			:data-parent-id="parentId"
+			v-draggable="{onDrag}"
 		>
 			<div 
 				class="lock"
@@ -35,15 +37,6 @@
 @import "../../sass/variables";
 
 .context-wrap {
-	.pointer-line-canvas {
-		position: absolute;
-		pointer-events: none;
-		top: 0;
-		left: 0;
-		width: 100%;
-		height: 100%;
-	}
-
 	.context {
 		position: absolute;
 		background: white;
@@ -69,28 +62,32 @@
 </style>
 
 <script>
+import { mapGetters, mapMutations } from 'vuex'
 import palette from './palette'
+import pointerLine from './components/pointer-line'
 import settings from '@/settings.js'
 import paper from 'paper'
-import PointerLine from './PointerLine'
-import {getBounds} from '@/utils'
+import { getBounds } from '@/utils'
 
 const { Path, Point } = paper
 
 export default {
+	extends: palette,
+
 	props: ['payload'],
 
-	extends: palette,
+	components: { pointerLine },
 
 	data() {
 		return {
-			line: null,
-			delta: {},
+			delta: null,
 			locked: false,
 		}
 	},
 
 	computed: {
+		...mapGetters(['contexts', 'getContext', 'contextIsOpen']),
+
 		css() {
 			return {
 				top: this.position.y + 'px',
@@ -105,49 +102,124 @@ export default {
 			return this.payload.referenceEl || {}
 		},
 
-		position() {
-			const {referenceEl} = this
-			const bounds = getBounds(referenceEl)
-			return {
-				x: bounds.topRight.x + settings.context.margin.x,
-				y: bounds.topRight.y + settings.context.margin.y
-			}
-		},
-
 		parentId() {
 			return this.payload.parentId
 		},
 
 		showPointerLine() {
 			if (this.parentId === undefined) return true
-			return this.$bus.openContexts[this.parentId] !== undefined
+			return this.contextIsOpen(this.parentId)
+		},
+
+		parentContext() {
+			return this.getContext(this.parentId)
+		},
+
+		parentContextPosition() {
+			if (this.parentContext) {
+				return this.parentContext.position
+			}
+		},
+
+		referencePoint() {
+			if (this.parentContext) {
+				const parentPos = this.parentContextPosition
+				const delta = this.delta
+				return {
+					x: parentPos.x + delta.x,
+					y: parentPos.y + delta.y
+				}				
+			} else {
+				const bounds = getBounds(this.referenceEl)
+				return {
+					x: bounds.center.x,
+					y: bounds.center.y
+				}
+			}
+		},
+
+		position: {
+			get() {
+				return this.$store.state.contexts[this.id].position || {}
+			},
+			set(value) {
+				this.$store.commit('modifyContext', {
+					id: this.id,
+					key: 'position',
+					value,
+				})
+			}
 		},
 	},
 
-	mounted() {
-		const {canvas} = this.$refs
-		canvas.width = canvas.offsetWidth
-		canvas.height = canvas.offsetHeight
-		this.line = new PointerLine(this.$refs.canvas, this, this.referenceEl)
-	},
+	// watch() {
+	// 	referencePoint(point) {
+	// 		this.line.referencePoint = point
+	// 	}
+	// },
 
-	activated() {
-		// this.line && (this.line.visible = true)
-	},
+	created() {
+		this.align()
+		// const {referenceEl} = this
+		// const bounds = getBounds(referenceEl)
 
-	deactivated() {
-		// this.line && (this.line.visible = false)
-	},
+		// if (this.parentContext) {
+		// 	this.delta = {
+		// 		x: bounds.left - this.parentContextPosition.x,
+		// 		y: bounds.top - this.parentContextPosition.y,
+		// 	}
+		// }
 
-	destroyed() {
-		// this.line.remove()
+		// // const referenceDelta = {
+		// // 	x: this.parentContextPosition.x,
+		// // 	y: this.parentContextPosition.y,
+		// // }
+
+		// this.position = {
+		// 	x: bounds.topRight.x + settings.context.margin.x,
+		// 	y: bounds.topRight.y + settings.context.margin.y
+		// }
+		// this.modifyContext({
+		// 	id: this.id,
+		// 	key: 'position',
+		// 	value: this.position
+		// })
+
+		// this.$nextTick(() => {
+		// 	const {canvas} = this.$refs
+		// 	canvas.width = canvas.offsetWidth
+		// 	canvas.height = canvas.offsetHeight
+		// 	this.line = new PointerLine(this.$refs.canvas, this.$refs.context, this.referenceEl)
+		// })
 	},
 
 	methods: {
+		...mapMutations(['openContext', 'closeContext', 'modifyContext']),
+
+		align() {
+			const bounds = getBounds(this.referenceEl)
+
+			this.position = {
+				x: bounds.topRight.x + settings.context.margin.x,
+				y: bounds.topRight.y + settings.context.margin.y
+			}
+
+			if (this.parentContext) {
+				this.delta = {
+					x: bounds.center.x - this.parentContextPosition.x,
+					y: bounds.center.y - this.parentContextPosition.y,
+				}
+			}		
+		},
+
+		onDrag() {
+			const { x, y } = this.$refs.context.getBoundingClientRect()
+			this.position = { x, y }
+		},
+
 		close(event) {
 			if (this.targetIsChild(event.target)) return
-
-			this.$bus.$emit('close-context', this.id)
+			this.closeContext(this.id)
 		},
 
 		targetIsChild(target) {
@@ -155,7 +227,7 @@ export default {
 
 			if (!context) return false
 
-			const parentId = context && context.dataset.parentid
+			const parentId = context.dataset.parentId
 			return (parentId === this.id)
 		}
 	},

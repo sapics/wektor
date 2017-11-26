@@ -4,7 +4,7 @@ function getBounds(el) {
 	} else if (el.getBoundingClientRect) {
 		const boundingClientRect = el.getBoundingClientRect()
 		const {top, left, bottom, right, width, height} = boundingClientRect
-		return Object.assign({}, boundingClientRect, {
+		return Object.assign(boundingClientRect, {
 			topLeft: {y: top, x: left},
 			topRight: {y: top, x: right},
 			bottomRight: {y: bottom, x: right},

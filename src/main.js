@@ -1,13 +1,17 @@
-// The Vue build version to load with the `import` command
-// (runtime-only or standalone) has been set in webpack.base.conf with an alias.
 import Vue from 'vue'
+import Vuex from 'vuex'
+
 import eventBus from './eventBus.js'
+import store from './store'
+
+import outside from './directives/outside.js'
+import visible from './directives/visible.js'
+import draggable from './directives/draggable.js'
+
 import Wektor from './Wektor.vue'
 import paper from 'paper'
 import BezierTool from './tools/BezierTool/BezierTool.js'
 import SelectionTool from './tools/SelectionTool/SelectionTool.js'
-import outside from './directives/outside.js'
-import visible from './directives/visible.js'
 
 paper.install(window)
 paper.setup('main-canvas')
@@ -20,9 +24,11 @@ paper.project.currentStyle = {
 const target = new paper.Group()
 
 Vue.config.productionTip = false
+Vue.use(Vuex)
 Vue.use(eventBus)
 Vue.directive('outside', outside)
 Vue.directive('visible', visible)
+Vue.directive('draggable', draggable)
 
 /* eslint-disable no-new */
 new Vue({
@@ -31,6 +37,8 @@ new Vue({
 	components: { Wektor },
 
 	template: '<Wektor ref="wektor" :target="target" />',
+
+	store,
 
 	data() {
 		return {

@@ -2,26 +2,25 @@
 	<div id="wektor">
 		<tool-bar ref="toolbar" class="tool-bar" :tools="tools"></tool-bar>
 		<div ref="palettes">
-<!-- 			<keep-alive :exclude="settings.context.keepAlive ? null : 'context'"> -->
-				<context
-					v-for="(context, id) in openContexts"
-					:key="id"
-					:id="id"
-					:values="context.values"
-					:layout="context.layout"
-					:payload="context.payload"
-				></context>
-			<!-- </keep-alive> -->
+			<context
+				v-for="(context, id) in openContexts"
+				:key="id"
+				:id="id"
+				:values="context.values"
+				:layout="context.layout"
+				:payload="context.payload"
+			></context>
 		</div>
 	</div>
 </template>
 
 <script>
 import Vue from 'vue' 
+import { mapGetters, mapMutations, mapState } from 'vuex'
 import toolBar from './components/tool-bar.vue'
 import context from './components/palette/context.vue'
 import settings from './settings.js'
-import {isArray} from './utils.js'
+import { isArray } from './utils.js'
 
 export default {
 	name: 'wektor',
@@ -31,21 +30,17 @@ export default {
 	components: { toolBar, context },
 
 	computed: {
-		shortcuts() {
-			return this.$bus.shortcuts
-		},
-
-		tools() {
-			return this.$bus.tools
-		},
-
-		openContexts() {
-			return this.$bus.openContexts
-		},
+		...mapState([
+			'shortcuts', 
+			'tools'
+		]),
+		...mapGetters([
+			'openContexts'
+		]),
 
 		settings() {
 			return settings
-		}
+		},
 	},
 
 	mounted() {
@@ -53,11 +48,13 @@ export default {
 		document.addEventListener('keydown', this.onKeydown)
 		document.addEventListener('contextmenu', this.onContextmenu)
 		this.initShortcuts()
-		this.$bus.$on('open-context', this.openContext)
-		this.$bus.$on('close-context', this.closeContext)
 	},
 
 	methods: {
+		...mapMutations([
+			'openContext',
+		]),
+
 		initShortcuts() {
 			for (const shortcut of settings.shortcuts) {
 				this.addShortcut(shortcut)
@@ -118,28 +115,21 @@ export default {
 			const point = { x: event.x, y: event.y }
 			const hit = this.target.hitTest(point, settings.context.hitOptions)
 
-			console.log({hit})
-
 			if (!hit) return
 			if (!hit.item) return
 
 			if (['Path', 'Shape'].includes(hit.item.constructor.name)) {
-				this.openContext(hit.item.id, {
-					layout: settings.context.layouts.item,
-					values: hit.item,
-					payload: {
-						referenceEl: hit.item,
+				this.openContext({
+					id: hit.item.id,
+					spec: {
+						layout: settings.context.layouts.item,
+						values: hit.item,
+						payload: {
+							referenceEl: hit.item,
+						}
 					}
 				})
 			}
-		},
-
-		openContext(id, context) {
-			Vue.set(this.openContexts, id, context)
-		},
-
-		closeContext(id) {
-			this.$delete(this.openContexts, id)
 		},
 	},
 }

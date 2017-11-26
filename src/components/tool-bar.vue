@@ -1,12 +1,13 @@
 <template>
-	<tool-select class="tool-bar" ref="select" :options="toolSelectOptions" v-model="selectedTool"></tool-select>
+	<tool-select class="tool-bar" ref="select" :options="toolSelectOptions" v-model="activeTool"></tool-select>
 </template>
 
 <script>
+import { mapState, mapMutations } from 'vuex'
 import toolSelect from './tool-select.vue'
 import paper from 'paper'
 
-const {Tool} = paper
+const { Tool } = paper
 
 export default {
 	props: {
@@ -16,9 +17,18 @@ export default {
 		}
 	},
 
-	components: {toolSelect},
+	components: { toolSelect },
 
 	computed: {
+		activeTool: {
+			get() {
+				return this.$store.state.active.tool
+			},
+			set(tool) {
+				this.$store.commit('activateTool', tool)
+			},
+		},
+
 		toolSelectOptions() {
 			return this.tools.map(tool => {
 				return {
@@ -27,24 +37,6 @@ export default {
 				}
 			})
 		},
-
-		selectedTool: {
-			get() {
-				return this.$bus.active.tool
-			},
-			set(value) {
-				this.$bus.active.tool = value
-			}
-		},
-	},
-
-	watch: {
-		selectedTool(tool) {
-			if (!(tool instanceof Tool))
-				console.warn("Can't activate tool")
-			else
-				tool.activate()
-		}
 	},
 
 	mounted() {
