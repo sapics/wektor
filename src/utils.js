@@ -105,4 +105,38 @@ function round(value, decimals = 2) {
 	return Math.round(value * factor) / factor	
 }
 
-export { isInt, isString, isObject, isArray, isFunction, isHtml, toCamelCase, makeUniqueId, getUnit, toPx, toUnit, trimZeros, round, convertUnits, getBounds }
+function mapValue(value, range1, range2) {
+	return (value - range1.min) * (range2.max - range2.min) / (range1.max - range1.min) + range2.min
+}
+
+function filterObject(object, fn) {
+	if (!fn) return object
+
+	return Object.keys(object).reduce((filteredObj, key) => {
+		const value = object[key]
+		if (fn && fn(key, value)) {
+			filteredObj[key] = value
+		}
+		return filteredObj
+	}, {})
+}
+
+export { 
+	isInt, 
+	isString, 
+	isObject, 
+	isArray, 
+	isFunction, 
+	isHtml, 
+	toCamelCase, 
+	makeUniqueId, 
+	getUnit, 
+	toPx, 
+	toUnit, 
+	trimZeros, 
+	round, 
+	convertUnits, 
+	getBounds, 
+	mapValue,
+	filterObject, 
+}

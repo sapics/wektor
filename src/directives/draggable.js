@@ -27,8 +27,8 @@ export default {
 		el.addEventListener('mousedown', event => startDrag(el, event))
 		el.addEventListener('mouseup', event => endDrag(el))
 		el.dragHandler = function(event) {
-			spec && spec.onDrag && spec.onDrag()
-			drag(el, event)
+			spec && spec.onDrag && spec.onDrag(event)
+			// drag(el, event)
 		} 
 	},
 

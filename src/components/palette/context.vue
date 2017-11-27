@@ -1,6 +1,7 @@
 <template>
 	<div class="context-wrap">
 		<pointer-line
+			:style="{zIndex}"
 			v-visible="showPointerLine"
 			:from="position"
 			:to="referencePoint"
@@ -8,11 +9,14 @@
 		<div 
 			class="context"
 			ref="context"
-			v-outside:mousedown="{callback: close, enabled: !locked}"
 			:style="css"
+			v-outside:mousedown="{callback: close, enabled: !locked}"
 			:data-id="id"
 			:data-parent-id="parentId"
-			v-draggable="{onDrag}"
+			@mousedown="startDrag"
+			@mouseup="endDrag"
+			@mouseenter="hover = true"
+			@mouseleave="hover = false"
 		>
 			<div 
 				class="lock"
@@ -80,16 +84,25 @@ export default {
 
 	data() {
 		return {
-			delta: null,
-			locked: false,
+			dragDelta: {},
+			delta: {},
+			hover: false,
+			referenceHover: false,
+			dragging: false,
 		}
 	},
 
 	computed: {
-		...mapGetters(['contexts', 'getContext', 'contextIsOpen']),
+		...mapGetters([
+			'contexts', 
+			'lockedContexts',			
+			'getContext',  
+			'contextIsOpen',
+		]),
 
 		css() {
 			return {
+				zIndex: this.zIndex,
 				top: this.position.y + 'px',
 				left: this.position.x + 'px',
 				width: this.payload.width,
@@ -107,6 +120,7 @@ export default {
 		},
 
 		showPointerLine() {
+			if (this.locked && !(this.hover || this.referenceHover)) return false
 			if (this.parentId === undefined) return true
 			return this.contextIsOpen(this.parentId)
 		},
@@ -115,15 +129,9 @@ export default {
 			return this.getContext(this.parentId)
 		},
 
-		parentContextPosition() {
-			if (this.parentContext) {
-				return this.parentContext.position
-			}
-		},
-
 		referencePoint() {
 			if (this.parentContext) {
-				const parentPos = this.parentContextPosition
+				const parentPos = this.parentContext.position
 				const delta = this.delta
 				return {
 					x: parentPos.x + delta.x,
@@ -150,47 +158,32 @@ export default {
 				})
 			}
 		},
+
+		locked: {
+			get() {
+				return this.$store.state.contexts[this.id].locked || false
+			},
+			set (value) {
+				this.$store.commit('modifyContext', {
+					id: this.id,
+					key: 'locked',
+					value,
+				})				
+			}
+		},
+
+		zIndex() {
+			if (!this.locked && Object.keys(this.lockedContexts).length > 1) return 'auto'
+			return this.hover ? 1 : 'auto'
+		},
 	},
 
-	// watch() {
-	// 	referencePoint(point) {
-	// 		this.line.referencePoint = point
-	// 	}
-	// },
-
-	created() {
+	mounted() {
 		this.align()
-		// const {referenceEl} = this
-		// const bounds = getBounds(referenceEl)
-
-		// if (this.parentContext) {
-		// 	this.delta = {
-		// 		x: bounds.left - this.parentContextPosition.x,
-		// 		y: bounds.top - this.parentContextPosition.y,
-		// 	}
+		// if (this.referenceEl.addEventListener) {
+		// 	this.referenceEl.addEventListener('mouseenter', () => { this.referenceHover = true })
+		// 	this.referenceEl.addEventListener('mouseleave', () => { this.referenceHover = false })
 		// }
-
-		// // const referenceDelta = {
-		// // 	x: this.parentContextPosition.x,
-		// // 	y: this.parentContextPosition.y,
-		// // }
-
-		// this.position = {
-		// 	x: bounds.topRight.x + settings.context.margin.x,
-		// 	y: bounds.topRight.y + settings.context.margin.y
-		// }
-		// this.modifyContext({
-		// 	id: this.id,
-		// 	key: 'position',
-		// 	value: this.position
-		// })
-
-		// this.$nextTick(() => {
-		// 	const {canvas} = this.$refs
-		// 	canvas.width = canvas.offsetWidth
-		// 	canvas.height = canvas.offsetHeight
-		// 	this.line = new PointerLine(this.$refs.canvas, this.$refs.context, this.referenceEl)
-		// })
 	},
 
 	methods: {
@@ -206,15 +199,34 @@ export default {
 
 			if (this.parentContext) {
 				this.delta = {
-					x: bounds.center.x - this.parentContextPosition.x,
-					y: bounds.center.y - this.parentContextPosition.y,
+					x: bounds.center.x - this.parentContext.position.x,
+					y: bounds.center.y - this.parentContext.position.y,
 				}
 			}		
 		},
 
-		onDrag() {
-			const { x, y } = this.$refs.context.getBoundingClientRect()
-			this.position = { x, y }
+		onDrag(event) {
+			event.preventDefault()
+			this.position = { 
+				x: event.x - this.dragDelta.x,
+				y: event.y - this.dragDelta.y 
+			}
+		},
+
+		startDrag(event) {
+			this.dragging = true
+			const el = this.$refs.context
+			const {top, left} = el.getBoundingClientRect()
+			this.dragDelta = {
+				x: event.x - left,
+				y: event.y - top
+			}
+			document.addEventListener('mousemove', this.onDrag)		
+		},
+
+		endDrag(event) {
+			this.dragging = false
+			document.removeEventListener('mousemove', this.onDrag)	
 		},
 
 		close(event) {

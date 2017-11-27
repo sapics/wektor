@@ -7,7 +7,7 @@
 				ref="colorLabel"
 				:class="{'no-color': !cssColor}"
 				@click="onClick"
-				:style="{color: cssColor}"
+				:style="{color: cssColor, 'text-shadow': colorLabelShadow}"
 			>color</span>
 			<span>{{labelSegments.suffix}}</span>
 		</span>
@@ -28,8 +28,22 @@
 <script>
 import { mapMutations, mapGetters } from 'vuex'
 import baseComponent from './baseComponent'
-import {isObject, round} from '@/utils.js'
+import { isObject, round, mapValue } from '@/utils.js'
 import paper from 'paper'
+
+function getContrast(color) {
+	const { red, green, blue } = alphaToWhite(color)
+
+	return 1 - (0.2126 * red + 0.7152 * green + 0.0722 * blue)
+}
+
+function alphaToWhite(color) {
+	return new paper.Color({
+		red: 1 + (color.red - 1) * color.alpha,
+		green: 1 + (color.green - 1) * color.alpha,
+		blue: 1 + (color.blue - 1) * color.alpha,
+	})
+}
 
 export default {
 	extends: baseComponent,
@@ -37,6 +51,7 @@ export default {
 	data() {
 		return {
 			cssColor: null,
+			colorLabelShadow: null,
 			color: null,
 			colorPickerId: null,
 		}
@@ -74,7 +89,11 @@ export default {
 	watch: {
 		color: {
 			handler(color) {
-				this.cssColor = color.toCSS()
+				const contrast = getContrast(color)
+				let shadow = 1 - (mapValue(contrast, { min: 0, max: 0.1 }, { min: 0, max: 1 }))
+				if (shadow < 0) shadow = 0
+				this.colorLabelShadow = `rgba(180, 180, 180, ${shadow}) 1px 1px`
+				this.cssColor = alphaToWhite(color).toCSS()
 			},
 			deep: true,
 		},
