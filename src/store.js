@@ -13,19 +13,17 @@ const store = new Vuex.Store({
 			tool: null,
 			context: null,
 		},
+		drag: false,
 	},
 
 	mutations: {
 		openContext(state, payload) {
-			const { id, spec } = payload
+			const { id } = payload
+			const storedContext = state.contexts[id] || {}
 
-			const context = state.contexts[id]
-			if (context) {
-				Vue.set(state.contexts, id, {...context, ...spec, open: true})
-			} else {
-				Vue.set(state.contexts, id, {...spec, open: true})
-			}
+			if (!id) console.warn(`no id provided for the context-menu:`, payload)
 
+			Vue.set(state.contexts, id, { ...storedContext, ...payload, open: true })
 			state.active.context = state.contexts[id]
 		},
 
@@ -33,7 +31,7 @@ const store = new Vuex.Store({
 			const context = state.contexts[id]
 			if (!context) return
 			Vue.set(context, 'open', false)
-			if (state.active.context === context) state.active.context = null
+			if (state.active.context.id === id) state.active.context = null
 		},
 
 		modifyContext(state, { id, key, value }) {
@@ -43,6 +41,14 @@ const store = new Vuex.Store({
 
 		activateTool(state, tool) {
 			state.active.tool = tool
+		},
+
+		activateContext(state, id) {
+			state.active.context = state.contexts[id]
+		},
+
+		setDrag(state, value) {
+			state.drag = value
 		},
 	},
 
@@ -63,13 +69,13 @@ const store = new Vuex.Store({
 
 		getContext: (state, getters) => selector => {
 			const contexts = getters.getContexts(selector)
-			return contexts && contexts[0]
+			if (!contexts) return null
+			const keys = Object.keys(contexts)
+			return contexts[keys[0]]
 		},
 
 		getContexts: (state, getters) => selector => {
-			if (isInt(selector)) {
-				return state.contexts[selector]
-			} else if (isObject(selector)) {
+			if (isObject(selector)) {
 				return filterObject(state.contexts, (id, context) => {
 					let match = true
 					for (const [key, value] of Object.entries(selector)) {
@@ -80,6 +86,9 @@ const store = new Vuex.Store({
 					}
 					return match
 				})
+			} else {
+				const context = state.contexts[selector]
+				return context ? { [selector]: context } : null
 			}
 		},
 

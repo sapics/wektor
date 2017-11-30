@@ -2,7 +2,8 @@
 	<div class="color">
 		<span class="label">
 			<span>{{labelSegments.prefix}}</span>
-			<span 
+			<span
+				:data-id="`${id}-color-label`" 
 				class="color-label"
 				ref="colorLabel"
 				:class="{'no-color': !cssColor}"
@@ -28,22 +29,8 @@
 <script>
 import { mapMutations, mapGetters } from 'vuex'
 import baseComponent from './baseComponent'
-import { isObject, round, mapValue } from '@/utils.js'
+import { isObject, round, mapValue, getContrast, alphaToWhite } from '@/utils.js'
 import paper from 'paper'
-
-function getContrast(color) {
-	const { red, green, blue } = alphaToWhite(color)
-
-	return 1 - (0.2126 * red + 0.7152 * green + 0.0722 * blue)
-}
-
-function alphaToWhite(color) {
-	return new paper.Color({
-		red: 1 + (color.red - 1) * color.alpha,
-		green: 1 + (color.green - 1) * color.alpha,
-		blue: 1 + (color.blue - 1) * color.alpha,
-	})
-}
 
 export default {
 	extends: baseComponent,
@@ -121,17 +108,13 @@ export default {
 
 			this.openContext({
 				id, 
-				spec: {
-					layout,
-					values,
-					payload: {
-						referenceEl: this.$refs.colorLabel,
-						width: '200px',
-						height: '200px',
-						parentId: this.contextId,
-						padding: 'none'
-					}
-				}				
+				layout,
+				values,
+				payload: {
+					referenceId: `${this.id}-color-label`,
+					parentId: this.contextId,
+					padding: 'none'
+				}			
 			})
 
 			this.colorPickerId = id

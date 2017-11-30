@@ -13,7 +13,7 @@
 			v-outside:mousedown="{callback: close, enabled: !locked}"
 			:data-id="id"
 			:data-parent-id="parentId"
-			@mousedown="startDrag"
+			@mousedown="onMouseDown"
 			@mouseup="endDrag"
 			@mouseenter="hover = true"
 			@mouseleave="hover = false"
@@ -26,6 +26,7 @@
 			<template v-for="(child, index) in children">
 				<component 
 					:is="child.component" 
+					:data-id="child.key"
 					v-model="child.value" 
 					:key="child.key" 
 					:id="child.key"
@@ -49,8 +50,9 @@
 
 	.lock {
 		position: absolute;
-		width: 0.5em;
-		height: 0.5em;
+		box-sizing: border-box;
+		width: 0.6em;
+		height: 0.6em;
 		margin: 0.2em;
 		right: 0;
 		top: 0;
@@ -71,7 +73,7 @@ import palette from './palette'
 import pointerLine from './components/pointer-line'
 import settings from '@/settings.js'
 import paper from 'paper'
-import { getBounds } from '@/utils'
+import { getBounds, elementsOverlap } from '@/utils'
 
 const { Path, Point } = paper
 
@@ -88,7 +90,10 @@ export default {
 			delta: {},
 			hover: false,
 			referenceHover: false,
-			dragging: false,
+			referenceEl: null,
+			parentContextEl: null,
+			drag: false,
+			focus: false,
 		}
 	},
 
@@ -111,9 +116,9 @@ export default {
 			}
 		},
 
-		referenceEl() {
-			return this.payload.referenceEl || {}
-		},
+		// referenceEl() {
+		// 	return this.payload.referenceEl || {}
+		// },
 
 		parentId() {
 			return this.payload.parentId
@@ -126,6 +131,7 @@ export default {
 		},
 
 		parentContext() {
+			const response = this.getContext(this.parentId)
 			return this.getContext(this.parentId)
 		},
 
@@ -172,10 +178,58 @@ export default {
 			}
 		},
 
-		zIndex() {
-			if (!this.locked && Object.keys(this.lockedContexts).length > 1) return 'auto'
-			return this.hover ? 1 : 'auto'
+		globalDrag: {
+			get() {
+				return this.$store.state.drag
+			},
+			set(value) {
+				this.$store.commit('setDrag', value)
+			}
 		},
+
+		active() {
+			const activeContext = this.$store.state.active.context
+			return (activeContext && this.id.toString() === activeContext.id.toString())
+		},
+
+		zIndex() {
+			return this.active ? 1 : 'auto'
+		},
+	},
+
+	watch: {
+		hover(hover) {
+			if (!hover) return
+
+			if (!this.parentContextEl) return
+
+			if (elementsOverlap(this.$refs.context, this.parentContextEl)) {
+				this.focus = true
+			} else {
+				this.focus = false
+			}
+		},
+
+		'parentContext.open': function(open) {
+			if (open) {
+				this.referenceEl = this.getReferenceEl(this.payload.referenceId)
+			} else {
+				this.releaseReferenceEl(this.referenceEl)
+				this.referenceEl = null
+			}
+		},
+
+		referenceEl(el) {
+			el && this.initReferenceEl(el)
+		},
+	},
+
+	created() {
+		this.referenceEl = this.payload.referenceId 
+			? this.getReferenceEl(this.payload.referenceId)
+			: this.payload.referenceEl
+
+		this.parentContextEl = document.querySelector(`[data-id="${this.parentId}"]`)
 	},
 
 	mounted() {
@@ -187,7 +241,36 @@ export default {
 	},
 
 	methods: {
-		...mapMutations(['openContext', 'closeContext', 'modifyContext']),
+		...mapMutations([
+			'openContext', 
+			'closeContext',
+			'activateContext', 
+			'modifyContext',
+		]),
+
+		getReferenceEl(id) {
+			const parentContextEl = document.querySelector(`[data-id="${this.parentId}"]`)
+			const referenceEl = parentContextEl && parentContextEl.querySelector(`[data-id="${id}"]`)
+			return referenceEl			
+		},
+
+		initReferenceEl(el) {
+			if (!el) console.warn('no reference element specified')
+
+			if (el && el.addEventListener) {
+				el.addEventListener('mouseenter', () => { this.referenceHover = true })
+				el.addEventListener('mouseleave', () => { this.referenceHover = false })	
+			}
+		},
+
+		releaseReferenceEl(el) {
+			const referenceEl = this.referenceEl
+
+			if (el && el.removeEventListener) {
+				el.removeEventListener('mouseenter', () => { this.referenceHover = true })
+				el.removeEventListener('mouseleave', () => { this.referenceHover = false })					
+			}
+		},
 
 		align() {
 			const bounds = getBounds(this.referenceEl)
@@ -205,6 +288,11 @@ export default {
 			}		
 		},
 
+		onMouseDown(event) {
+			this.startDrag(event)
+			this.activateContext(this.id)
+		},
+
 		onDrag(event) {
 			event.preventDefault()
 			this.position = { 
@@ -214,7 +302,7 @@ export default {
 		},
 
 		startDrag(event) {
-			this.dragging = true
+			this.drag = this.globalDrag = true
 			const el = this.$refs.context
 			const {top, left} = el.getBoundingClientRect()
 			this.dragDelta = {
@@ -225,7 +313,8 @@ export default {
 		},
 
 		endDrag(event) {
-			this.dragging = false
+			this.drag = this.globalDrag = false
+			this.$store.commit('setDrag', false)
 			document.removeEventListener('mousemove', this.onDrag)	
 		},
 

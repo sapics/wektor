@@ -12,6 +12,7 @@ import Wektor from './Wektor.vue'
 import paper from 'paper'
 import BezierTool from './tools/BezierTool/BezierTool.js'
 import SelectionTool from './tools/SelectionTool/SelectionTool.js'
+import GridTool from './tools/GridTool'
 
 paper.install(window)
 paper.setup('main-canvas')
@@ -53,7 +54,7 @@ new Vue({
 	},
 
 	mounted() {
-		this.wektor.addTools([BezierTool, SelectionTool])
+		this.wektor.addTools([BezierTool, GridTool, SelectionTool])
 		this.wektor.target.addChild(new paper.Path.Rectangle([100, 100], {width: 200, height: 200}))
 	},
 })

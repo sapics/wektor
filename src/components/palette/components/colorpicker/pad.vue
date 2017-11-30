@@ -1,19 +1,111 @@
 <template>
 	<div
 		@mousedown="onMouseDown"
-	></div>
+	>
+		<div ref="pointer"></div>
+	</div>
 </template>
 
+<style lamg="scss" scoped>
+.pointer {
+	position: absolute;
+}
+</style>
+
 <script>
+import { mapValue } from '@/utils'	
+
 export default {
+	props: {
+		direction: {
+			type: String,
+			default: 'vertical' // 'vertical', 'horizontal' || 'both'
+		},
+	},
+
 	data() {
 		return {
+			size: {
+				width: 0,
+				height: 0
+			},
+			pointerSize: {
+				width: 0,
+				height: 0,
+			},
+			range: {
+				min: 0, max: 1
+			},
 			factorHorizontal: null,
-			factorVertical: null,
+			factorVertical: null
 		}
 	},
 
+	computed: {
+		pointerPos() {
+			let pos = {}
+			let normValueX
+			let normValueY
+
+			switch (this.direction) {
+				case 'horizontal':
+					normValueX = this.normalizeValue(this.value, this.range)
+					pos.left = normValueX * (this.size.width - this.pointerSize.width) + 'px'
+					break
+
+				case 'vertical':
+					normValueY = this.normalizeValue(this.value, this.range)
+					pos.top = normValueY * (this.size.height - this.pointerSize.height) + 'px'
+					break
+
+				case 'both':
+					normValueX = this.normalizeValue(this.value.x, this.range.x)
+					normValueY = this.normalizeValue(this.value.y, this.range.y)
+					pos = {
+						left: normValueX * (this.size.width - this.pointerSize.width) + 'px',
+						top: normValueY * (this.size.height - this.pointerSize.height) + 'px'
+					}
+			}
+
+			return pos
+		},
+
+		isHorizontal() {
+			const direction = this.direction
+			return direction === 'horizontal' || direction === 'both'
+		},
+
+		isVertical() {
+			const direction = this.direction
+			return direction === 'vertical' || direction === 'both'
+		},
+	},
+
+	mounted() {
+		this.setElSize()
+		this.setPointerSize()
+	},
+
 	methods: {
+		normalizeValue(value, range) {
+			return mapValue(value, range, { min: 0, max: 1 })
+		},
+
+		setElSize() {
+			const { width, height } = this.$el.getBoundingClientRect()
+			this.size = {
+				width, height
+			}
+		},
+
+		setPointerSize() {
+			const { pointer } = this.$refs
+			const { width, height } = pointer.getBoundingClientRect()
+			this.pointerSize = {
+				width, height
+			}
+		},
+
 		onMouseDown(event) {
 			event.stopPropagation()
 			this.bindListeners()
@@ -39,11 +131,25 @@ export default {
 			const x = pageX - left
 			const y = pageY - top
 			
-			const factorVertical = 1 / height * y
-			const factorHorizontal = 1 / width * x
+			const factorVertical = this.cropFactor(1 / height * y)
+			const factorHorizontal = this.cropFactor(1 / width * x)
 
-			this.factorHorizontal = this.cropFactor(factorHorizontal)
-			this.factorVertical = this.cropFactor(factorVertical)
+			this.factorHorizontal = factorHorizontal
+			this.factorVertical = factorVertical
+
+			switch (this.direction) {
+				case 'vertical':
+					this.value = mapValue(factorVertical, { min: 0, max: 1 }, this.range)
+					break
+				case 'horizontal':
+					this.value = mapValue(factorHorizontal, { min: 0, max: 1 }, this.range)
+					break
+				case 'both':
+					this.value = {
+						x: mapValue(factorHorizontal, { min: 0, max: 1 }, this.range.x),
+						y: mapValue(factorVertical, { min: 0, max: 1 }, this.range.y)
+					}
+			}
 		},
 
 		cropFactor(factor) {

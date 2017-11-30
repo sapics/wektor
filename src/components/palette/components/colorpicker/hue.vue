@@ -2,7 +2,13 @@
 	<div 
 		:class="['hue', direction]"
 		@mousedown="onMouseDown"
-	></div>
+	>
+		<div
+			class="pointer" 
+			ref="pointer"
+			:style="pointerPos"
+		></div>
+	</div>
 </template>
 
 <style lang="scss" scoped>
@@ -12,6 +18,21 @@
 
 .hue.vertical {
 	background: linear-gradient(to top, #f00 0%, #ff0 17%, #0f0 33%, #0ff 50%, #00f 67%, #f0f 83%, #f00 100%);
+}
+
+.hue {
+	position: relative;
+
+	.pointer {
+		background: white;
+		margin-top: -1px;
+		position: absolute;
+		width: 100%;
+		height: 5px;
+		border-top: 1px solid;
+		border-bottom: 1px solid;
+		box-sizing: border-box;
+	}
 }
 </style>
 
@@ -23,29 +44,25 @@ export default {
 
 	props: {
 		color: Object,
-		direction: {
-			type: String,
-			default: 'vertical'
+	},
+
+	data() {
+		return {
+			range: { min: 360, max: 0 }, // we need the value to increase from bottom to top
+			value: null,
 		}
 	},
-
+	
 	watch: {
-		factorHorizontal(value) {
-			if (this.direction === 'horizontal')
-				this.updateHue(value)
-		},
-
-		factorVertical(value) {
-			if (this.direction === 'vertical')
-				this.updateHue(value)
-		},	
-	},
-
-	methods: {
-		updateHue(value) {
-			this.color.hue = value * 360
+		value(value) {
+			this.color.hue = value
 			this.$parent.$emit('change')
 		},
+	},
+
+	mounted() {
+		this.value = this.color.hue
+		this.pointerSize.height -= 2 // we want the pointer to be able to move into the outer border
 	},
 }	
 </script>

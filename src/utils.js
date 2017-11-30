@@ -1,3 +1,5 @@
+import paper from 'paper'
+
 function getBounds(el) {
 	if (el.bounds) {
 		return el.bounds
@@ -121,6 +123,30 @@ function filterObject(object, fn) {
 	}, {})
 }
 
+function elementsOverlap(el1, el2) {
+	const rect1 = el1.getBoundingClientRect()
+	const rect2 = el2.getBoundingClientRect()
+
+	return !(rect1.right < rect2.left || 
+			rect1.left > rect2.right || 
+			rect1.bottom < rect2.top || 
+			rect1.top > rect2.bottom)
+}
+
+function getContrast(color, alpha = true) {
+	const { red, green, blue } = alpha ? alphaToWhite(color) : color
+
+	return 1 - (0.2126 * red + 0.7152 * green + 0.0722 * blue)
+}
+
+function alphaToWhite(color) {
+	return new paper.Color({
+		red: 1 + (color.red - 1) * color.alpha,
+		green: 1 + (color.green - 1) * color.alpha,
+		blue: 1 + (color.blue - 1) * color.alpha,
+	})
+}
+
 export { 
 	isInt, 
 	isString, 
@@ -139,4 +165,7 @@ export {
 	getBounds, 
 	mapValue,
 	filterObject, 
+	elementsOverlap,
+	getContrast,
+	alphaToWhite
 }

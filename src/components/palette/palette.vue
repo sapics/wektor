@@ -76,6 +76,7 @@ export default {
 					},
 					set value(value) {
 						values[key] = value
+						console.log(values[key])
 					},
 				}
 			}

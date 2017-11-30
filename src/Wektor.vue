@@ -35,7 +35,8 @@ export default {
 			'tools'
 		]),
 		...mapGetters([
-			'openContexts'
+			'openContexts',
+			'contexts'
 		]),
 
 		settings() {
@@ -44,7 +45,6 @@ export default {
 	},
 
 	mounted() {
-		// this.target.removeChildren()
 		document.addEventListener('keydown', this.onKeydown)
 		document.addEventListener('contextmenu', this.onContextmenu)
 		this.initShortcuts()
@@ -72,9 +72,20 @@ export default {
 
 		addTool(Tool, spec) {
 			const tool = new Tool(this.target, spec)
-			tool.on('activate', () => {
-				this.$bus.active.tool = tool
+
+			tool.on({
+				activate: () => {
+					this.$store.commit('activateTool', tool)
+				},
+
+				'open-dialog': () => {
+					this.openContext()
+				}
 			})
+
+			// tool.on('activate', () => {
+			// 	this.$store.commit('activateTool', tool)
+			// })
 			tool.activate()
 
 			this.tools.push(tool)
@@ -121,12 +132,10 @@ export default {
 			if (['Path', 'Shape'].includes(hit.item.constructor.name)) {
 				this.openContext({
 					id: hit.item.id,
-					spec: {
-						layout: settings.context.layouts.item,
-						values: hit.item,
-						payload: {
-							referenceEl: hit.item,
-						}
+					layout: settings.context.layouts.item,
+					values: hit.item,
+					payload: {
+						referenceEl: hit.item,
 					}
 				})
 			}

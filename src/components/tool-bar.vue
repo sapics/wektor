@@ -25,6 +25,7 @@ export default {
 				return this.$store.state.active.tool
 			},
 			set(tool) {
+				if (tool instanceof Tool) tool.activate()
 				this.$store.commit('activateTool', tool)
 			},
 		},
