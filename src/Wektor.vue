@@ -2,14 +2,14 @@
 	<div id="wektor">
 		<tool-bar ref="toolbar" class="tool-bar" :tools="tools"></tool-bar>
 		<div ref="palettes">
-			<context
-				v-for="(context, id) in openContexts"
+			<vdialog
+				v-for="(dialog, id) in openDialogs"
 				:key="id"
 				:id="id"
-				:values="context.values"
-				:layout="context.layout"
-				:payload="context.payload"
-			></context>
+				:values="dialog.values"
+				:layout="dialog.layout"
+				:payload="dialog.payload"
+			></vdialog>
 		</div>
 	</div>
 </template>
@@ -18,7 +18,7 @@
 import Vue from 'vue' 
 import { mapGetters, mapMutations, mapState } from 'vuex'
 import toolBar from './components/tool-bar.vue'
-import context from './components/palette/context.vue'
+import vdialog from './components/palette/vdialog.vue'
 import settings from './settings.js'
 import { isArray } from './utils.js'
 
@@ -27,7 +27,7 @@ export default {
 
 	props: ['target'],
 
-	components: { toolBar, context },
+	components: { toolBar, vdialog },
 
 	computed: {
 		...mapState([
@@ -35,8 +35,8 @@ export default {
 			'tools'
 		]),
 		...mapGetters([
-			'openContexts',
-			'contexts'
+			'openDialogs',
+			'dialogs'
 		]),
 
 		settings() {
@@ -52,7 +52,7 @@ export default {
 
 	methods: {
 		...mapMutations([
-			'openContext',
+			'openDialog',
 		]),
 
 		initShortcuts() {
@@ -79,7 +79,7 @@ export default {
 				},
 
 				'open-dialog': () => {
-					this.openContext()
+					this.openDialog()
 				}
 			})
 
@@ -124,15 +124,15 @@ export default {
 			event.preventDefault()
 
 			const point = { x: event.x, y: event.y }
-			const hit = this.target.hitTest(point, settings.context.hitOptions)
+			const hit = this.target.hitTest(point, settings.dialog.hitOptions)
 
 			if (!hit) return
 			if (!hit.item) return
 
 			if (['Path', 'Shape'].includes(hit.item.constructor.name)) {
-				this.openContext({
+				this.openDialog({
 					id: hit.item.id,
-					layout: settings.context.layouts.item,
+					layout: settings.dialog.layouts.item,
 					values: hit.item,
 					payload: {
 						referenceEl: hit.item,

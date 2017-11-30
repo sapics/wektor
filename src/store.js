@@ -6,45 +6,45 @@ Vue.use(Vuex)
 
 const store = new Vuex.Store({
 	state: {
-		contexts: {},
+		dialogs: {},
 		tools: [],
 		shortcuts: [],
 		active: {
 			tool: null,
-			context: null,
+			dialog: null,
 		},
 		drag: false,
 	},
 
 	mutations: {
-		openContext(state, payload) {
+		openDialog(state, payload) {
 			const { id } = payload
-			const storedContext = state.contexts[id] || {}
+			const storedDialog = state.dialogs[id] || {}
 
-			if (!id) console.warn(`no id provided for the context-menu:`, payload)
+			if (!id) console.warn(`no id provided for the dialog-menu:`, payload)
 
-			Vue.set(state.contexts, id, { ...storedContext, ...payload, open: true })
-			state.active.context = state.contexts[id]
+			Vue.set(state.dialogs, id, { ...storedDialog, ...payload, open: true })
+			state.active.dialog = state.dialogs[id]
 		},
 
-		closeContext(state, id) {
-			const context = state.contexts[id]
-			if (!context) return
-			Vue.set(context, 'open', false)
-			if (state.active.context.id === id) state.active.context = null
+		closeDialog(state, id) {
+			const dialog = state.dialogs[id]
+			if (!dialog) return
+			Vue.set(dialog, 'open', false)
+			if (state.active.dialog.id === id) state.active.dialog = null
 		},
 
-		modifyContext(state, { id, key, value }) {
-			const context = state.contexts[id]
-			Vue.set(state.contexts, id, { ...context, [key]: value })
+		modifyDialog(state, { id, key, value }) {
+			const dialog = state.dialogs[id]
+			Vue.set(state.dialogs, id, { ...dialog, [key]: value })
 		},
 
 		activateTool(state, tool) {
 			state.active.tool = tool
 		},
 
-		activateContext(state, id) {
-			state.active.context = state.contexts[id]
+		activateDialog(state, id) {
+			state.active.dialog = state.dialogs[id]
 		},
 
 		setDrag(state, value) {
@@ -53,33 +53,33 @@ const store = new Vuex.Store({
 	},
 
 	getters: {
-		contexts: state => state.contexts,
+		dialogs: state => state.dialogs,
 
-		openContexts: (state, getters) => {
-			return getters.getContexts({ open: true })
+		openDialogs: (state, getters) => {
+			return getters.getDialogs({ open: true })
 		},
 
-		lockedContexts: (state, getters) => {
-			return getters.getContexts({ locked: true })
+		lockedDialogs: (state, getters) => {
+			return getters.getDialogs({ locked: true })
 		},		
 
-		getOpenContext: (state, getters) => id => {
-			return getters.openContexts[id]
+		getOpenDialog: (state, getters) => id => {
+			return getters.openDialogs[id]
 		},
 
-		getContext: (state, getters) => selector => {
-			const contexts = getters.getContexts(selector)
-			if (!contexts) return null
-			const keys = Object.keys(contexts)
-			return contexts[keys[0]]
+		getDialog: (state, getters) => selector => {
+			const dialogs = getters.getDialogs(selector)
+			if (!dialogs) return null
+			const keys = Object.keys(dialogs)
+			return dialogs[keys[0]]
 		},
 
-		getContexts: (state, getters) => selector => {
+		getDialogs: (state, getters) => selector => {
 			if (isObject(selector)) {
-				return filterObject(state.contexts, (id, context) => {
+				return filterObject(state.dialogs, (id, dialog) => {
 					let match = true
 					for (const [key, value] of Object.entries(selector)) {
-						if (context[key] !== value) {
+						if (dialog[key] !== value) {
 							match = false
 							break
 						}
@@ -87,13 +87,13 @@ const store = new Vuex.Store({
 					return match
 				})
 			} else {
-				const context = state.contexts[selector]
-				return context ? { [selector]: context } : null
+				const dialog = state.dialogs[selector]
+				return dialog ? { [selector]: dialog } : null
 			}
 		},
 
-		contextIsOpen: (state, getters) => id => {
-			return getters.getOpenContext(id) !== undefined
+		dialogIsOpen: (state, getters) => id => {
+			return getters.getOpenDialog(id) !== undefined
 		},
 	},
 })

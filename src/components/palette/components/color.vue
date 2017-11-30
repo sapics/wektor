@@ -45,7 +45,7 @@ export default {
 	},
 
 	computed: {
-		...mapGetters(['getContext']),
+		...mapGetters(['getDialog']),
 
 		gradientColor() {
 			return `linear-gradient(to top, black, transparent), linear-gradient(to right, white, ${this.value.toCSS()})`
@@ -87,7 +87,7 @@ export default {
 	},
 
 	methods: {
-		...mapMutations(['openContext']),
+		...mapMutations(['openDialog']),
 
 		onClick() {
 			if (!this.color) {
@@ -95,7 +95,7 @@ export default {
 			}
 			this.$emit('input', this.color)
 
-			const id = this.contextId + '>' + this.id
+			const id = this.dialogId + '>' + this.id
 			const layout = {
 				[this.id]: {
 					type: 'colorpicker',
@@ -106,13 +106,13 @@ export default {
 				[this.id]: this.color
 			}
 
-			this.openContext({
+			this.openDialog({
 				id, 
 				layout,
 				values,
 				payload: {
 					referenceId: `${this.id}-color-label`,
-					parentId: this.contextId,
+					parentId: this.dialogId,
 					padding: 'none'
 				}			
 			})

@@ -1,4 +1,4 @@
-import context from './context.js'
+import dialog from './dialog'
 
 export default {
 	label: 'bezier',
@@ -13,5 +13,5 @@ export default {
 		'asymmetricHandles': 'command',
 		'independendHandles': 'alt'
 	},
-	context,
+	dialog,
 }

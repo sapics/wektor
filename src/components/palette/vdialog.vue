@@ -1,5 +1,5 @@
 <template>
-	<div class="context-wrap">
+	<div class="dialog-wrap">
 		<pointer-line
 			:style="{zIndex}"
 			v-visible="showPointerLine"
@@ -7,8 +7,8 @@
 			:to="referencePoint"
 		></pointer-line>
 		<div 
-			class="context"
-			ref="context"
+			class="dialog"
+			ref="dialog"
 			:style="css"
 			v-outside:mousedown="{callback: close, enabled: !locked}"
 			:data-id="id"
@@ -30,7 +30,7 @@
 					v-model="child.value" 
 					:key="child.key" 
 					:id="child.key"
-					:contextId="id"
+					:dialogId="id"
 					:label="child.label"
 				></component>
 			</template>
@@ -41,8 +41,8 @@
 <style lang="scss">
 @import "../../sass/variables";
 
-.context-wrap {
-	.context {
+.dialog-wrap {
+	.dialog {
 		position: absolute;
 		background: white;
 		border: 1px solid black;
@@ -91,7 +91,7 @@ export default {
 			hover: false,
 			referenceHover: false,
 			referenceEl: null,
-			parentContextEl: null,
+			parentDialogEl: null,
 			drag: false,
 			focus: false,
 		}
@@ -99,10 +99,10 @@ export default {
 
 	computed: {
 		...mapGetters([
-			'contexts', 
-			'lockedContexts',			
-			'getContext',  
-			'contextIsOpen',
+			'dialogs', 
+			'lockedDialogs',			
+			'getDialog',  
+			'dialogIsOpen',
 		]),
 
 		css() {
@@ -127,17 +127,16 @@ export default {
 		showPointerLine() {
 			if (this.locked && !(this.hover || this.referenceHover)) return false
 			if (this.parentId === undefined) return true
-			return this.contextIsOpen(this.parentId)
+			return this.dialogIsOpen(this.parentId)
 		},
 
-		parentContext() {
-			const response = this.getContext(this.parentId)
-			return this.getContext(this.parentId)
+		parentDialog() {
+			return this.getDialog(this.parentId)
 		},
 
 		referencePoint() {
-			if (this.parentContext) {
-				const parentPos = this.parentContext.position
+			if (this.parentDialog) {
+				const parentPos = this.parentDialog.position
 				const delta = this.delta
 				return {
 					x: parentPos.x + delta.x,
@@ -154,10 +153,10 @@ export default {
 
 		position: {
 			get() {
-				return this.$store.state.contexts[this.id].position || {}
+				return this.$store.state.dialogs[this.id].position || {}
 			},
 			set(value) {
-				this.$store.commit('modifyContext', {
+				this.$store.commit('modifyDialog', {
 					id: this.id,
 					key: 'position',
 					value,
@@ -167,10 +166,10 @@ export default {
 
 		locked: {
 			get() {
-				return this.$store.state.contexts[this.id].locked || false
+				return this.$store.state.dialogs[this.id].locked || false
 			},
 			set (value) {
-				this.$store.commit('modifyContext', {
+				this.$store.commit('modifyDialog', {
 					id: this.id,
 					key: 'locked',
 					value,
@@ -188,8 +187,8 @@ export default {
 		},
 
 		active() {
-			const activeContext = this.$store.state.active.context
-			return (activeContext && this.id.toString() === activeContext.id.toString())
+			const activeDialog = this.$store.state.active.dialog
+			return (activeDialog && this.id.toString() === activeDialog.id.toString())
 		},
 
 		zIndex() {
@@ -201,16 +200,16 @@ export default {
 		hover(hover) {
 			if (!hover) return
 
-			if (!this.parentContextEl) return
+			if (!this.parentDialogEl) return
 
-			if (elementsOverlap(this.$refs.context, this.parentContextEl)) {
+			if (elementsOverlap(this.$refs.dialog, this.parentDialogEl)) {
 				this.focus = true
 			} else {
 				this.focus = false
 			}
 		},
 
-		'parentContext.open': function(open) {
+		'parentDialog.open': function(open) {
 			if (open) {
 				this.referenceEl = this.getReferenceEl(this.payload.referenceId)
 			} else {
@@ -229,7 +228,7 @@ export default {
 			? this.getReferenceEl(this.payload.referenceId)
 			: this.payload.referenceEl
 
-		this.parentContextEl = document.querySelector(`[data-id="${this.parentId}"]`)
+		this.parentDialogEl = document.querySelector(`[data-id="${this.parentId}"]`)
 	},
 
 	mounted() {
@@ -242,15 +241,15 @@ export default {
 
 	methods: {
 		...mapMutations([
-			'openContext', 
-			'closeContext',
-			'activateContext', 
-			'modifyContext',
+			'openDialog', 
+			'closeDialog',
+			'activateDialog', 
+			'modifyDialog',
 		]),
 
 		getReferenceEl(id) {
-			const parentContextEl = document.querySelector(`[data-id="${this.parentId}"]`)
-			const referenceEl = parentContextEl && parentContextEl.querySelector(`[data-id="${id}"]`)
+			const parentDialogEl = document.querySelector(`[data-id="${this.parentId}"]`)
+			const referenceEl = parentDialogEl && parentDialogEl.querySelector(`[data-id="${id}"]`)
 			return referenceEl			
 		},
 
@@ -276,21 +275,21 @@ export default {
 			const bounds = getBounds(this.referenceEl)
 
 			this.position = {
-				x: bounds.topRight.x + settings.context.margin.x,
-				y: bounds.topRight.y + settings.context.margin.y
+				x: bounds.topRight.x + settings.dialog.margin.x,
+				y: bounds.topRight.y + settings.dialog.margin.y
 			}
 
-			if (this.parentContext) {
+			if (this.parentDialog) {
 				this.delta = {
-					x: bounds.center.x - this.parentContext.position.x,
-					y: bounds.center.y - this.parentContext.position.y,
+					x: bounds.center.x - this.parentDialog.position.x,
+					y: bounds.center.y - this.parentDialog.position.y,
 				}
 			}		
 		},
 
 		onMouseDown(event) {
 			this.startDrag(event)
-			this.activateContext(this.id)
+			this.activateDialog(this.id)
 		},
 
 		onDrag(event) {
@@ -303,7 +302,7 @@ export default {
 
 		startDrag(event) {
 			this.drag = this.globalDrag = true
-			const el = this.$refs.context
+			const el = this.$refs.dialog
 			const {top, left} = el.getBoundingClientRect()
 			this.dragDelta = {
 				x: event.x - left,
@@ -320,15 +319,15 @@ export default {
 
 		close(event) {
 			if (this.targetIsChild(event.target)) return
-			this.closeContext(this.id)
+			this.closeDialog(this.id)
 		},
 
 		targetIsChild(target) {
-			const context = target.closest('.context')
+			const dialog = target.closest('.dialog')
 
-			if (!context) return false
+			if (!dialog) return false
 
-			const parentId = context.dataset.parentId
+			const parentId = dialog.dataset.parentId
 			return (parentId === this.id)
 		}
 	},

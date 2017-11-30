@@ -26,7 +26,7 @@ export default {
 			emit: 'toolSelectPrev'
 		},		
 	],
-	context: {
+	dialog: {
 		hitOptions: {
 			tolerance: 5,
 			stroke: true,

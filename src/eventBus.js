@@ -1,17 +1,6 @@
 import Vue from 'vue'
 
-const eventBus = new Vue({
-	data() {
-		return {
-			active: {
-				tool: null,
-			},
-			tools: [],
-			shortcuts: [],
-			openContexts: {},
-		}
-	},
-})
+const eventBus = new Vue()
 
 export default {
 	install(Vue) {
