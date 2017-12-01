@@ -17,7 +17,7 @@ class BezierTool extends SelectionTool {
 	}
 
 	onKeyDown(event) {
-		if (event.key === this.spec.keys.release) {
+		if (event.key === this.options.keys.release) {
 			this.releasePath()
 			event.preventDefault()
 		}
@@ -27,13 +27,13 @@ class BezierTool extends SelectionTool {
 		if (!this.path)
 			this.path = this.createPath()
 
-		if (this.spec.pathPreview)
+		if (this.options.pathPreview)
 			this.pathPreview = this.pathPreview || new PathPreview(this.path)
 
 		if (this.pathPreview)
 			this.pathPreview.clear()
 
-		if (this.spec.snapToClose)
+		if (this.options.snapToClose)
 			event = this.snap(this.path, event)
 
 		if (this.path.firstSegment && this.path.firstSegment.point.equals(event.point)) {
@@ -55,7 +55,7 @@ class BezierTool extends SelectionTool {
 		if (!this.path)
 			return false
 
-		if (this.spec.snapToClose)
+		if (this.options.snapToClose)
 			event = this.snap(this.path, event)
 
 		if (this.pathPreview)
@@ -63,7 +63,7 @@ class BezierTool extends SelectionTool {
 	}
 
 	onMouseDrag(event) {
-		if (Key.isDown(this.spec.keys.dragSegment))
+		if (Key.isDown(this.options.keys.dragSegment))
 			this.segment.point = event.point.subtract(this.segment.handleOut)
 		else if (this.handle)
 			this.dragHandle(this.handle, event)
@@ -101,7 +101,7 @@ class BezierTool extends SelectionTool {
 		const startPoint = path.firstSegment.point
 		const distance = startPoint.subtract(event.point).length
 
-		if (distance < this.spec.snapToClose.threshold)
+		if (distance < this.options.snapToClose.threshold)
 			event.point = startPoint
 
 		return event

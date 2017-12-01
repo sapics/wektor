@@ -6,7 +6,7 @@ class BaseTool extends paper.Tool {
 		super()
 
 		const id = makeUniqueId()
-		this.set({ target, spec, id })
+		this.set({ ...spec, target, id, })
 
 		const eventKeys = [
 			'onMouseDown',
@@ -16,7 +16,8 @@ class BaseTool extends paper.Tool {
 			'onKeyDown',
 			'onKeyUp',
 			'onActivate',
-			'onDeactivate'
+			'onDeactivate',
+			'onOpenSettings'
 		]
 
 		for (const key of eventKeys) {
@@ -25,6 +26,23 @@ class BaseTool extends paper.Tool {
 				this.on(key.substr(2).toLowerCase(), event)
 			}
 		}
+	}
+
+	openDialog(dialog, id) {
+		const values = Object.assign({}, this, this.options)
+		id = id
+			? this.constructor.name + '>' + id
+			: this.constructor.name + makeUniqueId()
+		this.emit('open-dialog', { id, values, ...dialog })
+	}
+
+	onOpenSettings(payload) {
+		if (!(this.dialogs && this.dialogs.settings)) {
+			console.log(`Tool ${this.label} (${this.constructor.name}) doesn't provide a settings dialog`)
+			return
+		}
+
+		this.openDialog({ ...this.dialogs.settings, payload }, 'settings')
 	}
 
 	onlySelect(value) {
@@ -46,6 +64,8 @@ class BaseTool extends paper.Tool {
 		const result = target.hitTest(event.point, options)
 		if (!result)
 			return false
+
+		if (result.item && result.item.data.noSelect) return false
 
 		if (!returnType) 
 			return result

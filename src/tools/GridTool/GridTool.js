@@ -1,5 +1,8 @@
 import BaseTool from '@/tools/BaseTool'
 import specDefault from './spec'
+import { makeUniqueId } from '@/utils.js'
+import Grid from './Grid'
+import paper from 'paper'
 
 class GridTool extends BaseTool {
 	constructor(target, spec) {
@@ -8,7 +11,12 @@ class GridTool extends BaseTool {
 	}
 
 	onMouseDown(event) {
-		this.emit('open-dialog')
+		// mousedown will close our new dialog directly after we opend it so we have to stop the event
+		event.stopPropagation()
+
+		var group = new Grid()
+
+		this.target.addChild(group)
 	}
 }
 

@@ -1,10 +1,17 @@
 <template>
 	<div
+		class="tool-select-item"
 		v-html="label"
 		@click="$emit('click', $event)"
-		@contextmenu.prevent="onContextmenu($event)"
+		@contextmenu="onContextmenu($event)"
 	></div>
 </template>
+
+<style lang="scss" scoped>
+.tool-select-item {
+	user-select: none;
+}
+</style>
 
 <script>
 export default {
@@ -23,7 +30,7 @@ export default {
 		label() {
 			if (!this.tool) return null
 
-			const { label, shortcut } = this.tool.spec
+			const { label, shortcut } = this.tool
 			const shortcutPos = label.indexOf(shortcut)
 
 			if (label === '') console.warn(`Tool (${this.tool.constructor.name}) doesn't provide a label.`)
@@ -40,13 +47,10 @@ export default {
 
 	methods: {
 		onContextmenu(event) {
+			const tool = this.tool
 			this.$emit('contextmenu', event)
-
-			if (!this.tool) return
-
-			this.$bus.$emit('open-context', this.tool.id, {
-				layout: this.tool.spec.context.layout,
-				values: this.tool.spec
+			tool && tool.emit('opensettings', {
+				referenceEl: this.$el,
 			})
 		},
 	},	

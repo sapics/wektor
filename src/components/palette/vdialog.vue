@@ -1,8 +1,9 @@
 <template>
 	<div class="dialog-wrap">
 		<pointer-line
-			:style="{zIndex}"
+			v-if="this.referenceEl"
 			v-visible="showPointerLine"
+			:style="{zIndex}"
 			:from="position"
 			:to="referencePoint"
 		></pointer-line>
@@ -80,7 +81,14 @@ const { Path, Point } = paper
 export default {
 	extends: palette,
 
-	props: ['payload'],
+	props: {
+		payload: {
+			type: Object,
+			default: () => {
+				return {}
+			}
+		}
+	},
 
 	components: { pointerLine },
 
@@ -116,10 +124,6 @@ export default {
 			}
 		},
 
-		// referenceEl() {
-		// 	return this.payload.referenceEl || {}
-		// },
-
 		parentId() {
 			return this.payload.parentId
 		},
@@ -142,7 +146,7 @@ export default {
 					x: parentPos.x + delta.x,
 					y: parentPos.y + delta.y
 				}				
-			} else {
+			} else if (this.referenceEl) {
 				const bounds = getBounds(this.referenceEl)
 				return {
 					x: bounds.center.x,
@@ -233,10 +237,6 @@ export default {
 
 	mounted() {
 		this.align()
-		// if (this.referenceEl.addEventListener) {
-		// 	this.referenceEl.addEventListener('mouseenter', () => { this.referenceHover = true })
-		// 	this.referenceEl.addEventListener('mouseleave', () => { this.referenceHover = false })
-		// }
 	},
 
 	methods: {
@@ -263,8 +263,6 @@ export default {
 		},
 
 		releaseReferenceEl(el) {
-			const referenceEl = this.referenceEl
-
 			if (el && el.removeEventListener) {
 				el.removeEventListener('mouseenter', () => { this.referenceHover = true })
 				el.removeEventListener('mouseleave', () => { this.referenceHover = false })					
@@ -272,6 +270,11 @@ export default {
 		},
 
 		align() {
+			if (!this.referenceEl) {
+				this.position = { x: 0, y: 0 }
+				return
+			}
+
 			const bounds = getBounds(this.referenceEl)
 
 			this.position = {

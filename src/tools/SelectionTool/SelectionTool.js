@@ -26,6 +26,10 @@ class SelectionTool extends BaseTool {
 		return transformbox.event(event)
 	}
 
+	emitChange(payload) {
+		this.item && this.item.emit('change', payload)		
+	}
+
 	onMouseDown(event) {
 		if (this.transformbox) {
 			const couldHandleMouseDown = this.transformbox.handleMouseDown(event)
@@ -49,7 +53,7 @@ class SelectionTool extends BaseTool {
 			case 'stroke':
 			case 'fill':
 				this.item = hitResult.item
-				this.item.applyMatrix = false
+				// this.item.applyMatrix = false
 				this.onlySelect(this.item)
 				this.segment = this.handle = null
 				break	
@@ -115,12 +119,15 @@ class SelectionTool extends BaseTool {
 
 	dragSegment(segment, event) {
 		segment.point = this.item.globalToLocal(event.point)
+		this.emitChange({ type: 'segment', action: 'drag', segment, event })
 	}
 
 	addSegment(path, event) {
 		const segment = new Segment(event.point)
 		this.onlySelect(segment)
-		return path.add(segment)
+		const result = path.add(segment)
+		this.emitChange({ type: 'segment', action: 'add', segment, event })
+		return result
 	}
 
 	convertSegment(segment) {
@@ -164,6 +171,7 @@ class SelectionTool extends BaseTool {
 		}
 
 		segment[this.toPropertyName(handle.type)] = handleDistance
+		this.emitChange({ type: 'handle', action: 'drag', handle, event })
 	}
 }
 

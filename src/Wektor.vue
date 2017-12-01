@@ -78,20 +78,14 @@ export default {
 					this.$store.commit('activateTool', tool)
 				},
 
-				'open-dialog': () => {
-					this.openDialog()
-				}
+				'open-dialog': this.openDialog,
 			})
-
-			// tool.on('activate', () => {
-			// 	this.$store.commit('activateTool', tool)
-			// })
 			tool.activate()
 
 			this.tools.push(tool)
 			this.shortcuts.push({ 
 				modifier: settings.shortcutModifiers.tool,
-				key: tool.spec.shortcut,
+				key: tool.shortcut,
 				callback: () => tool.activate(),
 			})
 		},
@@ -129,7 +123,9 @@ export default {
 			if (!hit) return
 			if (!hit.item) return
 
-			if (['Path', 'Shape'].includes(hit.item.constructor.name)) {
+			if (hit.item.dialog) {
+				this.openDialog(hit.item.dialog)
+			} else if (['Path', 'Shape'].includes(hit.item.constructor.name) && !hit.item.data.noSelect) {
 				this.openDialog({
 					id: hit.item.id,
 					layout: settings.dialog.layouts.item,

@@ -55,6 +55,6 @@ new Vue({
 
 	mounted() {
 		this.wektor.addTools([BezierTool, GridTool, SelectionTool])
-		this.wektor.target.addChild(new paper.Path.Rectangle([100, 100], {width: 200, height: 200}))
+		// this.wektor.target.addChild(new paper.Path.Rectangle([100, 100], {width: 200, height: 200}))
 	},
 })

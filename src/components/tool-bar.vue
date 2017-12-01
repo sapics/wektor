@@ -34,7 +34,7 @@ export default {
 			return this.tools.map(tool => {
 				return {
 					value: tool,
-					label: tool.spec.label
+					label: tool.label
 				}
 			})
 		},

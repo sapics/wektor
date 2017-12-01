@@ -47,7 +47,7 @@ export default {
 
 					children.push(
 						Object.assign(
-							makeValueGetterSetter(key),
+							this.makeValueGetterSetter(values, key),
 							child,
 						)
 					)
@@ -61,7 +61,7 @@ export default {
 
 					children.push(
 						Object.assign(
-							makeValueGetterSetter(key),
+							this.makeValueGetterSetter(values, key),
 							spec,
 							child,
 						)
@@ -69,19 +69,20 @@ export default {
 				}
 			}
 
-			function makeValueGetterSetter(key) {
-				return {
-					get value() {
-						return values[key]
-					},
-					set value(value) {
-						values[key] = value
-						console.log(values[key])
-					},
-				}
-			}
-
 			return children
+		}
+	},
+
+	methods: {
+		makeValueGetterSetter(values, key) {
+			return {
+				get value() {
+					return values[key]
+				},
+				set value(value) {
+					values[key] = value
+				},
+			}
 		}
 	},
 }
