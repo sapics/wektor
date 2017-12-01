@@ -124,7 +124,11 @@ export default {
 			if (!hit.item) return
 
 			if (hit.item.dialog) {
-				this.openDialog(hit.item.dialog)
+				const dialog = hit.item.dialog
+				dialog.payload = {
+					referenceEl: hit.item
+				}
+				this.openDialog(dialog)
 			} else if (['Path', 'Shape'].includes(hit.item.constructor.name) && !hit.item.data.noSelect) {
 				this.openDialog({
 					id: hit.item.id,

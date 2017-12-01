@@ -3,18 +3,22 @@ const { Path, Group, Symbol, SymbolDefinition, SymbolItem } = paper
 
 const dialog = {
 	layout: {
-		spacingVertical: {
-			type: 'number',
-			label: 'spacing vertical',
-		},
-		// linesStrokeWidth: {
-		// 	type: 'number',
-		// 	label: 'line stroke',
-		// },
-		lines: {
-			strokeWidth: {
+		options: {
+			spacingVertical: {
 				type: 'number',
-				label: 'strokeWidth'
+				label: 'spacing vertical',
+			},
+			lines: {
+				strokeWidth: {
+					type: 'number',
+					label: 'strokeWidth'
+				}
+			},
+		},
+		background: {
+			style: {
+				type: 'stroke',
+				label: 'background'
 			}
 		}
 	}
@@ -23,27 +27,40 @@ const dialog = {
 const specDefault = {
 	options: {
 		spacingVertical: 5,
-		linesStrokeColor: 'green',
-		linesStrokeWidth: 1,
-		backgroundStyle: {
-			strokeColor: 'black',
-			strokeWidth: 10,
+		lines: {
+			strokeWidth: 1,
 		},
 	},
 	dialog,
+}
+
+class DeepProxy {
+	constructor(target, changeHandler) {
+		const proxyHandler = {
+			get(target, key) {
+				if (typeof target[key] === 'object' && target[key] !== null) {
+					return new Proxy(target[key], proxyHandler)
+				} else {
+					return target[key]
+				}
+			},			
+			set: (target, key, value) => {
+				target[key] = value
+				changeHandler && changeHandler(target, key, value)
+				return true
+			},
+		}
+
+		return new Proxy(target, proxyHandler)	
+	}
 }
 
 class Grid extends Group {
 	constructor(spec) {
 		super()
 		spec = Object.assign({}, specDefault, spec)
-
-		spec.options = new Proxy(spec.options, {
-			set: (obj, key, value) => {
-				obj[key] = value
-				this.handleOptionChange(obj, key, value)
-				return true
-			}
+		spec.options = new DeepProxy(spec.options, (...args) => {
+			this.handleOptionChange(...args)
 		})
 
 		this._assign = true
@@ -65,7 +82,7 @@ class Grid extends Group {
 	handleOptionChange(options, key, value) {
 		if (this._assign) return
 
-		if (['spacingVertical', 'linesStrokeWidth'].includes(key))
+		if (['spacingVertical', 'strokeWidth'].includes(key))
 			this.drawLines()
 	}
 
@@ -74,7 +91,7 @@ class Grid extends Group {
 	}	
 
 	set dialog(dialog) {
-		const values = this.options
+		const values = this
 		const id = this.constructor.name + this.id
 		this._dialog = { values, id, ...dialog } 
 	}
@@ -99,8 +116,6 @@ class Grid extends Group {
 	drawLines() {
 		if (this._construct) return false
 
-		console.log(this.options.linesStrokeWidth)
-
 		this.clear()
 		const { width, height } = this.background.bounds
 
@@ -108,7 +123,7 @@ class Grid extends Group {
 		const lineVertical = new Path.Line({
 			from: window.view.bounds.topLeft,
 			to: window.view.bounds.bottomLeft,
-			strokeWidth: this.options.linesStrokeWidth,
+			style: this.options.lines,
 		})
 		lineVertical.pivot = lineVertical.bounds.topLeft
 

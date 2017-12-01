@@ -53,6 +53,9 @@ export default {
 
 		labelSegments() {
 			const {label} = this
+
+			if (!label) return {}
+
 			const colorPos = label.indexOf('color')
 
 			if (colorPos === -1) {
@@ -95,7 +98,7 @@ export default {
 			}
 			this.$emit('input', this.color)
 
-			const id = this.dialogId + '>' + this.id
+			const id = this.dialogId + this.id
 			const layout = {
 				[this.id]: {
 					type: 'colorpicker',
