@@ -1,26 +1,15 @@
 import paper from 'paper'
-const { Path, Group, Symbol, SymbolDefinition, SymbolItem } = paper
+const { Path, Group, Symbol, SymbolDefinition, SymbolItem, Color } = paper
 
 const dialog = {
 	layout: {
-		options: {
-			spacingVertical: {
-				type: 'number',
-				label: 'spacing vertical',
-			},
-			lines: {
-				strokeWidth: {
-					type: 'number',
-					label: 'strokeWidth'
-				}
-			},
+		'options.spacingVertical': {
+			type: 'number',
+			label: 'spacing vertical',
 		},
-		background: {
-			style: {
-				type: 'stroke',
-				label: 'background'
-			}
-		}
+		'options.lines.style.strokeColor': {
+			type: 'color'
+		}		
 	}
 }
 
@@ -28,8 +17,14 @@ const specDefault = {
 	options: {
 		spacingVertical: 5,
 		lines: {
-			strokeWidth: 1,
-		},
+			style: {
+				strokeColor: new Color({
+					red: 0,
+					green: 0,
+					blue: 0,
+				})
+			}
+		}
 	},
 	dialog,
 }
@@ -73,7 +68,7 @@ class Grid extends Group {
 		const clippingMask = new SymbolItem(backgroundSymbolDefinition)
 		this.lines = new Group({
 			children: [clippingMask],
-			clipped: true
+			clipped: true,
 		})
 		this.addChild(this.background)
 		this.drawLines()
@@ -82,7 +77,7 @@ class Grid extends Group {
 	handleOptionChange(options, key, value) {
 		if (this._assign) return
 
-		if (['spacingVertical', 'strokeWidth'].includes(key))
+		if (['spacingVertical', 'strokeWidth', 'strokeColor'].includes(key))
 			this.drawLines()
 	}
 
@@ -116,6 +111,8 @@ class Grid extends Group {
 	drawLines() {
 		if (this._construct) return false
 
+		console.log('draw')
+
 		this.clear()
 		const { width, height } = this.background.bounds
 
@@ -123,7 +120,10 @@ class Grid extends Group {
 		const lineVertical = new Path.Line({
 			from: window.view.bounds.topLeft,
 			to: window.view.bounds.bottomLeft,
-			style: this.options.lines,
+			style: {
+				strokeWidth: 1,
+				strokeColor: this.options.lines.style.strokeColor
+			},
 		})
 		lineVertical.pivot = lineVertical.bounds.topLeft
 

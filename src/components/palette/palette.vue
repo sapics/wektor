@@ -1,22 +1,21 @@
 <template>
-	<div class="palette">
+	<div class="palette">	
 		<template v-for="(child, index) in children">
-			<component :is="child.component" v-model="child.value" :key="child.key" :id="child.key" :label="child.label"></component>
+			<component 
+				:is="child.component" 
+				:data-id="child.key"
+				v-model="child.value" 
+				:key="child.key" 
+				:id="child.key"
+				:dialogId="id"
+				:label="child.label"
+			></component>				
 		</template>
 	</div>
 </template>
 
-<style lang="scss">
-.palette {
-	position: absolute;
-	top: 0;
-	bottom: 0;
-	display: inline-table;
-	background: aqua;
-}
-</style>
-
 <script type="text/javascript">
+import { resolvePropertyPath } from '@/utils'
 import number from './components/number'
 import checkbox from './components/checkbox'
 import coordinate from './components/coordinate'
@@ -26,6 +25,8 @@ import colorpicker from './components/colorpicker'
 import stroke from './components/stroke'
 
 export default {
+	name: 'palette',
+
 	props: ['values', 'layout', 'id'],
 
 	components: {number, coordinate, bezier, checkbox, color, colorpicker, stroke},
@@ -36,93 +37,32 @@ export default {
 		}
 	},
 
-	computed: {
-		// children() {
-		// 	const commonLayout = (this.layout.type !== undefined)
-		// 	const children = []
-		// 	const values = this.values
-		// 	const layout = this.layout
-		// 	const components = this.$options.components
-
-		// 	// for (let [key, spec] of Object.entries(layout)) {
-		// 	// 	let child = {
-		// 	// 		key,
-		// 	// 		component: components[spec.type],
-		// 	// 	}
-
-		// 	// 	children.push(
-		// 	// 		Object.assign(
-		// 	// 			this.makeValueGetterSetter(values, key),
-		// 	// 			spec,
-		// 	// 			child,
-		// 	// 		)
-		// 	// 	)
-		// 	// }
-			
-		// 	this.recursive(values, layout)
-
-		// 	// if (commonLayout) {
-		// 	// 	for (let [key] of Object.entries(values)) {
-
-		// 	// 		let child = {
-		// 	// 			key,
-		// 	// 			component: components[layout.type],
-		// 	// 		}
-
-		// 	// 		children.push(
-		// 	// 			Object.assign(
-		// 	// 				this.makeValueGetterSetter(values, key),
-		// 	// 				child,
-		// 	// 			)
-		// 	// 		)
-		// 	// 	}
-		// 	// } else {
-		// 	// 	for (let [key, spec] of Object.entries(layout)) {
-		// 	// 		let child = {
-		// 	// 			key,
-		// 	// 			component: components[spec.type],
-		// 	// 		}
-
-		// 	// 		children.push(
-		// 	// 			Object.assign(
-		// 	// 				this.makeValueGetterSetter(values, key),
-		// 	// 				spec,
-		// 	// 				child,
-		// 	// 			)
-		// 	// 		)
-		// 	// 	}
-		// 	// }
-
-		// 	return children
-		// }
-	},
-
 	mounted() {
-		let nested = ''
-		this.recursive(this.values, this.layout, nested)
+		console.log(this)
+		let nested = this.id
+		this.addChildren(this.values, this.layout, nested)
 	},
 
 	methods: {
-		recursive(values, layout, nested) {
+		addChildren(values, layout, nested) {
 			const components = this.$options.components
 
 			for (let [key, spec] of Object.entries(layout)) {
-				if (spec.type) {
-					let child = {
-						key: `${nested}>${key}`,
-						component: components[spec.type],
-					}
+				// the key can also be a path to a nested property like 'obj.child.key' so we have to resolve it
+				const { obj: resolvedObj, key: resolvedKey } = resolvePropertyPath(values, key, false)
 
-					this.children.push(
-						Object.assign(
-							this.makeValueGetterSetter(values, key),
-							spec,
-							child,
-						)
+				let child = {
+					key: `${nested}>${resolvedKey}`,
+					component: components[spec.type],
+				}				
+
+				this.children.push(
+					Object.assign(
+						this.makeValueGetterSetter(resolvedObj, resolvedKey),
+						spec,
+						child,
 					)
-				} else {
-					this.recursive(values[key], spec, `${nested}>${key}`)
-				}
+				)
 			}
 		},
 

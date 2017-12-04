@@ -24,17 +24,12 @@
 				:class="{locked}"
 				@click="locked = !locked"
 			></div>
-			<template v-for="(child, index) in children">
-				<component 
-					:is="child.component" 
-					:data-id="child.key"
-					v-model="child.value" 
-					:key="child.key" 
-					:id="child.key"
-					:dialogId="id"
-					:label="child.label"
-				></component>
-			</template>
+			<palette
+				:values="values"
+				:layout="layout"
+				:id="id"
+			>
+			</palette>
 		</div>	
 	</div>
 </template>
@@ -79,9 +74,12 @@ import { getBounds, elementsOverlap } from '@/utils'
 const { Path, Point } = paper
 
 export default {
-	extends: palette,
+	// extends: palette,
 
 	props: {
+		id: String,
+		values: Object,
+		layout: Object,
 		payload: {
 			type: Object,
 			default: () => {
@@ -90,7 +88,7 @@ export default {
 		}
 	},
 
-	components: { pointerLine },
+	components: { pointerLine, palette },
 
 	data() {
 		return {
@@ -215,7 +213,10 @@ export default {
 
 		'parentDialog.open': function(open) {
 			if (open) {
-				this.referenceEl = this.getReferenceEl(this.payload.referenceId)
+				// wait for next tick so the parentDialog's children are ready
+				this.$nextTick(() => {
+					this.referenceEl = this.getReferenceEl(this.payload.referenceId)
+				})
 			} else {
 				this.releaseReferenceEl(this.referenceEl)
 				this.referenceEl = null
@@ -250,6 +251,7 @@ export default {
 		getReferenceEl(id) {
 			const parentDialogEl = document.querySelector(`[data-id="${this.parentId}"]`)
 			const referenceEl = parentDialogEl && parentDialogEl.querySelector(`[data-id="${id}"]`)
+			console.log('id', `[data-id="${id}"]`)
 			return referenceEl			
 		},
 

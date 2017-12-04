@@ -103,7 +103,7 @@ function trimZeros(value) {
 }
 
 function round(value, decimals = 2) {
-    const factor = Math.pow(10, decimals)
+	const factor = Math.pow(10, decimals)
 	return Math.round(value * factor) / factor	
 }
 
@@ -147,6 +147,25 @@ function alphaToWhite(color) {
 	})
 }
 
+function resolvePropertyPath(obj, str, resolveKey = true) {
+    let segments = str.split('.')
+    
+    if (resolveKey) {
+        return segments.reduce(resolve, obj || self)
+    } else {
+        const key = segments[segments.length - 1]
+        segments = segments.slice(0, -1)
+        return {
+            obj: segments.reduce(resolve, obj || self),
+            key: key,
+        }
+    }
+    
+    function resolve(prev, curr) {
+        return prev ? prev[curr] : undefined
+    }
+}
+
 export { 
 	isInt, 
 	isString, 
@@ -167,5 +186,6 @@ export {
 	filterObject, 
 	elementsOverlap,
 	getContrast,
-	alphaToWhite
+	alphaToWhite,
+	resolvePropertyPath,
 }

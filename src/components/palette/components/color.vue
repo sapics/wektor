@@ -98,7 +98,7 @@ export default {
 			}
 			this.$emit('input', this.color)
 
-			const id = this.dialogId + this.id
+			const id = this.id
 			const layout = {
 				[this.id]: {
 					type: 'colorpicker',
@@ -108,6 +108,8 @@ export default {
 			const values = {
 				[this.id]: this.color
 			}
+
+			console.log('values', values)
 
 			this.openDialog({
 				id, 

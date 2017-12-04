@@ -26,7 +26,7 @@ export default {
 			},
 			set(tool) {
 				if (tool instanceof Tool) tool.activate()
-				this.$store.commit('activateTool', tool)
+				// this.$store.commit('activateTool', tool)
 			},
 		},
 
