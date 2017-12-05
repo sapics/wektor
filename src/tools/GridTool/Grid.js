@@ -3,19 +3,24 @@ const { Path, Group, Symbol, SymbolDefinition, SymbolItem, Color } = paper
 
 const dialog = {
 	layout: {
-		'options.spacingVertical': {
+		'options.spacing.vertical': {
 			type: 'number',
 			label: 'spacing vertical',
 		},
-		'options.lines.style.strokeColor': {
+		'lineVertical.style.strokeColor': {
 			type: 'color'
-		}		
+		},
+		// 'background.style.fillColor': {
+		// 	type: 'color'
+		// },	
 	}
 }
 
 const specDefault = {
 	options: {
-		spacingVertical: 5,
+		spacing: {
+			vertical: 5
+		},
 		lines: {
 			style: {
 				strokeColor: new Color({
@@ -31,22 +36,30 @@ const specDefault = {
 
 class DeepProxy {
 	constructor(target, changeHandler) {
-		const proxyHandler = {
-			get(target, key) {
-				if (typeof target[key] === 'object' && target[key] !== null) {
-					return new Proxy(target[key], proxyHandler)
-				} else {
-					return target[key]
-				}
-			},			
-			set: (target, key, value) => {
-				target[key] = value
-				changeHandler && changeHandler(target, key, value)
-				return true
-			},
+		function makeProxyHandler(keyPath) {
+			return {
+				get(target, key) {
+					if (typeof target[key] === 'object' && target[key] !== null && target.constructor.name === 'Object') {
+						const newKeyPath = keyPath ? `${keyPath}.${key}` : key
+						return new Proxy(target[key], makeProxyHandler(newKeyPath))
+					} else {
+						return target[key]
+					}
+				},			
+				set: (target, key, value) => {
+					target[key] = value
+					changeHandler && changeHandler({
+						target, 
+						key, 
+						value, 
+						keyPath: keyPath ? `${keyPath}.${key}` : key
+					})
+					return true
+				},
+			}
 		}
 
-		return new Proxy(target, proxyHandler)	
+		return new Proxy(target, makeProxyHandler())	
 	}
 }
 
@@ -70,14 +83,22 @@ class Grid extends Group {
 			children: [clippingMask],
 			clipped: true,
 		})
+
+		this.lineVertical = new Path.Line({
+			from: window.view.bounds.topLeft,
+			to: window.view.bounds.bottomLeft,
+			style: this.options.lines.style
+		})
+		this.lineVerticalSymbolDefinition = new SymbolDefinition(this.lineVertical)
+
 		this.addChild(this.background)
 		this.drawLines()
 	}
 
-	handleOptionChange(options, key, value) {
+	handleOptionChange({target, key, value, keyPath}) {
 		if (this._assign) return
 
-		if (['spacingVertical', 'strokeWidth', 'strokeColor'].includes(key))
+		if (['spacing.vertical'].includes(keyPath))
 			this.drawLines()
 	}
 
@@ -111,25 +132,16 @@ class Grid extends Group {
 	drawLines() {
 		if (this._construct) return false
 
-		console.log('draw')
-
 		this.clear()
 		const { width, height } = this.background.bounds
 
-		// vertical
-		const lineVertical = new Path.Line({
-			from: window.view.bounds.topLeft,
-			to: window.view.bounds.bottomLeft,
-			style: {
-				strokeWidth: 1,
-				strokeColor: this.options.lines.style.strokeColor
-			},
-		})
-		lineVertical.pivot = lineVertical.bounds.topLeft
+		// // vertical
+		// const lineVertical = this.lineVertical
+		// lineVertical.pivot = lineVertical.bounds.topLeft
 
-		const lineVerticalSymbolDefinition = new SymbolDefinition(lineVertical)
+		const lineVerticalSymbolDefinition = this.lineVerticalSymbolDefinition
 
-		for (let x = 0; x < width; x += this.options.spacingVertical) {		
+		for (let x = 0; x < width; x += this.options.spacing.vertical) {		
 			let newLine = new SymbolItem(lineVerticalSymbolDefinition)
 			newLine.pivot = newLine.bounds.topLeft
 			newLine.position = {
