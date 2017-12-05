@@ -21,9 +21,10 @@ import toolBar from './components/tool-bar.vue'
 import vdialog from './components/palette/vdialog.vue'
 import settings from './settings.js'
 import { isArray } from './utils.js'
+import wektor from '@/wektor'
 
 export default {
-	name: 'wektor',
+	name: 'wektorUi',
 
 	props: ['target'],
 
@@ -31,9 +32,9 @@ export default {
 
 	computed: {
 		...mapState([
-			'shortcuts', 
-			'tools'
+			'tools',
 		]),
+
 		...mapGetters([
 			'openDialogs',
 			'dialogs'
@@ -45,59 +46,21 @@ export default {
 	},
 
 	mounted() {
+		console.log(wektor.tools[0])
+		wektor.tools[0].activate()
 		document.addEventListener('keydown', this.onKeydown)
 		document.addEventListener('contextmenu', this.onContextmenu)
-		this.initShortcuts()
+
+		wektor.on('add-tool', tool => {
+			const { label, id } = tool
+			this.tools.push({ label, id })
+		})
 	},
 
 	methods: {
 		...mapMutations([
 			'openDialog',
 		]),
-
-		initShortcuts() {
-			for (const shortcut of settings.shortcuts) {
-				this.addShortcut(shortcut)
-			}
-		},
-
-		addShortcut(shortcut) {
-			if (!shortcut.callback && !shortcut.emit)
-				console.warn(`shortcut (${shortcut.modifier} + ${shortcut.key}) doesn't provide a callback or an emit-event-name.`)
-			else if (!shortcut.callback && shortcut.emit)
-				shortcut.callback = () => this.$bus.$emit(shortcut.emit)
-
-			this.shortcuts.push(shortcut)
-		},
-
-		addTool(Tool, spec) {
-			const tool = new Tool(this.target, spec)
-
-			tool.on({
-				activate: () => {
-					this.$store.commit('activateTool', tool)
-				},
-
-				'open-dialog': this.openDialog,
-			})
-			tool.activate()
-
-			this.tools.push(tool)
-			this.shortcuts.push({ 
-				modifier: settings.shortcutModifiers.tool,
-				key: tool.shortcut,
-				callback: () => tool.activate(),
-			})
-		},
-
-		addTools(array) {
-			for (const item of array) {
-				if (isArray(item))
-					this.addTool(item[0], item[1])
-				else
-					this.addTool(item)
-			}
-		},
 
 		onKeydown(event) {			
 			const exlcude = settings.shortcutTargetExlude
