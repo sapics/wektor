@@ -45,13 +45,14 @@ class Wektor extends EventEmitter {
 
 		tool.on({
 			activate: () => {
-				this.emit('activate-tool', tool)
+				this.emit('activateTool', tool)
 			},
 
 			'open-dialog': this.openDialog,
 		})
 		tool.activate()
 
+		this.emit('addTool', tool)
 		this.tools.push(tool)
 		this.addShortcut({
 			modifier: this.settings.shortcutModifiers.tool,

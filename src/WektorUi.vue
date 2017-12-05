@@ -46,20 +46,19 @@ export default {
 	},
 
 	mounted() {
-		console.log(wektor.tools[0])
 		wektor.tools[0].activate()
 		document.addEventListener('keydown', this.onKeydown)
 		document.addEventListener('contextmenu', this.onContextmenu)
 
-		wektor.on('add-tool', tool => {
-			const { label, id } = tool
-			this.tools.push({ label, id })
-		})
+		wektor.on('addTool', this.addTool)
+		wektor.on('activateTool', this.activateTool)
 	},
 
 	methods: {
 		...mapMutations([
 			'openDialog',
+			'addTool',
+			'activateTool'
 		]),
 
 		onKeydown(event) {			
@@ -67,7 +66,7 @@ export default {
 			if (exlcude.includes(event.target.tagName.toLowerCase())) return
 
 			let shortcutMatched = false
-			for (const shortcut of this.shortcuts) {
+			for (const shortcut of wektor.shortcuts) {
 				if (event.key === shortcut.key && (!shortcut.modifier || event[shortcut.modifier + 'Key'])) {
 					if (shortcutMatched) console.warn('multiple shortcuts matched event')
 					shortcutMatched = true

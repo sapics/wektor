@@ -7,7 +7,7 @@ Vue.use(Vuex)
 const store = new Vuex.Store({
 	state: {
 		dialogs: {},
-		tools: [],
+		tools: {},
 		shortcuts: [],
 		active: {
 			tool: null,
@@ -39,8 +39,14 @@ const store = new Vuex.Store({
 			Vue.set(state.dialogs, id, { ...dialog, [key]: value })
 		},
 
+		addTool(state, tool) {
+			const { label, id, shortcut } = tool
+			Vue.set(state.tools, id, { id, label, shortcut })			
+		},
+
 		activateTool(state, tool) {
-			state.active.tool = tool
+			const { label, id, shortcut } = tool
+			state.active.tool = { label, id, shortcut }
 		},
 
 		activateDialog(state, id) {

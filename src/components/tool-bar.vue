@@ -1,5 +1,5 @@
 <template>
-	<tool-select class="tool-bar" ref="select" :options="toolSelectOptions" v-model="activeTool"></tool-select>
+	<tool-select class="tool-bar" ref="select" :options="toolSelectOptions" v-model="activeToolId"></tool-select>
 </template>
 
 <script>
@@ -12,31 +12,33 @@ const { Tool } = paper
 export default {
 	props: {
 		tools: {
-			type: Array,
-			default: () => [],
+			type: Object,
+			default: () => {},
 		}
 	},
 
 	components: { toolSelect },
 
 	computed: {
-		activeTool: {
+		activeToolId: {
 			get() {
-				return this.$store.state.active.tool
+				const tool = this.$store.state.active.tool
+				return tool && tool.id
 			},
-			set(tool) {
-				if (tool instanceof Tool) tool.activate()
-				// this.$store.commit('activateTool', tool)
+			set(id) {
+				this.$store.commit('activateTool', this.$store.state.tools[id])
 			},
 		},
 
 		toolSelectOptions() {
-			return this.tools.map(tool => {
-				return {
-					value: tool,
-					label: tool.label
-				}
-			})
+			const options = []
+
+			console.log('too', this.tools)
+			for (const [id, tool] of Object.entries(this.tools)) {
+				options.push({ ...tool, value: id })
+			}
+
+			return options
 		},
 	},
 

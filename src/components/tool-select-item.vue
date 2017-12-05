@@ -24,7 +24,7 @@ export default {
 
 	computed: {
 		tool() {
-			return this.option.value
+			return this.option
 		},
 
 		label() {
@@ -33,7 +33,7 @@ export default {
 			const { label, shortcut } = this.tool
 			const shortcutPos = label.indexOf(shortcut)
 
-			if (label === '') console.warn(`Tool (${this.tool.constructor.name}) doesn't provide a label.`)
+			if (label === '') console.warn(`Tool doesn't provide a label.`)
 
 			let labelHtml = ''
 			labelHtml += '<span class="bullet">●</span>'
