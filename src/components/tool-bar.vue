@@ -6,6 +6,7 @@
 import { mapState, mapMutations } from 'vuex'
 import toolSelect from './tool-select.vue'
 import paper from 'paper'
+import wektor from '@/wektor'
 
 const { Tool } = paper
 
@@ -22,20 +23,24 @@ export default {
 	computed: {
 		activeToolId: {
 			get() {
-				const tool = this.$store.state.active.tool
-				return tool && tool.id
+				return this.$store.state.active.tool
 			},
 			set(id) {
-				this.$store.commit('activateTool', this.$store.state.tools[id])
+				const tool = wektor.tools[id]
+				tool && tool.activate()
+				this.$store.commit('setActiveTool', id)
 			},
 		},
 
 		toolSelectOptions() {
 			const options = []
 
-			console.log('too', this.tools)
 			for (const [id, tool] of Object.entries(this.tools)) {
-				options.push({ ...tool, value: id })
+				options.push({
+					value: id,
+					label: tool.label,
+					shortcut: tool.shortcut
+				})
 			}
 
 			return options

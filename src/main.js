@@ -17,6 +17,10 @@ import GridTool from './tools/GridTool'
 
 paper.install(window)
 paper.setup('main-canvas')
+paper.project.currentStyle = {
+	strokeColor: 'green',
+	strokeWidth: 10,
+}
 
 Vue.config.productionTip = false
 Vue.use(Vuex)

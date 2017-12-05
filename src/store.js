@@ -1,14 +1,13 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import { isInt, isObject, filterObject } from '@/utils'
+import wektor from '@/wektor'
 
 Vue.use(Vuex)
 
 const store = new Vuex.Store({
 	state: {
 		dialogs: {},
-		tools: {},
-		shortcuts: [],
 		active: {
 			tool: null,
 			dialog: null,
@@ -39,14 +38,8 @@ const store = new Vuex.Store({
 			Vue.set(state.dialogs, id, { ...dialog, [key]: value })
 		},
 
-		addTool(state, tool) {
-			const { label, id, shortcut } = tool
-			Vue.set(state.tools, id, { id, label, shortcut })			
-		},
-
-		activateTool(state, tool) {
-			const { label, id, shortcut } = tool
-			state.active.tool = { label, id, shortcut }
+		setActiveTool(state, id) {
+			state.active.tool = id
 		},
 
 		activateDialog(state, id) {

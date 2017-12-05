@@ -7,12 +7,9 @@ const dialog = {
 			type: 'number',
 			label: 'spacing vertical',
 		},
-		'lineVertical.style.strokeWidth': {
-			type: 'number'
-		},
-		// 'background.style.fillColor': {
-		// 	type: 'color'
-		// },	
+		'background.style.fillColor': {
+			type: 'color'
+		},	
 	}
 }
 
@@ -39,14 +36,14 @@ class DeepProxy {
 	constructor(target, changeHandler) {
 		function makeProxyHandler(keyPath) {
 			return {
-				// get(target, key) {
-				// 	if (typeof target[key] === 'object' && target[key] !== null && target.constructor.name === 'Object') {
-				// 		const newKeyPath = keyPath ? `${keyPath}.${key}` : key
-				// 		return new Proxy(target[key], makeProxyHandler(newKeyPath))
-				// 	} else {
-				// 		return target[key]
-				// 	}
-				// },			
+				get(target, key) {
+					if (typeof target[key] === 'object' && target[key] !== null && target.constructor.name === 'Object') {
+						const newKeyPath = keyPath ? `${keyPath}.${key}` : key
+						return new Proxy(target[key], makeProxyHandler(newKeyPath))
+					} else {
+						return target[key]
+					}
+				},			
 				set: (target, key, value) => {
 					target[key] = value
 					changeHandler && changeHandler({
@@ -68,9 +65,9 @@ class Grid extends Group {
 	constructor(spec) {
 		super()
 		spec = Object.assign({}, specDefault, spec)
-		// spec.options = new DeepProxy(spec.options, (...args) => {
-		// 	this.handleOptionChange(...args)
-		// })
+		spec.options = new DeepProxy(spec.options, (...args) => {
+			this.handleOptionChange(...args)
+		})
 		Object.assign(this, spec)
 
 		this.initBackground()
@@ -92,7 +89,7 @@ class Grid extends Group {
 			dialog: this.dialog,
 		})
 
-		this.background.on('mousedown', () => {
+		this.background.on('change', () => {
 			this.drawLines()
 		})
 
@@ -117,11 +114,14 @@ class Grid extends Group {
 				strokeColor: 'black'
 			}
 		})
+		this.lineVertical.pivot = this.lineVertical.bounds.topLeft
 		this.lineVerticalSymbolDefinition = new SymbolDefinition(this.lineVertical)
 	}
 
 	handleOptionChange({target, key, value, keyPath}) {
 		if (this._assign) return
+
+		console.log(keyPath)
 
 		if (['spacing.vertical'].includes(keyPath))
 			this.drawLines()
@@ -137,38 +137,16 @@ class Grid extends Group {
 		this._dialog = { values, id, ...dialog } 
 	}
 
-	createBackgroundRectangle() {
-		const background = new Path({
-			name: 'background',
-			segments: [
-				[0, 0], [200, 0], [200, 200], [0, 200]
-			],
-			closed: true,
-			style: this.backgroundStyle,
-			position: (window.view && window.view.center) || [0, 0],
-			dialog: this.dialog,
-		})
-		background.on('change', () => {
-			this.drawLines()
-		})
-		return background
-	}
-
 	drawLines() {
 		if (this._construct) return false
 
 		this.clear()
 		const { width, height } = this.background.bounds
 
-		// // vertical
-		// const lineVertical = this.lineVertical
-		// lineVertical.pivot = lineVertical.bounds.topLeft
-
 		const lineVerticalSymbolDefinition = this.lineVerticalSymbolDefinition
 
 		for (let x = 0; x < width; x += this.options.spacing.vertical) {		
-			let newLine = new SymbolItem(lineVerticalSymbolDefinition)
-			newLine.pivot = newLine.bounds.topLeft
+			let newLine = this.lineVertical.clone() // new SymbolItem(lineVerticalSymbolDefinition)
 			newLine.position = {
 				x: this.background.bounds.topLeft.x + x,
 				y: 0

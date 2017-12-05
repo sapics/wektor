@@ -31,9 +31,9 @@ export default {
 	components: { toolBar, vdialog },
 
 	computed: {
-		...mapState([
-			'tools',
-		]),
+		tools() {
+			return wektor.tools
+		},
 
 		...mapGetters([
 			'openDialogs',
@@ -46,19 +46,19 @@ export default {
 	},
 
 	mounted() {
-		wektor.tools[0].activate()
 		document.addEventListener('keydown', this.onKeydown)
 		document.addEventListener('contextmenu', this.onContextmenu)
 
-		wektor.on('addTool', this.addTool)
-		wektor.on('activateTool', this.activateTool)
+		wektor.on('activateTool', tool => {
+			this.setActiveTool(tool.id)
+		})
 	},
 
 	methods: {
 		...mapMutations([
 			'openDialog',
 			'addTool',
-			'activateTool'
+			'setActiveTool'
 		]),
 
 		onKeydown(event) {			
@@ -80,7 +80,7 @@ export default {
 			event.preventDefault()
 
 			const point = { x: event.x, y: event.y }
-			const hit = this.target.hitTest(point, settings.dialog.hitOptions)
+			const hit = wektor.target.hitTest(point, settings.dialog.hitOptions)
 
 			if (!hit) return
 			if (!hit.item) return

@@ -9,7 +9,7 @@ class Wektor extends EventEmitter {
 
 		Object.assign(this, {
 			target: null, // new paper.Group(),
-			tools: [],
+			tools: {},
 			shortcuts: [],
 			active: {
 				tool: null,
@@ -52,13 +52,14 @@ class Wektor extends EventEmitter {
 		})
 		tool.activate()
 
-		this.emit('addTool', tool)
-		this.tools.push(tool)
+		this.tools[tool.id] = tool
 		this.addShortcut({
 			modifier: this.settings.shortcutModifiers.tool,
 			key: tool.shortcut,
 			callback: () => tool.activate(),			
 		})
+
+		this.emit('addTool', tool)
 	}
 
 	addTools(array) {
