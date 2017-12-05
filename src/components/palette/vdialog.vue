@@ -251,7 +251,6 @@ export default {
 		getReferenceEl(id) {
 			const parentDialogEl = document.querySelector(`[data-id="${this.parentId}"]`)
 			const referenceEl = parentDialogEl && parentDialogEl.querySelector(`[data-id="${id}"]`)
-			console.log('id', `[data-id="${id}"]`)
 			return referenceEl			
 		},
 

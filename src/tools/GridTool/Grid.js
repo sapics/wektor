@@ -7,8 +7,8 @@ const dialog = {
 			type: 'number',
 			label: 'spacing vertical',
 		},
-		'lineVertical.style.strokeColor': {
-			type: 'color'
+		'lineVertical.style.strokeWidth': {
+			type: 'number'
 		},
 		// 'background.style.fillColor': {
 		// 	type: 'color'
@@ -27,7 +27,8 @@ const specDefault = {
 					red: 0,
 					green: 0,
 					blue: 0,
-				})
+				}),
+				strokeWidth: 1,
 			}
 		}
 	},
@@ -38,14 +39,14 @@ class DeepProxy {
 	constructor(target, changeHandler) {
 		function makeProxyHandler(keyPath) {
 			return {
-				get(target, key) {
-					if (typeof target[key] === 'object' && target[key] !== null && target.constructor.name === 'Object') {
-						const newKeyPath = keyPath ? `${keyPath}.${key}` : key
-						return new Proxy(target[key], makeProxyHandler(newKeyPath))
-					} else {
-						return target[key]
-					}
-				},			
+				// get(target, key) {
+				// 	if (typeof target[key] === 'object' && target[key] !== null && target.constructor.name === 'Object') {
+				// 		const newKeyPath = keyPath ? `${keyPath}.${key}` : key
+				// 		return new Proxy(target[key], makeProxyHandler(newKeyPath))
+				// 	} else {
+				// 		return target[key]
+				// 	}
+				// },			
 				set: (target, key, value) => {
 					target[key] = value
 					changeHandler && changeHandler({
@@ -67,32 +68,56 @@ class Grid extends Group {
 	constructor(spec) {
 		super()
 		spec = Object.assign({}, specDefault, spec)
-		spec.options = new DeepProxy(spec.options, (...args) => {
-			this.handleOptionChange(...args)
+		// spec.options = new DeepProxy(spec.options, (...args) => {
+		// 	this.handleOptionChange(...args)
+		// })
+		Object.assign(this, spec)
+
+		this.initBackground()
+		this.initLines()
+		this.drawLines()
+	}
+
+	initBackground() {
+		this.background = new Path({
+			name: 'background',
+			segments: [
+				[0, 0], [200, 0], [200, 200], [0, 200]
+			],
+			closed: true,
+			style: this.backgroundStyle,
+			position: (window.view && window.view.center) || [0, 0],
+			// linking the Grid's dialog will enable opening the Grid's dialog when clicking on the beackground
+			// (see Wektor.vue's onContextmenu())
+			dialog: this.dialog,
 		})
 
-		this._assign = true
-		Object.assign(this, spec)
-		this._assign = false
+		this.background.on('mousedown', () => {
+			this.drawLines()
+		})
 
-		this.background = this.createBackgroundRectangle()
-		const backgroundSymbolDefinition = new SymbolDefinition(this.background)
+		const symbolDefinition = new SymbolDefinition(this.background)
 		this.background.position = window.view.center
-		const clippingMask = new SymbolItem(backgroundSymbolDefinition)
+		this.clippingMask = new SymbolItem(symbolDefinition)
+
+		this.addChild(this.background)
+	}
+
+	initLines() {
 		this.lines = new Group({
-			children: [clippingMask],
+			children: [this.clippingMask],
 			clipped: true,
 		})
 
 		this.lineVertical = new Path.Line({
 			from: window.view.bounds.topLeft,
 			to: window.view.bounds.bottomLeft,
-			style: this.options.lines.style
+			style: {
+				strokeWidth: 1,
+				strokeColor: 'black'
+			}
 		})
 		this.lineVerticalSymbolDefinition = new SymbolDefinition(this.lineVertical)
-
-		this.addChild(this.background)
-		this.drawLines()
 	}
 
 	handleOptionChange({target, key, value, keyPath}) {
