@@ -49,19 +49,10 @@ export default {
 	data() {
 		return {
 			range: { min: 360, max: 0 }, // we need the value to increase from bottom to top
-			value: null,
 		}
-	},
-	
-	watch: {
-		value(value) {
-			this.color.hue = value
-			this.$parent.$emit('change')
-		},
 	},
 
 	mounted() {
-		this.value = this.color.hue
 		this.pointerSize.height -= 2 // we want the pointer to be able to move into the outer border
 	},
 }	

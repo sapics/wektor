@@ -1,11 +1,16 @@
 import paper from 'paper'
+import createDialog from '@/dialog'
 const { Path, Group, Symbol, SymbolDefinition, SymbolItem, Color } = paper
 
-const dialog = {
+const dialogData = {
 	layout: {
 		'options.spacing.vertical': {
 			type: 'number',
 			label: 'spacing vertical',
+		},
+		'options.lines.style.strokeColor': {
+			type: 'color',
+			label: 'lines'
 		},
 		'background.style.fillColor': {
 			type: 'color'
@@ -29,46 +34,45 @@ const specDefault = {
 			}
 		}
 	},
-	dialog,
+	dialogData,
 }
 
-class DeepProxy {
-	constructor(target, changeHandler) {
-		function makeProxyHandler(keyPath) {
-			return {
-				get(target, key) {
-					if (typeof target[key] === 'object' && target[key] !== null && target.constructor.name === 'Object') {
-						const newKeyPath = keyPath ? `${keyPath}.${key}` : key
-						return new Proxy(target[key], makeProxyHandler(newKeyPath))
-					} else {
-						return target[key]
-					}
-				},			
-				set: (target, key, value) => {
-					target[key] = value
-					changeHandler && changeHandler({
-						target, 
-						key, 
-						value, 
-						keyPath: keyPath ? `${keyPath}.${key}` : key
-					})
-					return true
-				},
-			}
-		}
+// class DeepProxy {
+// 	constructor(target, changeHandler) {
+// 		function makeProxyHandler(keyPath) {
+// 			return {
+// 				get(target, key) {
+// 					if (typeof target[key] === 'object' && target[key] !== null && target.constructor.name === 'Object') {
+// 						const newKeyPath = keyPath ? `${keyPath}.${key}` : key
+// 						return new Proxy(target[key], makeProxyHandler(newKeyPath))
+// 					} else {
+// 						return target[key]
+// 					}
+// 				},			
+// 				set: (target, key, value) => {
+// 					target[key] = value
+// 					changeHandler && changeHandler({
+// 						target, 
+// 						key, 
+// 						value,
+// 						targetPath: keyPath,
+// 						keyPath: keyPath ? `${keyPath}.${key}` : key
+// 					})
+// 					return true
+// 				},
+// 			}
+// 		}
 
-		return new Proxy(target, makeProxyHandler())	
-	}
-}
+// 		return new Proxy(target, makeProxyHandler())	
+// 	}
+// }
 
 class Grid extends Group {
 	constructor(spec) {
 		super()
 		spec = Object.assign({}, specDefault, spec)
-		spec.options = new DeepProxy(spec.options, (...args) => {
-			this.handleOptionChange(...args)
-		})
 		Object.assign(this, spec)
+		console.log(this.dialogData)
 
 		this.initBackground()
 		this.initLines()
@@ -82,12 +86,12 @@ class Grid extends Group {
 				[0, 0], [200, 0], [200, 200], [0, 200]
 			],
 			closed: true,
-			style: this.backgroundStyle,
 			position: (window.view && window.view.center) || [0, 0],
-			// linking the Grid's dialog will enable opening the Grid's dialog when clicking on the beackground
-			// (see Wektor.vue's onContextmenu())
-			dialog: this.dialog,
 		})
+
+		// when the background is hit (see wektorUi's onContextMenu the Grid's dialog will be opened)
+		// define this via an arrow function, otherwise 'this' in the getDialog function wont be Grid but the background Path 
+		this.background.getDialog = () => this.getDialog()
 
 		this.background.on('change', () => {
 			this.drawLines()
@@ -109,44 +113,42 @@ class Grid extends Group {
 		this.lineVertical = new Path.Line({
 			from: window.view.bounds.topLeft,
 			to: window.view.bounds.bottomLeft,
-			style: {
-				strokeWidth: 1,
-				strokeColor: 'black'
-			}
 		})
 		this.lineVertical.pivot = this.lineVertical.bounds.topLeft
 		this.lineVerticalSymbolDefinition = new SymbolDefinition(this.lineVertical)
 	}
 
-	handleOptionChange({target, key, value, keyPath}) {
+	handleOptionChange({target, key, value, keyPath, targetPath}) {
 		if (this._assign) return
 
-		console.log(keyPath)
+		const redrawList = [
+			'spacing.vertical',
+			'lines.style.strokeWidth',
+			'lines.style.strokeColor.hue',
+		]
 
-		if (['spacing.vertical'].includes(keyPath))
+		if (redrawList.includes(keyPath))
 			this.drawLines()
 	}
 
-	get dialog() {
-		return this._dialog
-	}	
-
-	set dialog(dialog) {
-		const values = this
+	getDialog() {
+		const dialog = createDialog(this, this.dialogData.layout)
 		const id = this.constructor.name + this.id
-		this._dialog = { values, id, ...dialog } 
-	}
+		return { ...dialog, id } 
+	}	
 
 	drawLines() {
 		if (this._construct) return false
 
+		console.log('draw')
+
 		this.clear()
 		const { width, height } = this.background.bounds
 
-		const lineVerticalSymbolDefinition = this.lineVerticalSymbolDefinition
+		this.lineVertical.style = this.options.lines.style
 
 		for (let x = 0; x < width; x += this.options.spacing.vertical) {		
-			let newLine = this.lineVertical.clone() // new SymbolItem(lineVerticalSymbolDefinition)
+			let newLine = this.lineVertical.clone()
 			newLine.position = {
 				x: this.background.bounds.topLeft.x + x,
 				y: 0

@@ -23,6 +23,7 @@ import bezier from './components/bezier'
 import color from './components/color'
 import colorpicker from './components/colorpicker'
 import stroke from './components/stroke'
+import paper from 'paper'
 
 export default {
 	name: 'palette',
@@ -38,44 +39,60 @@ export default {
 	},
 
 	mounted() {
-		console.log(this)
 		let nested = this.id
-		this.addChildren(this.values, this.layout, nested)
+		this.addChildren(this.layout, nested)
 	},
 
 	methods: {
-		addChildren(values, layout, nested) {
+		addChildren(layout) {
 			const components = this.$options.components
+			const values = this.values
 
-			for (let [key, spec] of Object.entries(layout)) {
-				// the key can also be a path to a nested property like 'obj.child.key' so we have to resolve it
-				const { obj: resolvedObj, key: resolvedKey } = resolvePropertyPath(values, key, false)
+			for (const [key, layoutProp] of Object.entries(layout)) {
+				console.log(layoutProp)
+				const child = {
+					spec: layoutProp,
+					key,
+					component: components[layoutProp.type],
+					value: values[key],
+				}
 
-				let child = {
-					key: `${nested}>${resolvedKey}`,
-					component: components[spec.type],
-				}				
-
-				this.children.push(
-					Object.assign(
-						this.makeValueGetterSetter(resolvedObj, resolvedKey),
-						spec,
-						child,
-					)
-				)
+				this.children.push(child)
 			}
 		},
 
-		makeValueGetterSetter(values, key) {
-			return {
-				get value() {
-					return values[key]
-				},
-				set value(value) {
-					values[key] = value
-				},
-			}
-		},
+		// addChildren(values, layout, nested) {
+		// 	const components = this.$options.components
+
+		// 	for (let [key, spec] of Object.entries(layout)) {
+		// 		// the key can also be a path to a nested property like 'obj.child.key' so we have to resolve it
+		// 		// const { obj: resolvedObj, key: resolvedKey } = resolvePropertyPath(values, key, false)
+
+		// 		let child = {
+		// 			key, // key, : `${nested}>${resolvedKey}`,
+		// 			component: components[spec.type],
+		// 		}
+
+		// 		this.children.push(
+		// 			Object.assign(
+		// 				this.makeValueGetterSetter(obj, resolvedKey),
+		// 				spec,
+		// 				child,
+		// 			)
+		// 		)
+		// 	}
+		// },
+
+		// makeValueGetterSetter(values, key) {
+		// 	return {
+		// 		get value() {
+		// 			return values[key]
+		// 		},
+		// 		set value(value) {
+		// 			values[key] = value
+		// 		},
+		// 	}
+		// },
 	},
 }
 </script>

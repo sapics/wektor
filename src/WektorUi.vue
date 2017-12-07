@@ -20,8 +20,9 @@ import { mapGetters, mapMutations, mapState } from 'vuex'
 import toolBar from './components/tool-bar.vue'
 import vdialog from './components/palette/vdialog.vue'
 import settings from './settings.js'
-import { isArray } from './utils.js'
+import { isArray, isFunction } from './utils.js'
 import wektor from '@/wektor'
+import createDialog from '@/dialog'
 
 export default {
 	name: 'wektorUi',
@@ -85,17 +86,18 @@ export default {
 			if (!hit) return
 			if (!hit.item) return
 
-			if (hit.item.dialog) {
-				const dialog = hit.item.dialog
-				dialog.payload = {
-					referenceEl: hit.item
-				}
+			if (isFunction(hit.item.getDialog)) {
+				const dialog = hit.item.getDialog()
+				console.log(dialog)
+				// dialog.payload = {
+				// 	referenceEl: hit.item
+				// }
 				this.openDialog(dialog)
 			} else if (['Path', 'Shape'].includes(hit.item.constructor.name) && !hit.item.data.noSelect) {
+				const dialog = createDialog(hit.item, settings.dialog.layouts.item)
 				this.openDialog({
+					...dialog,
 					id: hit.item.id,
-					layout: settings.dialog.layouts.item,
-					values: hit.item,
 					payload: {
 						referenceEl: hit.item,
 					}

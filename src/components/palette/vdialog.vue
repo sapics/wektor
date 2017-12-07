@@ -238,6 +238,7 @@ export default {
 
 	mounted() {
 		this.align()
+		this.activateDialog(this.id)
 	},
 
 	methods: {

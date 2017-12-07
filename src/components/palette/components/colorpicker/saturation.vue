@@ -34,7 +34,7 @@ export default {
 	extends: pad,
 
 	props: {
-		color: Object,
+		values: {},
 		direction: {
 			type: String,
 			default: 'both'
@@ -68,19 +68,19 @@ export default {
 		}
 	},	
 
-	watch: {
-		value({ x, y }) {
-			this.color.brightness = y
-			this.color.saturation = x	
-			this.$parent.$emit('change')
-		}
-	},
+	// watch: {
+	// 	value({ x, y }) {
+	// 		this.color.brightness = y
+	// 		this.color.saturation = x	
+	// 		this.$parent.$emit('change')
+	// 	}
+	// },
 
 	mounted() {
-		this.value = {
-			x: this.color.saturation,
-			y: this.color.brightness
-		}
+		// this.value = {
+		// 	x: this.color.saturation,
+		// 	y: this.color.brightness
+		// }
 		this.updateBgColor()
 		this.$parent.$on('change', this.update)
 	},	
@@ -92,8 +92,8 @@ export default {
 		},
 
 		updatePointerColor() {
-			const contrast = getContrast(this.color, false) // ignore alpha
-			this.pointerColor = contrast < 0.5 ? 'black' : 'white'	
+			// const contrast = getContrast(this.color, false) // ignore alpha
+			// this.pointerColor = contrast < 0.5 ? 'black' : 'white'	
 		},		
 
 		updateBgColor() {

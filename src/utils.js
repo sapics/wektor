@@ -38,7 +38,7 @@ function isHtml(value) {
 }
 
 function isFunction(value) {
-	return (typeof v === 'function') 
+	return (typeof value === 'function') 
 }
 
 function toCamelCase(value) {
@@ -166,6 +166,24 @@ function resolvePropertyPath(obj, str, resolveKey = true) {
     }
 }
 
+function resolveObjectPath(obj, path) {
+    function resolve(prev, curr) {
+        return prev ? prev[curr] : undefined
+    }
+    
+    const segments = path.split('.')
+    const key = segments[segments.length - 1]
+    const targetSegments = segments.slice(0, -1)
+    const target = targetSegments.reduce(resolve, obj || self)
+    const value = target[key]
+    
+    return {
+        target,
+        key,
+        value
+    }
+}
+
 export { 
 	isInt, 
 	isString, 
@@ -188,4 +206,5 @@ export {
 	getContrast,
 	alphaToWhite,
 	resolvePropertyPath,
+	resolveObjectPath,
 }

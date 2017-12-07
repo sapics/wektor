@@ -32,6 +32,14 @@ Vue.directive('draggable', draggable)
 wektor.setup(new paper.Group())
 wektor.addTools([BezierTool, GridTool, SelectionTool])
 
+var p = new paper.Path.Circle({
+	radius: 100,
+	position: [400, 400],
+	// fillColor: 'yellow'
+})
+
+wektor.target.addChild(p)
+
 new Vue({
 	el: '#wektor',
 

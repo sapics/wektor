@@ -7,7 +7,7 @@
 				class="color-label"
 				ref="colorLabel"
 				:class="{'no-color': !cssColor}"
-				@click="onClick"
+				@mousedown="openColorpicker"
 				:style="{color: cssColor, 'text-shadow': colorLabelShadow}"
 			>color</span>
 			<span>{{labelSegments.suffix}}</span>
@@ -29,8 +29,7 @@
 <script>
 import { mapMutations, mapGetters } from 'vuex'
 import baseComponent from './baseComponent'
-import { isObject, round, mapValue, getContrast, alphaToWhite } from '@/utils.js'
-import paper from 'paper'
+import { isObject, isString, round, mapValue, getContrast, alphaToWhite } from '@/utils.js'
 
 export default {
 	extends: baseComponent,
@@ -39,7 +38,7 @@ export default {
 		return {
 			cssColor: null,
 			colorLabelShadow: null,
-			color: null,
+			// color: null,
 			colorPickerId: null,
 		}
 	},
@@ -68,35 +67,29 @@ export default {
 				prefix: label.slice(0, colorPos), 
 				suffix: label.slice(colorPos + 'color'.length, label.length)
 			}
-		},
+		},		
 	},
 
-	mounted() {
-		this.color = this.value
-		this.color && (this.cssColor = this.color.toCSS())
-	},
-
-	watch: {
-		color: {
-			handler(color) {
-				const contrast = getContrast(color)
-				let shadow = 1 - (mapValue(contrast, { min: 0, max: 0.1 }, { min: 0, max: 1 }))
-				if (shadow < 0) shadow = 0
-				this.colorLabelShadow = `rgba(180, 180, 180, ${shadow}) 1px 1px`
-				this.cssColor = alphaToWhite(color).toCSS()
-			},
-			deep: true,
-		},
-	},
+	// watch: {
+	// 	// color: {
+	// 	// 	handler(color) {
+	// 	// 		const contrast = getContrast(color)
+	// 	// 		let shadow = 1 - (mapValue(contrast, { min: 0, max: 0.1 }, { min: 0, max: 1 }))
+	// 	// 		if (shadow < 0) shadow = 0
+	// 	// 		this.colorLabelShadow = `rgba(180, 180, 180, ${shadow}) 1px 1px`
+	// 	// 		this.cssColor = alphaToWhite(color).toCSS()
+	// 	// 	},
+	// 	// },
+	// },
 
 	methods: {
 		...mapMutations(['openDialog']),
 
-		onClick() {
-			if (!this.color) {
-				this.color = new paper.Color({red: 1})
+		openColorpicker() {
+			if (!this.value) {
+				const color = ['Color', 1, 0, 0, 1]
+				this.$emit('input', color)
 			}
-			this.$emit('input', this.color)
 
 			const id = this.id
 			const layout = {
@@ -105,12 +98,8 @@ export default {
 					label: this.label,
 				}
 			}
-			const values = {
-				[this.id]: this.color
-			}
-
-			console.log('values', values)
-
+			const values = this.$parent.values
+			
 			this.openDialog({
 				id, 
 				layout,

@@ -37,13 +37,10 @@ import { getContrast } from '@/utils'
 export default {
 	extends: pad,
 
-	props: {
-		color: Object,
-	},
+	props: ['value'],
 
 	data() {
 		return {
-			value: null,
 			range: { min: 1, max: 0 }, // we need the value to increase from bottom to top
 			gradient: null,
 			pointerColor: 'black',
@@ -57,18 +54,18 @@ export default {
 		}
 	},
 
-	watch: {
-		value(value) {
-			this.color.alpha = value
-			this.$parent.$emit('change')
-		}
-	},
+	// watch: {
+	// 	value(value) {
+	// 		this.color.alpha = value
+	// 		this.$parent.$emit('change')
+	// 	}
+	// },
 
 	mounted() {
-		this.value = this.color.alpha
-		this.update()
-		this.$parent.$on('change', this.update)
-		this.pointerSize.height -= 2
+		// this.value = this.color.alpha
+		// this.update()
+		// this.$parent.$on('change', this.update)
+		// this.pointerSize.height -= 2
 	},
 
 	methods: {

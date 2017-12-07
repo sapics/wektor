@@ -32,6 +32,13 @@ module.exports = {
     'generator-star-spacing': 0,
     'no-unused-vars': 0,
     'no-useless-escape': 0,
+    'no-unexpected-multiline': 0,
+    'semi': 0,
+    'one-var': 0,
+    'no-redeclare': 0,
+    'space-in-parens': 0,
+    'no-multi-spaces': 0,
+    'eqeqeq': 0,
     // allow debugger during development
     'no-debugger': process.env.NODE_ENV === 'production' ? 2 : 0
   }

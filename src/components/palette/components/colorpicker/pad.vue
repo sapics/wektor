@@ -17,6 +17,7 @@ import { mapValue } from '@/utils'
 
 export default {
 	props: {
+		value: {},
 		direction: {
 			type: String,
 			default: 'vertical' // 'vertical', 'horizontal' || 'both'
@@ -87,6 +88,10 @@ export default {
 	},
 
 	methods: {
+		updateValue(value) {
+			this.$emit('input', value)
+		},
+
 		normalizeValue(value, range) {
 			return mapValue(value, range, { min: 0, max: 1 })
 		},
@@ -137,18 +142,22 @@ export default {
 			this.factorHorizontal = factorHorizontal
 			this.factorVertical = factorVertical
 
+			let value
 			switch (this.direction) {
 				case 'vertical':
-					this.value = mapValue(factorVertical, { min: 0, max: 1 }, this.range)
+					value = mapValue(factorVertical, { min: 0, max: 1 }, this.range)
+					this.updateValue(value)
 					break
 				case 'horizontal':
-					this.value = mapValue(factorHorizontal, { min: 0, max: 1 }, this.range)
+					value = mapValue(factorHorizontal, { min: 0, max: 1 }, this.range)
+					this.updateValue(value)
 					break
 				case 'both':
-					this.value = {
+					value = {
 						x: mapValue(factorHorizontal, { min: 0, max: 1 }, this.range.x),
 						y: mapValue(factorVertical, { min: 0, max: 1 }, this.range.y)
 					}
+					this.updateValue(value)
 			}
 		},
 

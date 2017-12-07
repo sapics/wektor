@@ -8,7 +8,7 @@ class Wektor extends EventEmitter {
 		super()
 
 		Object.assign(this, {
-			target: null, // new paper.Group(),
+			target: null, // defined in setup
 			tools: {},
 			shortcuts: [],
 			active: {
