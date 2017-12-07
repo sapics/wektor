@@ -36,12 +36,9 @@ function createDialog(rawValues, layout, changeHandler) {
 			}
 			
 			const { target: rawTarget, key: rawKey } = resolveObjectPath(rawValues, key)
-			
-			if (isFunction(changeHandler)) 
-				changeHandler(target, key, value)
 
 			let type
-			if (isArray(value) && value[0] === 'Color') type = 'color'
+			if (value && isArray(value) && value[0] === 'Color') type = 'color'
 			
 			switch (type) {
 				case 'color': 
@@ -50,6 +47,9 @@ function createDialog(rawValues, layout, changeHandler) {
 				default:
 					rawTarget[rawKey] = value       
 			}
+
+			if (isFunction(changeHandler)) 
+				changeHandler(target, key, value)
 
 			target[key] = value
 			return true

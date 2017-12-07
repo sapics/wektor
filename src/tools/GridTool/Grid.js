@@ -7,6 +7,7 @@ const dialogData = {
 		'options.spacing.vertical': {
 			type: 'number',
 			label: 'spacing vertical',
+			payload: { min: 1 }
 		},
 		'options.lines.style.strokeColor': {
 			type: 'color',
@@ -26,7 +27,7 @@ const specDefault = {
 		lines: {
 			style: {
 				strokeColor: new Color({
-					red: 0,
+					red: 1,
 					green: 0,
 					blue: 0,
 				}),
@@ -36,36 +37,6 @@ const specDefault = {
 	},
 	dialogData,
 }
-
-// class DeepProxy {
-// 	constructor(target, changeHandler) {
-// 		function makeProxyHandler(keyPath) {
-// 			return {
-// 				get(target, key) {
-// 					if (typeof target[key] === 'object' && target[key] !== null && target.constructor.name === 'Object') {
-// 						const newKeyPath = keyPath ? `${keyPath}.${key}` : key
-// 						return new Proxy(target[key], makeProxyHandler(newKeyPath))
-// 					} else {
-// 						return target[key]
-// 					}
-// 				},			
-// 				set: (target, key, value) => {
-// 					target[key] = value
-// 					changeHandler && changeHandler({
-// 						target, 
-// 						key, 
-// 						value,
-// 						targetPath: keyPath,
-// 						keyPath: keyPath ? `${keyPath}.${key}` : key
-// 					})
-// 					return true
-// 				},
-// 			}
-// 		}
-
-// 		return new Proxy(target, makeProxyHandler())	
-// 	}
-// }
 
 class Grid extends Group {
 	constructor(spec) {
@@ -118,34 +89,31 @@ class Grid extends Group {
 		this.lineVerticalSymbolDefinition = new SymbolDefinition(this.lineVertical)
 	}
 
-	handleOptionChange({target, key, value, keyPath, targetPath}) {
-		if (this._assign) return
-
+	handleDialogChange(target, key, value) {
 		const redrawList = [
-			'spacing.vertical',
-			'lines.style.strokeWidth',
-			'lines.style.strokeColor.hue',
+			'options.spacing.vertical',
+			'options.lines.style.strokeColor'
 		]
 
-		if (redrawList.includes(keyPath))
+		if (redrawList.includes(key))
 			this.drawLines()
 	}
 
 	getDialog() {
-		const dialog = createDialog(this, this.dialogData.layout)
+		const dialog = createDialog(this, this.dialogData.layout, (...args) => {
+			this.handleDialogChange(...args)
+		})
 		const id = this.constructor.name + this.id
 		return { ...dialog, id } 
 	}	
 
 	drawLines() {
-		if (this._construct) return false
-
-		console.log('draw')
-
 		this.clear()
 		const { width, height } = this.background.bounds
 
 		this.lineVertical.style = this.options.lines.style
+
+		if (this.options.spacing.vertical <= 1) this.options.spacing.vertical = 1
 
 		for (let x = 0; x < width; x += this.options.spacing.vertical) {		
 			let newLine = this.lineVertical.clone()

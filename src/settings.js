@@ -52,7 +52,8 @@ export default {
 		}
 	},
 	units: {
-		whitelist: ['px', 'cm', 'mm'],
+		whitelist: ['px'],
+		allowed: ['px', 'cm', 'mm'],
 		decimals: 2,
 	},
 }

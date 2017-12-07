@@ -8,6 +8,7 @@
 		<input 
 			ref="input"
 			:value="inputFieldValue"
+			@keydown="validate($event)"
 			@input="onInput($event.target.value)"
 		>
 	</div>
@@ -33,12 +34,39 @@
 </style>
 
 <script>
+import baseComponent from './baseComponent'
 import paper from 'paper'
 import { getUnit, round, convertUnits } from '@/utils.js' 
 import settings from '@/settings.js'
 
+// class UnitValidator {
+// 	constructor(options) {
+// 		const default = {
+// 			allowedUnits: ['px']
+// 		}
+// 		Object.assign(this, options)
+// 	}
+
+// 	format(value) {
+// 		return value.replace(',', '.')
+// 	}
+
+// 	parse(value, oldValue) {
+// 		const unitValue = parseFloat(value)
+// 		const unit = getUnit(value)
+
+// 		return {
+// 			value,
+// 			unitValue,
+// 			unit
+// 		}
+// 	}
+// }
+
+const unitValidator = new UnitValidator(settings.units)
+
 export default {
-	props: ['value', 'label'],
+	extends: baseComponent,
 
 	data() {
 		return {
@@ -52,6 +80,10 @@ export default {
 	computed: {
 		pxValue() {
 			return convertUnits(this.unitValue, this.unit, 'px')
+		},
+
+		positive() {
+			return this.payload.positive
 		}
 	},
 
@@ -72,13 +104,16 @@ export default {
 	},
 
 	methods: {
-		onInput(string) {
-			string = string.replace(',', '.')
-			this.unitValue = parseFloat(string)
-			const unit = getUnit(string)
-			if (settings.units.whitelist.includes(unit))
-				this.unit = unit			
-		},
+		
+		// onInput(string) {
+		// 	string = string.replace(',', '.')
+		// 	const unitValue = parseFloat(string)
+		// 	if (unitValue <= 0) this.inputFieldValue = 0 + this.unit
+		// 	this.unitValue = unitValue
+		// 	const unit = getUnit(string)
+		// 	if (settings.units.whitelist.includes(unit))
+		// 		this.unit = unit			
+		// },
 
 		updateInput() {
 			this.inputFieldValue = (isNaN(this.unitValue) ? '' : this.unitValue) + this.unit

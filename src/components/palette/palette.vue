@@ -49,12 +49,17 @@ export default {
 			const values = this.values
 
 			for (const [key, layoutProp] of Object.entries(layout)) {
-				console.log(layoutProp)
 				const child = {
-					spec: layoutProp,
 					key,
+					label: layoutProp.label,
+					payload: layoutProp.payload,
 					component: components[layoutProp.type],
-					value: values[key],
+					get value() {
+						return values[key]
+					},
+					set value(value) {
+						values[key] = value
+					}
 				}
 
 				this.children.push(child)
