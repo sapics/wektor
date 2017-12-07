@@ -8,8 +8,7 @@
 		<input 
 			ref="input"
 			:value="inputFieldValue"
-			@keydown="validate($event)"
-			@input="onInput($event.target.value)"
+			@input="updateValue($event.target.value)"
 		>
 	</div>
 </template>
@@ -39,29 +38,48 @@ import paper from 'paper'
 import { getUnit, round, convertUnits } from '@/utils.js' 
 import settings from '@/settings.js'
 
-// class UnitValidator {
-// 	constructor(options) {
-// 		const default = {
-// 			allowedUnits: ['px']
-// 		}
-// 		Object.assign(this, options)
-// 	}
+class UnitValidator {
+	constructor(options) {
+		const defaultOptions = {
+			defaultUnit: 'px',
+			allowedUnits: ['px', 'cm'],
+			decimals: 2,
+		}
+		options = Object.assign(this, defaultOptions)
+		Object.assign(this, options)
+	}
 
-// 	format(value) {
-// 		return value.replace(',', '.')
-// 	}
+	format(string) {
+		// string.replace(',', '.')
+		// const { unitValue, unit } = this.extract(string)
+		// return
+	}
 
-// 	parse(value, oldValue) {
-// 		const unitValue = parseFloat(value)
-// 		const unit = getUnit(value)
+	extract(string) {
+		const unitValue = parseFloat(string)
+		const unit = getUnit(string) || this.defaultUnit
 
-// 		return {
-// 			value,
-// 			unitValue,
-// 			unit
-// 		}
-// 	}
-// }
+		return {
+			unitValue,
+			unit,
+		}
+	}
+
+	parse(string) {
+		string = string.replace(',', '.')
+		const { unit, unitValue } = this.extract(string)
+
+		if (!this.allowedUnits.includes(unit)) return false
+
+		const value = convertUnits(unitValue, unit, this.defaultUnit)
+
+		return {
+			value,
+			unitValue,
+			unit
+		}
+	}
+}
 
 const unitValidator = new UnitValidator(settings.units)
 
@@ -77,33 +95,38 @@ export default {
 		}
 	},
 
-	computed: {
-		pxValue() {
-			return convertUnits(this.unitValue, this.unit, 'px')
-		},
-
-		positive() {
-			return this.payload.positive
-		}
-	},
-
-	watch: {
-		pxValue(value) {
-			this.$emit('input', value)
-		}
-	},
+	// watch: {
+	// 	pxValue(value) {
+	// 		this.$emit('input', value)
+	// 	}
+	// },
 
 	mounted() {
 		this.resolution = window.paper.view.resolution
 		this.unitValue = this.value
 		this.updateInput()
+		// this.unitValue = this.value
+		// this.updateInput()
 	},
 
 	activated() {
-		this.updateInput()
+		// this.updateInput()
 	},
 
 	methods: {
+		updateValue(string) {
+			const result = unitValidator.parse(string)
+
+			if (result === false) return false
+
+			this.unit = result.unit
+			this.unitValue = result.unitValue
+			this.$emit('input', result.value)
+		},
+
+		updateInput() {
+			this.inputFieldValue = (isNaN(this.unitValue) ? '' : this.unitValue) + this.unit
+		},
 		
 		// onInput(string) {
 		// 	string = string.replace(',', '.')
@@ -115,10 +138,10 @@ export default {
 		// 		this.unit = unit			
 		// },
 
-		updateInput() {
-			this.inputFieldValue = (isNaN(this.unitValue) ? '' : this.unitValue) + this.unit
-			this.$refs.input.value = this.inputFieldValue
-		},
+		// updateInput() {
+		// 	this.inputFieldValue = (isNaN(this.unitValue) ? '' : this.unitValue) + this.unit
+		// 	this.$refs.input.value = this.inputFieldValue
+		// },
 
 		up(event) {
 			const change = (event && event[settings.shortcutModifiers.detailedChange + 'Key']) ? 0.1 : 1

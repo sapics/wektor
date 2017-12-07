@@ -53,7 +53,7 @@ export default {
 	},
 	units: {
 		whitelist: ['px'],
-		allowed: ['px', 'cm', 'mm'],
+		allowedUnits: ['px', 'cm', 'mm'],
 		decimals: 2,
 	},
 }
