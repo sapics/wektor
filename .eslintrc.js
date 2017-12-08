@@ -39,6 +39,7 @@ module.exports = {
     'space-in-parens': 0,
     'no-multi-spaces': 0,
     'eqeqeq': 0,
+    'func-call-spacing': 0,
     // allow debugger during development
     'no-debugger': process.env.NODE_ENV === 'production' ? 2 : 0
   }

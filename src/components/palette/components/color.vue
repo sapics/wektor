@@ -30,15 +30,13 @@
 import { mapMutations, mapGetters } from 'vuex'
 import baseComponent from './baseComponent'
 import { isObject, isString, round, mapValue, getContrast, alphaToWhite } from '@/utils.js'
+import { jsonToColor } from './colorpicker/colorUtils'
 
 export default {
 	extends: baseComponent,
 
 	data() {
 		return {
-			cssColor: null,
-			colorLabelShadow: null,
-			// color: null,
 			colorPickerId: null,
 		}
 	},
@@ -67,33 +65,36 @@ export default {
 				prefix: label.slice(0, colorPos), 
 				suffix: label.slice(colorPos + 'color'.length, label.length)
 			}
-		},		
-	},
+		},
 
-	// watch: {
-	// 	// color: {
-	// 	// 	handler(color) {
-	// 	// 		const contrast = getContrast(color)
-	// 	// 		let shadow = 1 - (mapValue(contrast, { min: 0, max: 0.1 }, { min: 0, max: 1 }))
-	// 	// 		if (shadow < 0) shadow = 0
-	// 	// 		this.colorLabelShadow = `rgba(180, 180, 180, ${shadow}) 1px 1px`
-	// 	// 		this.cssColor = alphaToWhite(color).toCSS()
-	// 	// 	},
-	// 	// },
-	// },
+		color() {
+			return jsonToColor(this.value)
+		},
+
+		cssColor() {
+			if (!this.color) return
+
+			const { red, green, blue } = alphaToWhite(this.color)
+			return `rgb(${Math.round(red * 255)}, ${Math.round(green * 255)}, ${Math.round(blue * 255)})`
+		},
+
+		colorLabelShadow() {
+			if (!this.color) return
+
+			const contrast = getContrast(this.color)
+			let shadow = 1 - (mapValue(contrast, { min: 0, max: 0.03 }, { min: 0, max: 1 }))
+			if (shadow < 0) shadow = 0
+			return `rgba(180, 180, 180, ${shadow}) 1px 1px`
+		},
+	},
 
 	methods: {
 		...mapMutations(['openDialog']),
 
 		openColorpicker() {
-			if (!this.value) {
-				const color = ['Color', 1, 0, 0, 1]
-				this.$emit('input', color)
-			}
-
 			const id = this.id
 			const layout = {
-				[this.id]: {
+				[this.propKey]: {
 					type: 'colorpicker',
 					label: this.label,
 				}

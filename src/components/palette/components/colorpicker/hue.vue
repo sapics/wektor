@@ -42,14 +42,25 @@ import pad from './pad'
 export default {
 	extends: pad,
 
-	props: {
-		color: Object,
-	},
-
 	data() {
 		return {
 			range: { min: 360, max: 0 }, // we need the value to increase from bottom to top
 		}
+	},
+
+	computed: {
+		color() {
+			return this.value
+		},
+
+		internalValue: {
+			get() {
+				return this.color.hue
+			},
+			set(value) {
+				this.$emit('input', { ...this.color, hue: value, type: 'hsb' })
+			}
+		},		
 	},
 
 	mounted() {

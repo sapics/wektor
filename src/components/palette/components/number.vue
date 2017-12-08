@@ -37,49 +37,7 @@ import baseComponent from './baseComponent'
 import paper from 'paper'
 import { getUnit, round, convertUnits } from '@/utils.js' 
 import settings from '@/settings.js'
-
-class UnitValidator {
-	constructor(options) {
-		const defaultOptions = {
-			defaultUnit: 'px',
-			allowedUnits: ['px', 'cm'],
-			decimals: 2,
-		}
-		options = Object.assign(this, defaultOptions)
-		Object.assign(this, options)
-	}
-
-	format(string) {
-		// string.replace(',', '.')
-		// const { unitValue, unit } = this.extract(string)
-		// return
-	}
-
-	extract(string) {
-		const unitValue = parseFloat(string)
-		const unit = getUnit(string) || this.defaultUnit
-
-		return {
-			unitValue,
-			unit,
-		}
-	}
-
-	parse(string) {
-		string = string.replace(',', '.')
-		const { unit, unitValue } = this.extract(string)
-
-		if (!this.allowedUnits.includes(unit)) return false
-
-		const value = convertUnits(unitValue, unit, this.defaultUnit)
-
-		return {
-			value,
-			unitValue,
-			unit
-		}
-	}
-}
+import { UnitValidator } from './unitUtils'
 
 const unitValidator = new UnitValidator(settings.units)
 
@@ -95,16 +53,10 @@ export default {
 		}
 	},
 
-	// watch: {
-	// 	pxValue(value) {
-	// 		this.$emit('input', value)
-	// 	}
-	// },
-
 	mounted() {
 		this.resolution = window.paper.view.resolution
 		this.unitValue = this.value
-		this.updateInput()
+		this.updateInputField()
 		// this.unitValue = this.value
 		// this.updateInput()
 	},
@@ -124,24 +76,9 @@ export default {
 			this.$emit('input', result.value)
 		},
 
-		updateInput() {
-			this.inputFieldValue = (isNaN(this.unitValue) ? '' : this.unitValue) + this.unit
+		updateInputField() {
+			this.inputFieldValue = (isNaN(this.unitValue) ? '' : round(this.unitValue)) + this.unit
 		},
-		
-		// onInput(string) {
-		// 	string = string.replace(',', '.')
-		// 	const unitValue = parseFloat(string)
-		// 	if (unitValue <= 0) this.inputFieldValue = 0 + this.unit
-		// 	this.unitValue = unitValue
-		// 	const unit = getUnit(string)
-		// 	if (settings.units.whitelist.includes(unit))
-		// 		this.unit = unit			
-		// },
-
-		// updateInput() {
-		// 	this.inputFieldValue = (isNaN(this.unitValue) ? '' : this.unitValue) + this.unit
-		// 	this.$refs.input.value = this.inputFieldValue
-		// },
 
 		up(event) {
 			const change = (event && event[settings.shortcutModifiers.detailedChange + 'Key']) ? 0.1 : 1
@@ -154,8 +91,9 @@ export default {
 		},
 
 		changeValueBy(change) {
-			this.unitValue = round(this.unitValue + change, settings.units.decimals)
-			this.updateInput()
+			this.unitValue += change
+			this.updateInputField()
+			this.updateValue(this.inputFieldValue)
 		},
 	},
 }

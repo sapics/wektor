@@ -34,7 +34,6 @@ export default {
 	extends: pad,
 
 	props: {
-		values: {},
 		direction: {
 			type: String,
 			default: 'both'
@@ -43,8 +42,6 @@ export default {
 
 	data() {
 		return {
-			bgColor: null,
-			pointerColor: 'black',
 			range: {
 				x: {
 					min: 0,
@@ -55,50 +52,39 @@ export default {
 					max: 0
 				}
 			},
-			value: {
-				x: null,
-				y: null
-			},
 		}
 	},
 
 	computed: {
+		color() {
+			return this.value
+		},
+
+		internalValue: {
+			get() {
+				return {
+					x: this.color.saturation,
+					y: this.color.brightness
+				}
+			},
+			set(value) {
+				const { x: saturation, y: brightness } = value
+				this.$emit('input', { ...this.color, saturation, brightness, type: 'hsb' })
+			}
+		},
+
 		pointerCss() {
 			return { ...this.pointerPos, borderColor: this.pointerColor }
-		}
-	},	
-
-	// watch: {
-	// 	value({ x, y }) {
-	// 		this.color.brightness = y
-	// 		this.color.saturation = x	
-	// 		this.$parent.$emit('change')
-	// 	}
-	// },
-
-	mounted() {
-		// this.value = {
-		// 	x: this.color.saturation,
-		// 	y: this.color.brightness
-		// }
-		this.updateBgColor()
-		this.$parent.$on('change', this.update)
-	},	
-
-	methods: {
-		update() {
-			this.updateBgColor()
-			this.updatePointerColor()
 		},
 
-		updatePointerColor() {
-			// const contrast = getContrast(this.color, false) // ignore alpha
-			// this.pointerColor = contrast < 0.5 ? 'black' : 'white'	
-		},		
-
-		updateBgColor() {
-			this.bgColor = `hsl(${this.color.hue}, 100%, 50%)`
+		bgColor() {
+			return `hsl(${this.color.hue}, 100%, 50%)`
 		},
-	},	
+
+		pointerColor() {
+			const contrast = getContrast(this.color, false) // ignore alpha
+			return contrast < 0.5 ? 'black' : 'white'	
+		},
+	},
 }
 </script>

@@ -88,7 +88,6 @@ export default {
 
 			if (isFunction(hit.item.getDialog)) {
 				const dialog = hit.item.getDialog()
-				console.log(dialog)
 				// dialog.payload = {
 				// 	referenceEl: hit.item
 				// }

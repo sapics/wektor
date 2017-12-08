@@ -43,25 +43,35 @@ export default {
 	},
 
 	computed: {
+		internalValue: {
+			get() {
+				return this.value
+			},
+			set(value) {
+				this.$emit('input', value)
+			}
+		},
+
 		pointerPos() {
+			const internalValue = this.internalValue
 			let pos = {}
 			let normValueX
 			let normValueY
 
 			switch (this.direction) {
 				case 'horizontal':
-					normValueX = this.normalizeValue(this.value, this.range)
+					normValueX = this.normalizeValue(this.internalValue, this.range)
 					pos.left = normValueX * (this.size.width - this.pointerSize.width) + 'px'
 					break
 
 				case 'vertical':
-					normValueY = this.normalizeValue(this.value, this.range)
+					normValueY = this.normalizeValue(this.internalValue, this.range)
 					pos.top = normValueY * (this.size.height - this.pointerSize.height) + 'px'
 					break
 
 				case 'both':
-					normValueX = this.normalizeValue(this.value.x, this.range.x)
-					normValueY = this.normalizeValue(this.value.y, this.range.y)
+					normValueX = this.normalizeValue(this.internalValue.x, this.range.x)
+					normValueY = this.normalizeValue(this.internalValue.y, this.range.y)
 					pos = {
 						left: normValueX * (this.size.width - this.pointerSize.width) + 'px',
 						top: normValueY * (this.size.height - this.pointerSize.height) + 'px'
@@ -88,10 +98,6 @@ export default {
 	},
 
 	methods: {
-		updateValue(value) {
-			this.$emit('input', value)
-		},
-
 		normalizeValue(value, range) {
 			return mapValue(value, range, { min: 0, max: 1 })
 		},
@@ -146,19 +152,18 @@ export default {
 			switch (this.direction) {
 				case 'vertical':
 					value = mapValue(factorVertical, { min: 0, max: 1 }, this.range)
-					this.updateValue(value)
 					break
 				case 'horizontal':
 					value = mapValue(factorHorizontal, { min: 0, max: 1 }, this.range)
-					this.updateValue(value)
 					break
 				case 'both':
 					value = {
 						x: mapValue(factorHorizontal, { min: 0, max: 1 }, this.range.x),
 						y: mapValue(factorVertical, { min: 0, max: 1 }, this.range.y)
 					}
-					this.updateValue(value)
 			}
+
+			this.internalValue = value
 		},
 
 		cropFactor(factor) {

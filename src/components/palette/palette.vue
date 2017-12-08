@@ -5,8 +5,9 @@
 				:is="child.component" 
 				:data-id="child.key"
 				v-model="child.value" 
-				:key="child.key" 
-				:id="child.key"
+				:key="child.key"
+				:propKey="child.key"
+				:id="`${id}-${child.key}`"
 				:dialogId="id"
 				:label="child.label"
 			></component>				

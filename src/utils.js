@@ -51,53 +51,6 @@ function makeUniqueId() {
 	return '_' + Math.random().toString(36).substr(2, 9)
 }
 
-function getUnit(string) {
-	const unit = string.replace(/([-+]?[0-9]*\.?[0-9]*)+([\S]+)?/, '$2').trim()
-	return unit !== '' ? unit : null
-}
-
-function toPx(value, unit, resolution = 72) {
-	const inch = 2.54
-
-	let px
-	switch (unit) {
-		case 'cm':
-			px = value * (1 / inch) * resolution
-			break
-		case 'mm':
-			px = value / 10 * (1 / inch) * resolution
-			break
-		default:
-			px = value
-	}
-
-	return px
-}
-
-function toUnit(valuePx, unit, resolution = 72) {
-	const inch = 2.54
-
-	let value
-	switch (unit) {
-		case 'cm':
-			value = valuePx * inch / resolution
-			break
-		case 'mm':
-			value = valuePx * 10 * inch / resolution
-			break
-		default:
-			value = valuePx
-			break
-	}
-
-	return value
-}
-
-function convertUnits(value, from, to, resolution = 72) {
-	const valuePx = toPx(value, from, resolution)
-	return toUnit(valuePx, to, resolution)
-}
-
 function trimZeros(value) {
 	return value.replace(/^0+(\d)|(\d)0+$/gm, '$1$2')
 }
@@ -140,11 +93,11 @@ function getContrast(color, alpha = true) {
 }
 
 function alphaToWhite(color) {
-	return new paper.Color({
+	return {
 		red: 1 + (color.red - 1) * color.alpha,
 		green: 1 + (color.green - 1) * color.alpha,
 		blue: 1 + (color.blue - 1) * color.alpha,
-	})
+	}
 }
 
 function resolvePropertyPath(obj, str, resolveKey = true) {
@@ -193,12 +146,8 @@ export {
 	isHtml, 
 	toCamelCase, 
 	makeUniqueId, 
-	getUnit, 
-	toPx, 
-	toUnit, 
 	trimZeros, 
-	round, 
-	convertUnits, 
+	round,  
 	getBounds, 
 	mapValue,
 	filterObject, 

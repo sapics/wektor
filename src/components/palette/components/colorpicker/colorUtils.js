@@ -1,4 +1,4 @@
-// taken from paper.js' Color Class (https://github.com/paperjs/paper.js/blob/5291043a5fdd1f5191702fa8acfda570cb0b0c1a/src/style/Color.js)
+// converters taken from paper.js' Color Class (https://github.com/paperjs/paper.js/blob/5291043a5fdd1f5191702fa8acfda570cb0b0c1a/src/style/Color.js)
 
 // For hsb-rgb conversion, used to lookup the right parameters in the
 // values array.
@@ -101,4 +101,59 @@ var converters = {
 	},
 }
 
-export default converters
+function jsonToColor(json, oldColor = {}) {
+	if (!json) return
+
+	const type = (typeof json[1] === 'string') ? json[1] : 'rgb'
+
+	switch (type) {
+		case 'rgb':
+			var [, red, green, blue, alpha] = json
+			var [hue, saturation, brightness] = converters['rgb-hsb'](red, green, blue)
+			break
+	}
+
+	alpha = (alpha !== undefined) ? alpha : 1
+
+	if (saturation === 0) 
+		hue = oldColor.hue || 0
+
+	if (brightness === 0)
+		saturation = oldColor.saturation || 0
+
+	if (hue === 0)
+		hue = oldColor.hue || 0
+
+	return {
+		alpha, red, green, blue, hue, saturation, brightness,
+	}
+}
+
+function colorToJson(color, returnType = 'rgb') {
+	if (!color) return
+
+	const colorType = color.type || 'hsb'
+
+	switch (colorType) {
+		case 'hsb':
+			var { hue, saturation, brightness, alpha } = color
+			var [ red, green, blue ] = converters['hsb-rgb']( hue, saturation, brightness)
+
+			break
+
+		case 'rgb':
+			var { red, green, blue, alpha } = color
+			var [ hue, saturation, brightness ] = converters['rgb-hsb'](red, green, blue)
+			break
+	}	
+
+	switch (returnType) {
+		case 'rgb':
+			return ['Color', red, green, blue, alpha]
+
+		case 'hsb':
+			return ['Color', 'hsb', hue, saturation, brightness, alpha]
+	}
+}
+
+export { converters, colorToJson, jsonToColor }
