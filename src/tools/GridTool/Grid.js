@@ -2,51 +2,81 @@ import paper from 'paper'
 import createDialog from '@/dialog'
 const { Path, Group, Symbol, SymbolDefinition, SymbolItem, Color } = paper
 
-const dialogData = {
-	layout: {
-		'options.spacing.vertical': {
-			type: 'number',
-			label: 'spacing vertical',
-			payload: { min: 1 }
-		},
-		'options.lines.style.strokeColor': {
-			type: 'color',
-			label: 'lines'
-		},
-		'background.style.fillColor': {
-			type: 'color'
-		},	
-	}
-}
-
-const specDefault = {
-	options: {
-		spacing: {
-			vertical: 5
-		},
-		lines: {
-			style: {
-				strokeColor: new Color({
-					red: 1,
-					green: 0,
-					blue: 0,
-				}),
-				strokeWidth: 1,
-			}
-		}
-	},
-	dialogData,
-}
-
 class Grid extends Group {
-	constructor(spec) {
+	constructor(spec = {}) {
 		super()
-		spec = Object.assign({}, specDefault, spec)
+
+		const specDefault = {
+			options: {
+				spacing: {
+					vertical: 5,
+					horizontal: 5
+				},
+				lines: {
+					style: {
+						strokeColor: new Color('black'),
+						strokeWidth: 1,
+					}
+				},
+			},
+
+			dialogData: {
+				layout: {
+					spacing: {
+						label: 'spacing',
+						align: 'comma-separated',
+						'spacing.horizontal': {
+							type: 'number',
+							label: 'x:',
+							space: 'thin',
+							min: 1,
+						},							
+						'spacing.vertical': {
+							type: 'number',
+							label: 'y:',
+							space: 'thin',
+							min: 1,
+						},					
+					},
+					'stroke': {
+						label: 'lines',
+						align: 'columns',
+						'lines.style.strokeWidth': {
+							type: 'number'
+						},						
+						'lines.style.strokeColor': {
+							type: 'color',
+						},												
+					},
+					'background': {
+						align: 'comma-separated',
+						label: 'fill',
+						'background.fillColor': {
+							type: 'color',
+						},					
+						'background.stroke': {
+							align: 'columns',
+							label: 'stroke',
+							'background.strokeWidth': {
+								type: 'number'
+							},								
+							'background.strokeColor': {
+								type: 'color'
+							},					
+						},						
+					}
+				}		
+			}			
+		}
+
+		spec = Object.assign(specDefault, spec)
 		Object.assign(this, spec)
-		console.log(this.dialogData)
 
 		this.initBackground()
 		this.initLines()
+
+		this.options.background = this.background
+
 		this.drawLines()
 	}
 
@@ -90,17 +120,21 @@ class Grid extends Group {
 	}
 
 	handleDialogChange(target, key, value) {
-		const redrawList = [
-			'options.spacing.vertical',
-			'options.lines.style.strokeColor'
-		]
+		switch (key) {
+			case 'spacing.vertical':
+			case 'spacing.horizontal':
+				this.drawLines()
+				break
 
-		if (redrawList.includes(key))
-			this.drawLines()
+			case 'lines.style.strokeColor':
+			case 'lines.style.strokeWidth':
+				this.styleLines()
+				break
+		}
 	}
 
 	getDialog() {
-		const dialog = createDialog(this, this.dialogData.layout, (...args) => {
+		const dialog = createDialog(this.options, this.dialogData.layout, (...args) => {
 			this.handleDialogChange(...args)
 		})
 		const id = this.constructor.name + this.id
@@ -115,7 +149,7 @@ class Grid extends Group {
 
 		if (this.options.spacing.vertical <= 1) this.options.spacing.vertical = 1
 
-		for (let x = 0; x < width; x += this.options.spacing.vertical) {		
+		for (let x = 0; x < width; x += this.options.spacing.horizontal) {		
 			let newLine = this.lineVertical.clone()
 			newLine.position = {
 				x: this.background.bounds.topLeft.x + x,
@@ -123,6 +157,10 @@ class Grid extends Group {
 			}
 			this.lines.addChild(newLine) 
 		}
+	}
+
+	styleLines() {
+		this.lines.style = this.options.lines.style
 	}
 
 	clear() {

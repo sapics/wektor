@@ -36,13 +36,15 @@ export default {
 		keepAlive: true,
 		layouts: {
 			item: {
-				strokeWidth: {
-					type: 'number',
-					label: 'stroke'
-				},
-				strokeColor: {
-					type: 'color',
-					label: 'stroke color'
+				group: {
+					label: 'stroke',
+					align: 'columns',
+					strokeColor: {
+						type: 'color',
+					},					
+					strokeWidth: {
+						type: 'number',
+					},
 				},
 				fillColor: {
 					type: 'color',

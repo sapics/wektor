@@ -3,7 +3,7 @@
 		<tool-bar ref="toolbar" class="tool-bar" :tools="tools"></tool-bar>
 		<div ref="palettes">
 			<vdialog
-				v-for="(dialog, id) in openDialogs"
+				v-for="(dialog, id) in dialogs"
 				:key="id"
 				:id="id"
 				:values="dialog.values"
@@ -31,15 +31,21 @@ export default {
 
 	components: { toolBar, vdialog },
 
+	data() {
+		return {
+			dialogs: [],
+		}
+	},
+
 	computed: {
 		tools() {
 			return wektor.tools
 		},
 
-		...mapGetters([
-			'openDialogs',
-			'dialogs'
-		]),
+		// ...mapGetters([
+		// 	'openDialogs',
+		// 	'dialogs'
+		// ]),
 
 		settings() {
 			return settings
@@ -52,6 +58,10 @@ export default {
 
 		wektor.on('activateTool', tool => {
 			this.setActiveTool(tool.id)
+		})
+
+		wektor.on('openDialog', dialog => {
+			this.dialogs.push(dialog)
 		})
 	},
 
@@ -83,25 +93,36 @@ export default {
 			const point = { x: event.x, y: event.y }
 			const hit = wektor.target.hitTest(point, settings.dialog.hitOptions)
 
-			if (!hit) return
-			if (!hit.item) return
+			if (!(hit && hit.item)) return
 
-			if (isFunction(hit.item.getDialog)) {
-				const dialog = hit.item.getDialog()
-				// dialog.payload = {
-				// 	referenceEl: hit.item
-				// }
-				this.openDialog(dialog)
-			} else if (['Path', 'Shape'].includes(hit.item.constructor.name) && !hit.item.data.noSelect) {
-				const dialog = createDialog(hit.item, settings.dialog.layouts.item)
-				this.openDialog({
-					...dialog,
-					id: hit.item.id,
-					payload: {
-						referenceEl: hit.item,
-					}
-				})
+			if (hit.item.responds('contextmenu')) {
+				hit.item.emit('contextmenu')
+			} else {
+				wektor.openDialog(hit.item, settings.dialog.layouts.item)
 			}
+
+			// const point = { x: event.x, y: event.y }
+			// const hit = wektor.target.hitTest(point, settings.dialog.hitOptions)
+
+			// if (!hit) return
+			// if (!hit.item) return
+
+			// if (isFunction(hit.item.getDialog)) {
+			// 	const dialog = hit.item.getDialog()
+			// 	// dialog.payload = {
+			// 	// 	referenceEl: hit.item
+			// 	// }
+			// 	this.openDialog(dialog)
+			// } else if (['Path', 'Shape'].includes(hit.item.constructor.name) && !hit.item.data.noSelect) {
+			// 	const dialog = createDialog(hit.item, settings.dialog.layouts.item)
+			// 	this.openDialog({
+			// 		...dialog,
+			// 		id: hit.item.id,
+			// 		payload: {
+			// 			referenceEl: hit.item,
+			// 		}
+			// 	})
+			// }
 		},
 	},
 }
@@ -120,6 +141,11 @@ export default {
 		font-family: HKGrotesk;
 		font-size: 14pt;
 		font-weight: 300;
+	}
+
+	input {
+		font-kerning: none;
+		padding: 0;
 	}
 
 	.tool-bar {

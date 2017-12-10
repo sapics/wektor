@@ -1,31 +1,22 @@
 <template>
 	<div class="stroke">
-		<span class="label">{{label}}</span>
-		<color
-			class="stroke-color"
-			:id="`${id}-strokeColor`"
-			:dialogId="this.dialogId"
-			v-model="style.strokeColor"
-		></color>		
-		<number
-			class="stroke-width"
-			:id="`${id}-strokeWidth`"
-			:dialogId="this.dialogId"
-			:value="style.strokeWidth"
-			@input="style.strokeWidth = $event"
-		></number>
+		<span class="label">
+			<span>{{labelSegments.prefix}}</span>
+			<span
+				:data-id="`${id}-stroke-label`" 
+				class="stroke-label"
+				ref="strokeLabel"
+				@mousedown="openStrokeDialog"
+			>stroke</span>
+			<span>{{labelSegments.suffix}}</span>
+		</span>
 	</div>
 </template>
 
 <style lang="scss" scoped>
 .stroke {
-	> * {
-		display: table-cell;
-	}
-
-	.label::after, .stroke-color::after {
-		content: ' ';
-		white-space: pre;
+	.stroke-label {
+		text-decoration: underline;
 	}
 }	
 </style>
@@ -38,12 +29,25 @@ import color from './color'
 export default {
 	extends: baseComponent,
 
-	components: { number, color },
-
 	computed: {
-		style() {
-			return this.value
-		}
-	},
+		labelSegments() {
+			const {label} = this
+
+			if (!label) return {}
+
+			const strokePos = label.indexOf('stroke')
+
+			if (strokePos === -1) {
+				return {
+					prefix: label
+				}
+			}
+
+			return {
+				prefix: label.slice(0, strokePos), 
+				suffix: label.slice(strokePos + 'stroke'.length, label.length)
+			}
+		},
+	}
 }	
 </script>

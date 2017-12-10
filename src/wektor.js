@@ -1,7 +1,8 @@
 import paper from 'paper'
 import EventEmitter from 'event-emitter-es6'
-import settings from '@/settings'
+import settings from './settings'
 import { isArray } from '@/utils'
+import createDialog from './dialog'
 
 class Wektor extends EventEmitter {
 	constructor(settings) {
@@ -14,6 +15,7 @@ class Wektor extends EventEmitter {
 			active: {
 				tool: null,
 			},
+			dialogs: [],
 			settings
 		})
 	}
@@ -69,6 +71,12 @@ class Wektor extends EventEmitter {
 			else
 				this.addTool(item)
 		}
+	}
+
+	openDialog(values, layout, changeHandler) {
+		const dialog = createDialog(values, layout, changeHandler)
+		this.dialogs.push(dialog)
+		this.emit('openDialog', dialog)
 	}		
 }
 

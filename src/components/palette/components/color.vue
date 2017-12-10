@@ -17,8 +17,15 @@
 
 <style lang="scss">
 .color {
+	display: inline-block;
+
+	.label {
+		display: inline-block;
+	}
+
 	.color-label {
 		cursor: pointer;
+		text-decoration: underline;
 	}
 	.color-label.no-color {
 		text-decoration: line-through;

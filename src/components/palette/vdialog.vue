@@ -28,6 +28,7 @@
 				:values="values"
 				:layout="layout"
 				:id="id"
+				:dialogId="id"
 			>
 			</palette>
 		</div>	
@@ -118,8 +119,13 @@ export default {
 				left: this.position.x + 'px',
 				width: this.payload.width,
 				height: this.payload.height,
-				padding: this.payload.padding || '0.5em'
+				padding: this.payload.padding || '0.6em',
+				cursor: 'grab',
 			}
+		},
+
+		cursor() {
+			return this.drag ? 'grabbing' : 'grab';
 		},
 
 		parentId() {
@@ -293,6 +299,8 @@ export default {
 		},
 
 		onMouseDown(event) {
+			const classList = event.target.classList
+			if (!classList.contains('dialog') && !classList.contains('palette-wrap') && !classList.contains('palette') && !classList.contains('label')) return
 			this.startDrag(event)
 			this.activateDialog(this.id)
 		},

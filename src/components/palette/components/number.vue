@@ -4,9 +4,14 @@
 		@keydown.up="up($event)"
 		@keydown.down="down($event)"
 	>
-		<span class="label">{{label}}</span>
-		<input 
+		<span 
+			class="label"
+			:class="[space ? `space-${space}` :null]"
+			v-if="label"
+		>{{label}}</span><!--
+	--><input 
 			ref="input"
+			v-autowidth
 			:value="inputFieldValue"
 			@input="updateValue($event.target.value)"
 		>
@@ -14,20 +19,22 @@
 </template>
 
 <style lang="scss" scoped>
-.number {
-	display: table;
+@import "src/sass/variables";
 
+.number {
 	input {
-		display: table-cell;
-		width: 100%;
 		box-sizing: border-box;
 		border: none;
 		outline: none;
 	}
 
 	.label {
-		display: table-cell;
-		padding-right: 0.5em;
+		cursor: default;
+		padding-right: $space;
+	}
+
+	.label.space-thin {
+		padding-right: $thin-space;
 	}
 }	
 </style>
@@ -57,12 +64,12 @@ export default {
 		this.resolution = window.paper.view.resolution
 		this.unitValue = this.value
 		this.updateInputField()
-		// this.unitValue = this.value
-		// this.updateInput()
 	},
 
-	activated() {
-		// this.updateInput()
+	computed: {
+		space() {
+			return this.payload.space
+		}
 	},
 
 	methods: {

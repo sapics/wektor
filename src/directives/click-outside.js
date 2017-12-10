@@ -18,7 +18,6 @@ export default {
 		const callback = valueIsObject ? binding.value.callback : binding.value
 
 		el.event = function(event) {
-			console.log('click outside')
 			if (!(el === event.target || el.contains(event.target)))
 				callback(event)
 		}

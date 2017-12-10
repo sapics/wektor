@@ -55,10 +55,6 @@ export default {
 	},
 
 	methods: {
-		test() {
-			console.log('rechts test')
-		},
-
 		focus() {
 			this.$refs.search.focus()
 		},

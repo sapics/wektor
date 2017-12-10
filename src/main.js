@@ -15,6 +15,9 @@ import BezierTool from './tools/BezierTool/BezierTool.js'
 import SelectionTool from './tools/SelectionTool/SelectionTool.js'
 import GridTool from './tools/GridTool'
 
+import inputAutowidth from './directives/input-autowidth'
+Vue.directive('autowidth', inputAutowidth)
+
 paper.install(window)
 paper.setup('main-canvas')
 paper.project.currentStyle = {
@@ -45,6 +48,13 @@ new Vue({
 
 	components: { WektorUi },
 
+	data() {
+		return {
+			name: 'Arno'
+		}
+	},
+
+	// template: `<div><input type="text" v-autowidth="{maxWidth: '960px', minWidth: '20px', comfortZone: 0}" :value="name" placeholder="Watch me change size with my content!" /></div>`,
 	template: '<wektor-ui/>',
 
 	store,
