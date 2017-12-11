@@ -59,6 +59,7 @@ class SelectionTool extends BaseTool {
 				break	
 						
 			case 'segment':
+				this.item = hitResult.item
 				this.segment = hitResult.segment
 				this.onlySelect(this.segment)
 				this.handle = null

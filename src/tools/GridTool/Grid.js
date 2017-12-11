@@ -1,5 +1,5 @@
 import paper from 'paper'
-import createDialog from '@/dialog'
+import wektor from '@/wektor'
 const { Path, Group, Symbol, SymbolDefinition, SymbolItem, Color } = paper
 
 class Grid extends Group {
@@ -20,7 +20,7 @@ class Grid extends Group {
 				},
 			},
 
-			dialogData: {
+			dialog: {
 				layout: {
 					spacing: {
 						label: 'spacing',
@@ -92,9 +92,13 @@ class Grid extends Group {
 
 		// when the background is hit (see wektorUi's onContextMenu the Grid's dialog will be opened)
 		// define this via an arrow function, otherwise 'this' in the getDialog function wont be Grid but the background Path 
-		this.background.getDialog = () => this.getDialog()
+		// this.background.getDialog = () => this.getDialog()
+		
+		this.background.on('contextmenu', event => {
+			this.handleContextmenu(event)
+		})
 
-		this.background.on('change', () => {
+		this.background.on('change', event => {
 			this.drawLines()
 		})
 
@@ -133,12 +137,15 @@ class Grid extends Group {
 		}
 	}
 
-	getDialog() {
-		const dialog = createDialog(this.options, this.dialogData.layout, (...args) => {
-			this.handleDialogChange(...args)
+	handleContextmenu() {
+		wektor.openDialog({
+			id: this.constructor.name + this.id,
+			values: this.options,
+			reference: this.background,
+			...this.dialog,
+			// we can't pass the handler directly because we need the right this-context
+			changeHandler: (...args) => this.handleDialogChange(...args)
 		})
-		const id = this.constructor.name + this.id
-		return { ...dialog, id } 
 	}	
 
 	drawLines() {

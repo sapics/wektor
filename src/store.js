@@ -43,7 +43,7 @@ const store = new Vuex.Store({
 		},
 
 		activateDialog(state, id) {
-			state.active.dialog = state.dialogs[id]
+			state.active.dialog = id
 		},
 
 		setDrag(state, value) {

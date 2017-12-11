@@ -2,7 +2,7 @@ import paper from 'paper'
 import EventEmitter from 'event-emitter-es6'
 import settings from './settings'
 import { isArray } from '@/utils'
-import createDialog from './dialog'
+import Dialog from './dialog'
 
 class Wektor extends EventEmitter {
 	constructor(settings) {
@@ -15,7 +15,7 @@ class Wektor extends EventEmitter {
 			active: {
 				tool: null,
 			},
-			dialogs: [],
+			dialogs: {},
 			settings
 		})
 	}
@@ -73,11 +73,19 @@ class Wektor extends EventEmitter {
 		}
 	}
 
-	openDialog(values, layout, changeHandler) {
-		const dialog = createDialog(values, layout, changeHandler)
-		this.dialogs.push(dialog)
+	openDialog(spec) {
+		const dialog = new Dialog(spec)
+		console.log('values', dialog.values)
+		this.dialogs[dialog.id] = { ...dialog, open: true }
 		this.emit('openDialog', dialog)
-	}		
+	}
+
+	closeDialog(id) {
+		const dialog = this.dialogs[id]
+		if (!dialog) return
+		dialog.open = false
+		this.emit('closeDialog', dialog)
+	}
 }
 
 export default new Wektor(settings)

@@ -38,6 +38,7 @@ import { mapMutations, mapGetters } from 'vuex'
 import baseComponent from './baseComponent'
 import { isObject, isString, round, mapValue, getContrast, alphaToWhite } from '@/utils.js'
 import { jsonToColor } from './colorpicker/colorUtils'
+import wektor from '@/wektor'
 
 export default {
 	extends: baseComponent,
@@ -96,8 +97,6 @@ export default {
 	},
 
 	methods: {
-		...mapMutations(['openDialog']),
-
 		openColorpicker() {
 			const id = this.id
 			const layout = {
@@ -107,16 +106,19 @@ export default {
 				}
 			}
 			const values = this.$parent.values
-			
-			this.openDialog({
-				id, 
+
+			wektor.openDialog({
+				id,
+				parentId: this.dialogId,
 				layout,
 				values,
+				reference: this.$refs.colorLabel,
 				payload: {
-					referenceId: `${this.id}-color-label`,
-					parentId: this.dialogId,
-					padding: 'none'
-				}			
+					css: {
+						'padding': 'none', // reset the default padding
+						'padding-right': '1em',
+					}
+				},
 			})
 
 			this.colorPickerId = id

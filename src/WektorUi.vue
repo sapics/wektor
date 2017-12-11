@@ -6,8 +6,10 @@
 				v-for="(dialog, id) in dialogs"
 				:key="id"
 				:id="id"
+				:parentId="dialog.parentId"
 				:values="dialog.values"
 				:layout="dialog.layout"
+				:reference="dialog.reference"
 				:payload="dialog.payload"
 			></vdialog>
 		</div>
@@ -33,7 +35,7 @@ export default {
 
 	data() {
 		return {
-			dialogs: [],
+			dialogs: {},
 		}
 	},
 
@@ -41,11 +43,6 @@ export default {
 		tools() {
 			return wektor.tools
 		},
-
-		// ...mapGetters([
-		// 	'openDialogs',
-		// 	'dialogs'
-		// ]),
 
 		settings() {
 			return settings
@@ -60,14 +57,13 @@ export default {
 			this.setActiveTool(tool.id)
 		})
 
-		wektor.on('openDialog', dialog => {
-			this.dialogs.push(dialog)
-		})
+		wektor.on('openDialog', this.openDialog)
+		wektor.on('closeDialog', this.closeDialog)
 	},
 
 	methods: {
 		...mapMutations([
-			'openDialog',
+			// 'openDialog',
 			'addTool',
 			'setActiveTool'
 		]),
@@ -87,6 +83,14 @@ export default {
 			}
 		},
 
+		openDialog(dialog) {
+			this.$set(this.dialogs, dialog.id, dialog)
+		},
+
+		closeDialog(dialog) {
+			this.$delete(this.dialogs, dialog.id)
+		},		
+
 		onContextmenu(event) {
 			event.preventDefault()
 
@@ -98,31 +102,13 @@ export default {
 			if (hit.item.responds('contextmenu')) {
 				hit.item.emit('contextmenu')
 			} else {
-				wektor.openDialog(hit.item, settings.dialog.layouts.item)
+				wektor.openDialog({
+					id: hit.item.className + hit.item.id, 
+					values: hit.item, 
+					layout: settings.dialog.layouts.item,
+					reference: hit.item,
+				})
 			}
-
-			// const point = { x: event.x, y: event.y }
-			// const hit = wektor.target.hitTest(point, settings.dialog.hitOptions)
-
-			// if (!hit) return
-			// if (!hit.item) return
-
-			// if (isFunction(hit.item.getDialog)) {
-			// 	const dialog = hit.item.getDialog()
-			// 	// dialog.payload = {
-			// 	// 	referenceEl: hit.item
-			// 	// }
-			// 	this.openDialog(dialog)
-			// } else if (['Path', 'Shape'].includes(hit.item.constructor.name) && !hit.item.data.noSelect) {
-			// 	const dialog = createDialog(hit.item, settings.dialog.layouts.item)
-			// 	this.openDialog({
-			// 		...dialog,
-			// 		id: hit.item.id,
-			// 		payload: {
-			// 			referenceEl: hit.item,
-			// 		}
-			// 	})
-			// }
 		},
 	},
 }
