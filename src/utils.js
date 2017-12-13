@@ -9,8 +9,11 @@ function getBounds(el) {
 		return Object.assign(boundingClientRect, {
 			topLeft: {y: top, x: left},
 			topRight: {y: top, x: right},
-			bottomRight: {y: bottom, x: right},
 			bottomLeft: {y: bottom, x: left},
+			bottomRight: {y: bottom, x: right},
+			leftCenter: {y: (top + height / 2), x: left},
+			topCenter: {y: top, x: (left + width / 2)},
+			rightCenter: {y: (top + height / 2), x: right},
 			center: {y: (top + height / 2), x: (left + width / 2)}			
 		})
 	}

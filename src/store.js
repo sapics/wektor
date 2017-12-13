@@ -46,6 +46,11 @@ const store = new Vuex.Store({
 			state.active.dialog = id
 		},
 
+		deactivateDialog(state, id) {
+			if (state.active.dialog === id)
+				state.active.dialog = null
+		},		
+
 		setDrag(state, value) {
 			state.drag = value
 		},

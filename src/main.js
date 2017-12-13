@@ -11,8 +11,8 @@ import draggable from './directives/draggable.js'
 import wektor from './wektor'
 import WektorUi from './WektorUi.vue'
 import paper from 'paper'
-import BezierTool from './tools/BezierTool/BezierTool.js'
-import SelectionTool from './tools/SelectionTool/SelectionTool.js'
+import BezierTool from './tools/BezierTool/BezierTool'
+import SelectionTool from './tools/SelectionTool/SelectionTool'
 import GridTool from './tools/GridTool'
 
 import inputAutowidth from './directives/input-autowidth'
@@ -42,19 +42,31 @@ var p = new paper.Path.Circle({
 })
 
 wektor.target.addChild(p)
+wektor.openDialog({
+	id: 'test',
+	layout: {
+		test: {
+			type: 'bezier',
+			time: 0.5,
+		}
+	},
+	values: {
+		test: 2,
+	},
+	payload: {
+		css: {
+			padding: 'none',
+			paddingRight: '0.8em'
+		},
+		locked: true,
+	},
+})
 
 new Vue({
 	el: '#wektor',
 
 	components: { WektorUi },
 
-	data() {
-		return {
-			name: 'Arno'
-		}
-	},
-
-	// template: `<div><input type="text" v-autowidth="{maxWidth: '960px', minWidth: '20px', comfortZone: 0}" :value="name" placeholder="Watch me change size with my content!" /></div>`,
 	template: '<wektor-ui/>',
 
 	store,

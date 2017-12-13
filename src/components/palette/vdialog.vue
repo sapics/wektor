@@ -3,12 +3,13 @@
 		<pointer-line
 			v-if="referencePoint"
 			v-visible="showPointerLine"
-			:style="{zIndex}"
+			class="pointer-line"
+			:css="{zIndex}"
 			:from="position"
 			:to="referencePoint"
 		></pointer-line>		
 		<div
-			class="dialog"
+			class="dialog draghandler"
 			ref="dialog"
 			:data-id="id"
 			:data-parent-id="parentId"
@@ -16,15 +17,19 @@
 			@mousedown="onMouseDown"
 			@mouseup="onMouseUp"
 			@mouseenter="hover = true"
-			@mouseleave="hover = false"	
-			v-outside:mousedown="{callback: close, enabled: !locked}"		
+			@mouseleave="hover = false"		
+			v-outside:mousedown="onMouseDownOutside"	
 		>
+<!-- 			<div class="wire-frame"
+				v-show="showWireFrame"
+			></div> -->
 			<div 
 				class="lock"
 				:class="{locked}"
 				@click="locked = !locked"
 			></div>		
 			<palette
+				class="draghandler"
 				:values="values"
 				:layout="layout"
 				:dialogId="id"
@@ -41,6 +46,7 @@
 		position: absolute;
 		background: white;
 		border: 1px solid black;
+		box-sizing: border-box;
 	}
 
 	.lock {
@@ -59,6 +65,23 @@
 	.lock.locked {
 		background-color: black;
 	}
+
+	// .pointer-line {
+	// 	z-index: 2;
+	// }
+
+	.wire-frame {
+		z-index: 3;
+		width: calc(100% + 2px);
+		height: calc(100% + 2px);
+		margin: -1px;
+		top: 0;
+		left: 0;
+		box-sizing: border-box;
+		pointer-events: none;
+		position: absolute;
+		border: 1px solid black;
+	}	
 }
 </style>
 
@@ -109,7 +132,7 @@ export default {
 				zIndex: this.zIndex,
 				top: this.position.y + 'px',
 				left: this.position.x + 'px',
-				padding: '0.6em',
+				padding: '0.8em',
 				...this.customCss				
 			}
 		},
@@ -118,28 +141,41 @@ export default {
 			set(value) {
 				if (value)
 					this.$store.commit('activateDialog', this.id)
+				else
+					this.$store.commit('deactivateDialog', this.id)
 			},
 			get() {
-				const activeDialog = this.$store.state.active.dialog
-				return (activeDialog && this.id === activeDialog.id)
+				const activeDialogId = this.$store.state.active.dialog
+				return (this.id === activeDialogId)
 			}
 		},
 
 		showPointerLine() {
-			if (this.drag) return true
-			if (this.locked && (!this.hover)) return false
-			return true
-		},		
+			if (this.drag || this.hover || this.reference.hover) return true
+			return !this.locked 
+		},
+
+		showWireFrame() {
+			return this.hover
+		},
 
 		zIndex() {
 			return this.active ? 1 : 'auto'
-		},		
+		},	
+	},
+
+	watch: {
+		showPointerLine(show) {
+			if (show)
+				this.referencePoint = this.reference.position
+		}
 	},
 
 	created() {
 		this.active = true
 		this.position = this.payload.position || { x: 0, y: 0 }
 		this.referencePoint = this.reference.position
+		this.locked = this.payload.locked || this.locked
 	},
 
 	methods: {
@@ -153,9 +189,15 @@ export default {
 			this.endDrag()
 		},
 
+		onMouseDownOutside(event) {
+			this.active = false
+			if (!this.locked) this.close(event)
+		},	
+
 		isDragHandle(el) {
 			const classList = el.classList
-			return (classList.contains('dialog') || classList.contains('palette-wrap') || classList.contains('palette') || classList.contains('label'))
+			return classList.contains('draghandler')
+			// return (classList.contains('dialog') || classList.contains('palette-wrap') || classList.contains('palette') || classList.contains('label'))
 		},
 
 		close(event) {

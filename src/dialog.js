@@ -1,6 +1,7 @@
 import paper from 'paper'
 import { isString, isArray, isObject, isFunction, getBounds, resolveObjectPath } from '@/utils'
 import wektor from '@/wektor'
+import Vue from 'vue'
 
 function createPaperReference(item) {
 	function getPosition(item) {
@@ -61,10 +62,10 @@ function createDomReference(el) {
 	}
 
 	el.addEventListener('mouseenter', () => {
-		reference.hover = true
+		Vue.set(reference, 'hover', true)
 	})
 	el.addEventListener('mouseleave', () => {
-		reference.hover = false
+		Vue.set(reference, 'hover', false)
 	})
 
 	return reference
