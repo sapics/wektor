@@ -59,6 +59,8 @@ export default {
 
 		wektor.on('openDialog', this.openDialog)
 		wektor.on('closeDialog', this.closeDialog)
+
+		wektor.on('updateChildren', this.updateChildren)
 	},
 
 	methods: {
@@ -81,6 +83,10 @@ export default {
 					event.preventDefault()
 				}
 			}
+		},
+
+		updateChildren() {
+			
 		},
 
 		openDialog(dialog) {

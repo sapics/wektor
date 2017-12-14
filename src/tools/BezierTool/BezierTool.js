@@ -72,7 +72,7 @@ class BezierTool extends SelectionTool {
 	}
 
 	createPath() {
-		return this.target.addChild(new Path())
+		return new Path() // return this.target.addChild(new Path())
 	}
 
 	releasePath(unselect = true) {

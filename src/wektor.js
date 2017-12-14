@@ -9,22 +9,70 @@ class Wektor extends EventEmitter {
 		super()
 
 		Object.assign(this, {
-			target: null, // defined in setup
+			project: null,
+			view: null,
 			tools: {},
 			shortcuts: [],
 			active: {
 				tool: null,
+				layer: null,
 			},
 			dialogs: {},
 			settings
 		})
 	}
 
-	setup(target) {
-		if (target instanceof paper.Item)
-			this.target = target
-		else
-			console.warn(`target (${target}) must a paper-item`)
+	setup(project) {
+		if (!(project instanceof paper.Project)) {
+			console.warn(`project (${project}) must be a paper.Project`)
+			return
+		}
+
+		this.project = project
+		this.active.layer = this.project.activeLayer
+
+		this.initShortcuts()
+		this.initChangeTracking()
+	}
+
+	initChangeTracking() {
+		const project = this.project
+		const view = project.view
+
+		const ChangeFlag = {
+			APPEARANCE: 1 << 0,
+			CHILDREN: 1 << 1,
+			INSERTION: 1 << 2,
+			GEOMETRY: 1 << 3,
+			SEGMENTS: 1 << 4,
+			STROKE: 1 << 5,
+			STYLE: 1 << 6,
+			ATTRIBUTE: 1 << 7,
+			CONTENT: 1 << 8,
+			PIXELS: 1 << 9,
+			CLIPPING: 1 << 10,
+			VIEW: 1 << 11
+		}
+
+		project._changes = []
+		project._changesById = {}
+
+		view.onFrame = () => {
+			if (project._changes.length) {
+				for (const change of project._changes) {
+					const { item, flags } = change
+					for (const name in ChangeFlag) {
+						const mask = ChangeFlag[name]
+						if (flags & mask) {
+							if (name === 'CHILDREN')
+								this.emit('updateChildren')
+						}
+					}
+				}
+			}
+			project._changes = []
+			project._changesById = {}
+		}
 	}
 
 	initShortcuts() {
@@ -43,7 +91,7 @@ class Wektor extends EventEmitter {
 	}
 
 	addTool(ToolClass, spec) {
-		const tool = new ToolClass(this.target, spec)
+		const tool = new ToolClass(this.project, spec)
 
 		tool.on({
 			activate: () => {

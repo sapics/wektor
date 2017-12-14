@@ -32,7 +32,7 @@ Vue.directive('outside', outside)
 Vue.directive('visible', visible)
 Vue.directive('draggable', draggable)
 
-wektor.setup(new paper.Group())
+wektor.setup(paper.project)
 wektor.addTools([BezierTool, GridTool, SelectionTool])
 
 var p = new paper.Path.Circle({
@@ -41,26 +41,26 @@ var p = new paper.Path.Circle({
 	// fillColor: 'yellow'
 })
 
-wektor.target.addChild(p)
-wektor.openDialog({
-	id: 'test',
-	layout: {
-		test: {
-			type: 'bezier',
-			time: 0.5,
-		}
-	},
-	values: {
-		test: 2,
-	},
-	payload: {
-		css: {
-			padding: 'none',
-			paddingRight: '0.8em'
-		},
-		locked: true,
-	},
-})
+wektor.active.layer.addChild(p)
+// wektor.openDialog({
+// 	id: 'test',
+// 	layout: {
+// 		test: {
+// 			type: 'bezier',
+// 			time: 0.5,
+// 		}
+// 	},
+// 	values: {
+// 		test: 2,
+// 	},
+// 	payload: {
+// 		css: {
+// 			padding: 'none',
+// 			paddingRight: '0.8em'
+// 		},
+// 		locked: true,
+// 	},
+// })
 
 new Vue({
 	el: '#wektor',
