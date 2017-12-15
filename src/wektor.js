@@ -64,8 +64,14 @@ class Wektor extends EventEmitter {
 					for (const name in ChangeFlag) {
 						const mask = ChangeFlag[name]
 						if (flags & mask) {
-							if (name === 'CHILDREN')
-								this.emit('updateChildren')
+							switch (name) {
+								case 'CHILDREN':
+									this.emit('updateChildren')
+									break
+								case 'ATTRIBUTE':
+									this.emit('updateSelection')
+									break
+							}
 						}
 					}
 				}
@@ -123,7 +129,6 @@ class Wektor extends EventEmitter {
 
 	openDialog(spec) {
 		const dialog = new Dialog(spec)
-		console.log('values', dialog.values)
 		this.dialogs[dialog.id] = { ...dialog, open: true }
 		this.emit('openDialog', dialog)
 	}

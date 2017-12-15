@@ -1,7 +1,7 @@
 <template>
 	<div id="wektor">
 		<tool-bar ref="toolbar" class="tool-bar" :tools="tools"></tool-bar>
-		<div ref="palettes">
+		<div ref="dialogs">
 			<vdialog
 				v-for="(dialog, id) in dialogs"
 				:key="id"
@@ -12,11 +12,22 @@
 				:reference="dialog.reference"
 				:payload="dialog.payload"
 			></vdialog>
+			<vdialog
+				key="layers"
+				:values="{ layers }"
+				:layout="{
+					layers: {
+						type: 'layers',
+					}
+				}"
+			>
+			</vdialog>
 		</div>
 	</div>
 </template>
 
 <script>
+import tree from './components/palette/components/tree'
 import Vue from 'vue' 
 import { mapGetters, mapMutations, mapState } from 'vuex'
 import toolBar from './components/tool-bar.vue'
@@ -31,11 +42,12 @@ export default {
 
 	props: ['target'],
 
-	components: { toolBar, vdialog },
+	components: { toolBar, vdialog, tree },
 
 	data() {
 		return {
 			dialogs: {},
+			layers: null,
 		}
 	},
 
@@ -47,6 +59,13 @@ export default {
 		settings() {
 			return settings
 		},
+
+		test() {
+			const layers = this.layers
+			return {
+				layers
+			}
+		}
 	},
 
 	mounted() {
@@ -61,6 +80,7 @@ export default {
 		wektor.on('closeDialog', this.closeDialog)
 
 		wektor.on('updateChildren', this.updateChildren)
+		wektor.on('updateSelection', this.updateSelection)
 	},
 
 	methods: {
@@ -86,7 +106,54 @@ export default {
 		},
 
 		updateChildren() {
-			
+			const countTypeOf = {}
+			const store = this.$store
+
+			function convertItems(items) {
+				const converted = []
+				for (let i = items.length - 1; i >= 0; i--) {
+					const item = items[i]
+					if (item.data.iterable === false) continue
+					converted.push({
+						id: item.id,
+						name: item.name || item.toString(),
+						type: item.className,
+						open: item.data.open,
+						children: item.children ? convertItems(item.children) : undefined	        
+					})					
+				}
+
+				// for (const item of items) {
+				// 	if (item.data.iterable === false) continue
+				// 	// if (!item.name) {
+				// 	// 	const type = item.className
+				// 	// 	let count = countTypeOf[type]
+				// 	// 	if (count === undefined) {
+				// 	// 		count = countTypeOf[type] = 1
+				// 	// 	} else {
+				// 	// 		count = (countTypeOf[type] += 1)
+				// 	// 	}
+				// 	// 	console.log(type, countTypeOf[type])
+				// 	// 	item.name = `${type} ${count}`
+				// 	// }
+				// 	converted.push({
+				// 		id: item.id,
+				// 		name: item.name || item.toString(),
+				// 		type: item.className,
+				// 		open: item.data.open,
+				// 		children: item.children ? convertItems(item.children) : undefined	        
+				// 	})
+				// }
+				return converted
+			}
+
+			this.layers = convertItems(wektor.project.layers)
+		},
+
+		updateSelection() {
+			const selectedItems = wektor.project.selectedItems
+			const ids = selectedItems.map(item => item.id)
+			this.$store.commit('updateSelection', ids)
 		},
 
 		openDialog(dialog) {
@@ -101,7 +168,7 @@ export default {
 			event.preventDefault()
 
 			const point = { x: event.x, y: event.y }
-			const hit = wektor.target.hitTest(point, settings.dialog.hitOptions)
+			const hit = wektor.project.hitTest(point, settings.dialog.hitOptions)
 
 			if (!(hit && hit.item)) return
 

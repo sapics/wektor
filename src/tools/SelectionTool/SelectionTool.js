@@ -44,8 +44,21 @@ class SelectionTool extends BaseTool {
 			return
 		}
 
-		const hitResult = this.getHit(this.target, event, { fill: true, stroke: true, segments: true, handles: true })
-		
+		const hitResultSelected = this.getHit(this.target, event, { 
+			match: result => result.item.selected,
+			segments: true,
+			handles: true,
+		})
+
+		const hitResult = hitResultSelected || this.getHit(this.target, event, { 
+			fill: true, 
+			stroke: true, 
+			segments: true, 
+			handles: true 
+		})
+
+		this.target.deselectAll()
+
 		if (!hitResult)
 			this.item && this.releaseItem()
 
@@ -67,6 +80,7 @@ class SelectionTool extends BaseTool {
 
 			case 'handle-in':
 			case 'handle-out':
+				this.onlySelect(this.segment)
 				this.handle = hitResult
 				break
 		}

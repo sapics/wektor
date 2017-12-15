@@ -13,7 +13,8 @@
   "dependencies": {
     "event-emitter-es6": "^1.1.5",
     "paper": "^0.11.5",
-    "vue": "^2.5.2",
+    "vddl": "^0.7.1",
+    "vue": "^2.5.11",
     "vue-color": "^2.4.3",
     "vue-input-autowidth": "^1.0.2",
     "vuex": "^3.0.1"

@@ -107,6 +107,8 @@ import bezier from './components/bezier'
 import color from './components/color'
 import colorpicker from './components/colorpicker'
 import stroke from './components/stroke'
+import tree from './components/tree'
+import layers from './components/layers'
 import paper from 'paper'
 
 import Vue from 'vue'
@@ -134,7 +136,7 @@ export default {
 		}
 	},
 
-	components: { number, coordinate, bezier, checkbox, color, colorpicker, stroke },
+	components: { number, coordinate, bezier, checkbox, color, colorpicker, stroke, tree, layers },
 
 	computed: {
 		children() {

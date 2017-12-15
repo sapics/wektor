@@ -15,8 +15,8 @@ import BezierTool from './tools/BezierTool/BezierTool'
 import SelectionTool from './tools/SelectionTool/SelectionTool'
 import GridTool from './tools/GridTool'
 
+import Vddl from 'vddl'
 import inputAutowidth from './directives/input-autowidth'
-Vue.directive('autowidth', inputAutowidth)
 
 paper.install(window)
 paper.setup('main-canvas')
@@ -28,9 +28,11 @@ paper.project.currentStyle = {
 Vue.config.productionTip = false
 Vue.use(Vuex)
 Vue.use(eventBus)
+Vue.use(Vddl)
 Vue.directive('outside', outside)
 Vue.directive('visible', visible)
 Vue.directive('draggable', draggable)
+Vue.directive('autowidth', inputAutowidth)
 
 wektor.setup(paper.project)
 wektor.addTools([BezierTool, GridTool, SelectionTool])
@@ -38,29 +40,16 @@ wektor.addTools([BezierTool, GridTool, SelectionTool])
 var p = new paper.Path.Circle({
 	radius: 100,
 	position: [400, 400],
-	// fillColor: 'yellow'
+	name: 'gelb',
+	fillColor: 'yellow'
 })
 
-wektor.active.layer.addChild(p)
-// wektor.openDialog({
-// 	id: 'test',
-// 	layout: {
-// 		test: {
-// 			type: 'bezier',
-// 			time: 0.5,
-// 		}
-// 	},
-// 	values: {
-// 		test: 2,
-// 	},
-// 	payload: {
-// 		css: {
-// 			padding: 'none',
-// 			paddingRight: '0.8em'
-// 		},
-// 		locked: true,
-// 	},
-// })
+var p = new paper.Path.Circle({
+	radius: 100,
+	position: [500, 400],
+	name: 'rot',
+	fillColor: 'red'
+})
 
 new Vue({
 	el: '#wektor',

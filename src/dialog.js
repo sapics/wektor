@@ -85,8 +85,8 @@ function isComponentDescription(layout) {
 }
 
 class Dialog {
-	constructor({ id, parentId, values, layout, reference, payload, changeHandler }) {
-		if (values._converted) {
+	constructor({ id, parentId, values, layout, reference, payload, changeHandler, convert }) {
+		if (values._converted || (convert === false)) {
 			this.values = values
 			if (changeHandler)
 				console.warn(`changeHandler is already defined for values`)

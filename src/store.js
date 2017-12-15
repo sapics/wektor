@@ -12,6 +12,7 @@ const store = new Vuex.Store({
 			tool: null,
 			dialog: null,
 		},
+		selection: [],
 		drag: false,
 	},
 
@@ -53,6 +54,10 @@ const store = new Vuex.Store({
 
 		setDrag(state, value) {
 			state.drag = value
+		},
+
+		updateSelection(state, arrayOfIds) {
+			state.selection = arrayOfIds
 		},
 	},
 
@@ -98,6 +103,10 @@ const store = new Vuex.Store({
 
 		dialogIsOpen: (state, getters) => id => {
 			return getters.getOpenDialog(id) !== undefined
+		},
+
+		itemIsSelected: (state, getters) => id => {
+			return state.selection.includes(id)
 		},
 	},
 })
