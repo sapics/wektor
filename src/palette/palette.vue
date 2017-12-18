@@ -109,6 +109,8 @@ import colorpicker from './components/colorpicker'
 import stroke from './components/stroke'
 import tree from './components/tree'
 import layers from './components/layers'
+import strokeDetails from './components/stroke-details'
+import vselect from './components/vselect'
 import paper from 'paper'
 
 import Vue from 'vue'
@@ -119,7 +121,7 @@ export default {
 	name: 'palette',
 
 	props: {
-		values: Object,
+		values: null,
 		layout: Object,
 		id: String,
 		dialogId: String,
@@ -136,7 +138,19 @@ export default {
 		}
 	},
 
-	components: { number, coordinate, bezier, checkbox, color, colorpicker, stroke, tree, layers },
+	components: { 
+		number, 
+		coordinate, 
+		bezier, 
+		checkbox, 
+		color, 
+		colorpicker, 
+		stroke, 
+		strokeDetails, 
+		tree, 
+		layers, 
+		vselect,
+	},
 
 	computed: {
 		children() {
@@ -144,41 +158,14 @@ export default {
 			const { values, layout } = this
 			const children = []
 
-			for (const [key, layoutProp] of Object.entries(layout)) {
-				const { label, type } = layoutProp
-
-				let child
-
-				if (this.isComponentDescription(layoutProp)) {
-					if (this.reservedKeys.includes(key))
-						console.warn(`'${key}' is a reserved key and shouldn't be used as a values key`)
-
-					if (!components[type])
-						console.warn(`there is no component '${type}'`)
-
-					child = {
-						key,
-						type,
-						component: components[type],
-						payload: layoutProp,
-						get value() {
-							return values[key]
-						},
-						set value(value) {
-							values[key] = value
-						},	
-					}			
-				} else if (isObject(layoutProp)) {
-					child = {
-						key,
-						type: 'palette',
-						values,
-						layout: layoutProp,
-						payload: layoutProp,
-					}			
-				}
-
+			if (this.isComponentDescription(layout)) {
+				var child = this.createChild(layout, values)
 				if (child) children.push(child)
+			} else {
+				for (const [key, layoutProp] of Object.entries(layout)) {
+					var child = this.createChild(layoutProp, values, key)
+					if (child) children.push(child)
+				}
 			}
 
 			return children		
@@ -197,6 +184,54 @@ export default {
 		isComponentDescription(layoutProperty) {
 			const type = layoutProperty.type
 			return (type && isString(type))
+		},
+
+		getComponent(type) {
+			// components that have the same name as native html elements are prefixed by 'v' (e.g. 'vselect')
+			const components = this.$options.components
+			const component = components[type] || components['v' + type]
+			return component
+		},
+
+		createChild(layout, values, key = false) {
+			let child
+
+			if (this.isComponentDescription(layout)) {
+				const type = layout.type
+				const component = this.getComponent(type)
+
+				if (!component)
+					console.warn(`there is no component '${type}'`)				
+
+				if (key && this.reservedKeys.includes(key))
+					console.warn(`'${key}' is a reserved key and shouldn't be used as a values key`)
+
+				child = {
+					key,
+					type,
+					component,
+					payload: layout,
+					get value() {
+						return key ? values[key] : values
+					},
+					set value(value) {
+						if (key)
+							values[key] = value
+						else
+							values = value
+					},	
+				}			
+			} else if (isObject(layout)) {
+				child = {
+					key,
+					type: 'palette',
+					values,
+					layout: layout,
+					payload: layout, // the layout also contains the payload (eg. { type: 'number', max: 3 })
+				}			
+			}
+
+			return child
 		},
 	},
 }

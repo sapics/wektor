@@ -14,12 +14,11 @@
 			></vdialog>
 			<vdialog
 				key="layers"
-				:values="{ layers }"
+				:values="layers"
 				:layout="{
-					layers: {
-						type: 'layers',
-					}
+					type: 'layers',
 				}"
+				:payload="{ locked: true }"
 			>
 			</vdialog>
 		</div>
@@ -27,11 +26,10 @@
 </template>
 
 <script>
-import tree from './components/palette/components/tree'
 import Vue from 'vue' 
 import { mapGetters, mapMutations, mapState } from 'vuex'
 import toolBar from './components/tool-bar.vue'
-import vdialog from './components/palette/vdialog.vue'
+import vdialog from './palette/vdialog.vue'
 import settings from './settings.js'
 import { isArray, isFunction } from './utils.js'
 import wektor from '@/wektor'
@@ -42,7 +40,7 @@ export default {
 
 	props: ['target'],
 
-	components: { toolBar, vdialog, tree },
+	components: { toolBar, vdialog },
 
 	data() {
 		return {

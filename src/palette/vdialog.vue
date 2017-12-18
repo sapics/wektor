@@ -39,7 +39,7 @@
 </template>
 
 <style lang="scss">
-@import "../../sass/variables";
+@import "../sass/variables";
 
 .dialog-wrap {
 	.dialog {
@@ -101,7 +101,7 @@ export default {
 	props: {
 		id: String,
 		parentId: String,
-		values: Object,
+		values: null,
 		layout: Object,
 		reference: {
 			type: Object,

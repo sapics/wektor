@@ -38,6 +38,7 @@
 		</div>
 		<div v-else 
 			:class="{ selected }"
+			@contextmenu="handleContextMenu"
 		>
 			{{item.name}}
 		</div>
@@ -131,6 +132,10 @@ export default {
 			wektor.project.deselectAll()
 			paperItem.selected = true	
 		},	
+
+		handleContextMenu(event) {
+			
+		},
 	},
 }	
 </script>

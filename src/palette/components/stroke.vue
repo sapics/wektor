@@ -25,6 +25,7 @@
 import baseComponent from './baseComponent.vue'
 import number from './number'
 import color from './color'
+import wektor from '@/wektor'
 
 export default {
 	extends: baseComponent,
@@ -48,6 +49,24 @@ export default {
 				suffix: label.slice(strokePos + 'stroke'.length, label.length)
 			}
 		},
+	},
+
+	methods: {
+		openStrokeDialog() {
+			// wektor.openDialog({
+			// 	id: this.id,
+			// 	parentId: this.dialogId,
+			// 	layout: {
+			// 		[this.propKey]: {
+			// 			type: 'strokeDetails',
+			// 			label: this.label,
+			// 		}
+			// 	},
+			// 	values: {},
+			// 	reference: this.$refs.strokeLabel,
+			// 	convert: false,
+			// })	
+		}
 	}
 }	
 </script>
