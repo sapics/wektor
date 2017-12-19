@@ -38,8 +38,11 @@
 }
 
 .colorpicker {
-	width: calc(150px + 2 * 1em);
-	height: 150px;
+	position: relative;
+	width: 100%;
+	height: 100%;
+	min-width: 3em;
+	min-height: 3em;
 
 	.saturation {
 		float: left;

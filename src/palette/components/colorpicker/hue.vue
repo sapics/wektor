@@ -25,8 +25,8 @@
 
 	.pointer {
 		background: white;
-		margin-top: -1px;
 		position: absolute;
+		margin-top: -1px;
 		width: 100%;
 		height: 5px;
 		border-top: 1px solid;

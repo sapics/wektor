@@ -91,6 +91,7 @@ class Dialog {
 			if (changeHandler)
 				console.warn(`changeHandler is already defined for values`)
 		} else {
+			if (!values.name && isFunction(values.toString)) values.name = values.toString()
 			const convertedValues = this.convertValues(values, layout)
 			this.values = this.createProxy(convertedValues, values, changeHandler) 
 		}
@@ -119,13 +120,14 @@ class Dialog {
 		
 		for (const [key, layoutProp] of Object.entries(layout)) {
 			if (isComponentDescription(layoutProp)) {
-				const { value } = resolveObjectPath(values, key)
+				let { value } = resolveObjectPath(values, key)
 
 				if (value instanceof paper.Color) {
 					converted[key] = value.toJSON()
 				} else {
 					converted[key] = value
-				}        	
+				}
+
 			} else if (isObject(layoutProp)) {
 				// recursively convert nested values
 				Object.assign(converted, this.convertValues(values, layoutProp))

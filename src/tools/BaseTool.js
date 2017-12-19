@@ -50,10 +50,22 @@ class BaseTool extends paper.Tool {
 
 		if (isArray(value)) {
 			for (const item of value)
-				item.selected = true
+				this.select(item)
 		} else {
-			value.selected = true
+			this.select(value)
 		}
+	}
+
+	select(item) {
+		function selectParentGroups(item) {
+			if (item.parent && item.parent.className === 'Group') {
+				item.parent.selected = true
+				selectParentGroups(item.parent)
+			}
+		}
+
+		item.selected = true
+		selectParentGroups(item)
 	}
 
 	getHit(target, event, options, returnType = null) {

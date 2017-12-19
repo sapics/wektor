@@ -24,6 +24,8 @@ class BezierTool extends SelectionTool {
 	}
 
 	onMouseDown(event) {
+		this.target.deselectAll()
+
 		if (!this.path)
 			this.path = this.createPath()
 

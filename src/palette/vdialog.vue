@@ -18,22 +18,23 @@
 			@mouseup="onMouseUp"
 			@mouseenter="hover = true"
 			@mouseleave="hover = false"		
-			v-outside:mousedown="onMouseDownOutside"	
+			v-outside:mousedown="onMouseDownOutside"
 		>
-<!-- 			<div class="wire-frame"
-				v-show="showWireFrame"
-			></div> -->
-			<div 
-				class="lock"
-				:class="{locked}"
-				@click="locked = !locked"
-			></div>		
 			<palette
 				class="draghandler"
 				:values="values"
 				:layout="layout"
 				:dialogId="id"
-			></palette>			
+			></palette>	
+			<div 
+				class="lock"
+				:class="{locked}"
+				@click="locked = !locked"
+			></div>	
+			<div v-if="this.payload.resize"
+				class="resize-corner"
+				@mousedown.stop.prevent="startResize"
+			></div>					
 		</div>
 	</div>
 </template>
@@ -66,9 +67,14 @@
 		background-color: black;
 	}
 
-	// .pointer-line {
-	// 	z-index: 2;
-	// }
+	.resize-corner {
+		position: absolute;
+		right: 0;
+		bottom: 0;
+		width: 9px;
+		height: 9px;
+		background-image: url('/static/icons/resize-corner.gif');
+	}
 
 	.wire-frame {
 		z-index: 3;
@@ -90,11 +96,12 @@ import wektor from '@/wektor'
 import draggable from '@/mixins/draggable'
 import palette from './palette'
 import pointerLine from './components/pointer-line'
+import resizeable from '@/mixins/resizeable'
 
 export default {
 	name: 'vdialog',
 
-	mixins: [ draggable ],
+	mixins: [ draggable, resizeable ],
 	
 	components: { pointerLine, palette },
 
@@ -119,6 +126,7 @@ export default {
 			referencePoint: null,
 			locked: false,
 			hover: false,
+			resizeEl: null, // see mounted()
 		}
 	},
 
@@ -178,6 +186,10 @@ export default {
 		this.locked = this.payload.locked || this.locked
 	},
 
+	mounted() {
+		this.resizeEl = this.$refs.dialog
+	},
+
 	methods: {
 		onMouseDown(event) {
 			this.active = true
@@ -197,7 +209,6 @@ export default {
 		isDragHandle(el) {
 			const classList = el.classList
 			return classList.contains('draghandler')
-			// return (classList.contains('dialog') || classList.contains('palette-wrap') || classList.contains('palette') || classList.contains('label'))
 		},
 
 		close(event) {

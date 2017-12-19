@@ -33,6 +33,33 @@ class Wektor extends EventEmitter {
 
 		this.initShortcuts()
 		this.initChangeTracking()
+
+		this.on('groupItems', () => this.groupItems())
+		console.log(this.shortcuts)
+	}
+
+	groupItems() {
+		// selectedItems may contain groups and also their children.
+		// to group these groups correctly we have to delete their children from the selectedItems array
+		function resolveGroups(items, root = true) {
+			for (const item of items) {
+				if (item.hasChildren() && item.parent)
+					resolveGroups(item.children, false)
+				else if (!item.parent || !root)
+					selectedItems = selectedItems.filter(selectedItem => selectedItem !== item)
+			}
+		}
+
+		let selectedItems = this.project.selectedItems
+		resolveGroups(selectedItems)
+
+		if (!selectedItems.length) return
+		if ((selectedItems.length === 1) && ['Group', 'Layer'].includes(selectedItems[0].className)) return
+
+		new paper.Group({
+			children: selectedItems,
+			selected: true
+		})
 	}
 
 	initChangeTracking() {
@@ -69,7 +96,7 @@ class Wektor extends EventEmitter {
 									this.emit('updateChildren')
 									break
 								case 'ATTRIBUTE':
-									this.emit('updateSelection')
+									this.emit('updateAttribute')
 									break
 							}
 						}

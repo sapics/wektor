@@ -63,6 +63,7 @@
 
 	.palette-select-options {
 		position: absolute;
+		z-index: 1;
 		background: white;
 		border: 1px solid black;
 		margin-left: -$space;	

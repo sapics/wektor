@@ -20,8 +20,8 @@
 	.pointer {
 		background: white;
 		position: absolute;
-		width: 100%;
 		margin-top: -1px;
+		width: 100%;
 		height: 5px;
 		border-top: 1px solid;
 		border-bottom: 1px solid;
@@ -71,6 +71,10 @@ export default {
 			const colorStr = `rgb(${Math.round(red * 255)}, ${Math.round(green * 255)}, ${Math.round(blue * 255)})`
 			return `linear-gradient(to ${side}, transparent, ${colorStr}), ${this.backgroundImage}`			
 		}
+	},
+
+	mounted() {
+		this.pointerSize.height -= 1
 	},
 }	
 </script>

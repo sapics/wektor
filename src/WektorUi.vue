@@ -78,7 +78,8 @@ export default {
 		wektor.on('closeDialog', this.closeDialog)
 
 		wektor.on('updateChildren', this.updateChildren)
-		wektor.on('updateSelection', this.updateSelection)
+		wektor.on('updateAttribute', this.updateChildren)
+		wektor.on('updateAttribute', this.updateSelection)
 	},
 
 	methods: {
@@ -94,13 +95,30 @@ export default {
 
 			let shortcutMatched = false
 			for (const shortcut of wektor.shortcuts) {
-				if (event.key === shortcut.key && (!shortcut.modifier || event[shortcut.modifier + 'Key'])) {
+				if (this.shortcutMatches(shortcut, event)) {
+					console.log('matched:', shortcut)
 					if (shortcutMatched) console.warn('multiple shortcuts matched event')
 					shortcutMatched = true
-					if (shortcut.callback instanceof Function) shortcut.callback()
-					event.preventDefault()
+					if (isFunction(shortcut.callback)) shortcut.callback()
+					event.preventDefault()		
 				}
 			}
+		},
+
+		shortcutMatches(shortcut, event) {
+			if (event.key !== shortcut.key) return false
+
+			const modifiers = isArray(shortcut.modifier) ? shortcut.modifier : [shortcut.modifier]
+
+			for (const modifier of ['alt', 'ctrl', 'meta', 'shift']) {
+				const eventHasModifier = event[modifier + 'Key']
+				const shortcutHasModifier = modifiers.includes(modifier)
+
+				if (eventHasModifier && !shortcutHasModifier) return false
+				if (!eventHasModifier && shortcutHasModifier) return false
+			}
+
+			return true
 		},
 
 		updateChildren() {
@@ -120,28 +138,6 @@ export default {
 						children: item.children ? convertItems(item.children) : undefined	        
 					})					
 				}
-
-				// for (const item of items) {
-				// 	if (item.data.iterable === false) continue
-				// 	// if (!item.name) {
-				// 	// 	const type = item.className
-				// 	// 	let count = countTypeOf[type]
-				// 	// 	if (count === undefined) {
-				// 	// 		count = countTypeOf[type] = 1
-				// 	// 	} else {
-				// 	// 		count = (countTypeOf[type] += 1)
-				// 	// 	}
-				// 	// 	console.log(type, countTypeOf[type])
-				// 	// 	item.name = `${type} ${count}`
-				// 	// }
-				// 	converted.push({
-				// 		id: item.id,
-				// 		name: item.name || item.toString(),
-				// 		type: item.className,
-				// 		open: item.data.open,
-				// 		children: item.children ? convertItems(item.children) : undefined	        
-				// 	})
-				// }
 				return converted
 			}
 
@@ -174,7 +170,7 @@ export default {
 				hit.item.emit('contextmenu')
 			} else {
 				wektor.openDialog({
-					id: hit.item.className + hit.item.id, 
+					id: hit.item.toString(), 
 					values: hit.item, 
 					layout: settings.dialog.layouts.item,
 					reference: hit.item,

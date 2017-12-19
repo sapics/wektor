@@ -24,6 +24,11 @@ export default {
 			key: 'ArrowUp',
 			modifier: 'meta',
 			emit: 'toolSelectPrev'
+		},
+		{
+			key: 'g',
+			modifier: 'meta',
+			emit: 'groupItems',
 		},		
 	],
 	dialog: {
@@ -36,24 +41,47 @@ export default {
 		keepAlive: true,
 		layouts: {
 			item: {
-				blendMode: {
-					type: 'select',
-					'label': 'blend',
-					options: ['normal', 'multiply', 'screen', 'overlay', 'soft-light', 'hard-light', 'color-dodge', 'color-burn', 'darken', 'lighten', 'difference', 'exclusion', 'hue', 'saturation', 'luminosity', 'color', 'add', 'subtract', 'average', 'pin-light', 'negation', 'source-over', 'source-in', 'source-out', 'source-atop', 'destination-over', 'destination-in', 'destination-out', 'destination-atop', 'lighter', 'darker', 'copy', 'xor']
+				name: {
+					type: 'text',
 				},
-				// group: {
-				// 	label: 'stroke',
-				// 	align: 'columns',
-				// 	strokeColor: {
-				// 		type: 'color',
-				// 	},					
-				// 	strokeWidth: {
-				// 		type: 'number',
-				// 	},
-				// },
+				group: {
+					align: 'columns',
+					stroke: {
+						'label': 'stroke',
+						'popup': true,
+						strokeCap: {
+							type: 'select',
+							label: 'cap',
+							options: ['round', 'square', 'butt'],
+						},
+						strokeJoin: {
+							type: 'select',
+							label: 'join',
+							options: ['miter', 'round', 'bevel'],
+						},
+						miterLimit: {
+							type: 'number',
+							label: 'miter',
+						},						
+					},				
+					strokeWidth: {
+						type: 'number',
+						unit: 'px',
+					},
+					strokeColor: {
+						type: 'color',
+					},												
+				},
 				fillColor: {
 					type: 'color',
 					label: 'fill'
+				},
+				advanced: {
+					blendMode: {
+						type: 'select',
+						'label': 'blend',
+						options: ['normal', 'multiply', 'screen', 'overlay', 'soft-light', 'hard-light', 'color-dodge', 'color-burn', 'darken', 'lighten', 'difference', 'exclusion', 'hue', 'saturation', 'luminosity', 'color', 'add', 'subtract', 'average', 'pin-light', 'negation', 'source-over', 'source-in', 'source-out', 'source-atop', 'destination-over', 'destination-in', 'destination-out', 'destination-atop', 'lighter', 'darker', 'copy', 'xor']
+					},			
 				},				
 			}
 		}

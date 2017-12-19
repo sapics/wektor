@@ -1,8 +1,8 @@
 <template>
 	<div 
 		class="number"
-		@keydown.up="up($event)"
-		@keydown.down="down($event)"
+		@keydown.up.prevent="up($event)"
+		@keydown.down.prevent="down($event)"
 	>
 		<span 
 			class="label"
@@ -53,7 +53,7 @@ export default {
 
 	data() {
 		return {
-			unit: 'px',
+			unit: this.payload.unit,
 			unitValue: null,
 			inputFieldValue: null,
 			resolution: 72,
@@ -69,22 +69,32 @@ export default {
 	computed: {
 		space() {
 			return this.payload.space
-		}
+		},
 	},
 
 	methods: {
 		updateValue(string) {
-			const result = unitValidator.parse(string)
+			let value
 
-			if (result === false) return false
+			if (!this.unit) {
+				value = parseFloat(string)
+			} else {
+				const result = unitValidator.parse(string)
 
-			this.unit = result.unit
-			this.unitValue = result.unitValue
-			this.$emit('input', result.value)
+				if (result === false) return false
+
+				this.unit = result.unit
+				value = this.unitValue = result.unitValue
+			}
+
+			this.$emit('input', value)
 		},
 
 		updateInputField() {
-			this.inputFieldValue = (isNaN(this.unitValue) ? '' : round(this.unitValue)) + this.unit
+			if (!this.unit)
+				this.inputFieldValue = this.unitValue
+			else
+				this.inputFieldValue = (isNaN(this.unitValue) ? '' : round(this.unitValue)) + this.unit
 		},
 
 		up(event) {

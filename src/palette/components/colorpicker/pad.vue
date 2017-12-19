@@ -6,7 +6,7 @@
 	</div>
 </template>
 
-<style lamg="scss" scoped>
+<style lang="scss" scoped>
 .pointer {
 	position: absolute;
 }
@@ -61,20 +61,21 @@ export default {
 			switch (this.direction) {
 				case 'horizontal':
 					normValueX = this.normalizeValue(this.internalValue, this.range)
-					pos.left = normValueX * (this.size.width - this.pointerSize.width) + 'px'
+					pos.left = `calc(${normValueX} * (100% - ${this.pointerSize.width}px))`
 					break
 
 				case 'vertical':
 					normValueY = this.normalizeValue(this.internalValue, this.range)
-					pos.top = normValueY * (this.size.height - this.pointerSize.height) + 'px'
+					// pos.top = normValueY * (this.size.height - this.pointerSize.height) + 'px'
+					pos.top = `calc(${normValueY} * (100% - ${this.pointerSize.height}px))`
 					break
 
 				case 'both':
 					normValueX = this.normalizeValue(this.internalValue.x, this.range.x)
 					normValueY = this.normalizeValue(this.internalValue.y, this.range.y)
 					pos = {
-						left: normValueX * (this.size.width - this.pointerSize.width) + 'px',
-						top: normValueY * (this.size.height - this.pointerSize.height) + 'px'
+						left: `calc(${normValueX} * (100% - ${this.pointerSize.width}px))`,
+						top: `calc(${normValueY} * (100% - ${this.pointerSize.height}px))`
 					}
 			}
 

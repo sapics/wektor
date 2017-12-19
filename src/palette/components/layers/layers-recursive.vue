@@ -10,17 +10,22 @@
 		:selected="handleSelected"
 	>
 		<div v-if="item.children">
-			<div 
+			<vddl-nodrag
 				class="info"
 			>
 				<span 
 					v-show="hasChildren"
 					class="chevron"
 					:class="{ opened }"
-					@click="opened = !opened"
+					@click.stop="opened = !opened"
 				>&#9656;</span>
-				<span class="label">{{ item.name }}</span>
-			</div>
+				<vddl-handle>
+					<span 
+						class="label"
+						:class="{ selected }"
+					>{{ item.name }}</span>
+				</vddl-handle>
+			</vddl-nodrag>
 			<vddl-list
 				v-if="opened"
 				:list="item.children"
@@ -128,6 +133,7 @@ export default {
 		},
 
 		handleSelected() {
+			console.log('selected', this.item)
 			const paperItem = wektor.project.getItem({ id: this.item.id })
 			wektor.project.deselectAll()
 			paperItem.selected = true	

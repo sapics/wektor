@@ -33,6 +33,7 @@ function isObject(value) {
 }
 
 function isArray(value) {
+	if (!value) return false
 	return value.constructor === Array
 }
 

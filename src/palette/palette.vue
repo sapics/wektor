@@ -19,8 +19,7 @@
 					:payload="child.payload"
 					:values="child.values"
 					:layout="child.layout"				
-				>
-				</palette>
+				></palette>			
 				<component
 					v-else
 					:is="child.component"
@@ -39,6 +38,11 @@
 
 <style lang="scss" scoped>
 .palette-wrap {
+	&, .palette {
+		width: 100%;
+		height: 100%;
+	}
+
 	.label {
 		cursor: default;
 	}
@@ -111,6 +115,8 @@ import tree from './components/tree'
 import layers from './components/layers'
 import strokeDetails from './components/stroke-details'
 import vselect from './components/vselect'
+import vtext from './components/vtext'
+import popup from './components/popup'
 import paper from 'paper'
 
 import Vue from 'vue'
@@ -150,6 +156,8 @@ export default {
 		tree, 
 		layers, 
 		vselect,
+		vtext,
+		popup,
 	},
 
 	computed: {
@@ -222,12 +230,24 @@ export default {
 					},	
 				}			
 			} else if (isObject(layout)) {
-				child = {
-					key,
-					type: 'palette',
-					values,
-					layout: layout,
-					payload: layout, // the layout also contains the payload (eg. { type: 'number', max: 3 })
+				if (layout.popup) {
+					child = {
+						key,
+						component: this.getComponent('popup'),
+						payload: {
+							label: layout.label,
+							layout,
+							values,
+						},
+					}
+				} else {
+					child = {
+						key,
+						type: 'palette',
+						values,
+						layout,
+						payload: layout, // the layout also contains the payload (eg. { type: 'number', max: 3 })
+					}					
 				}			
 			}
 

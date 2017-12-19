@@ -14,6 +14,8 @@
 
 <style lang="scss" scoped>
 .saturation {
+	position: relative;
+	overflow: hidden;
 	background: linear-gradient(0deg, black, transparent), linear-gradient(90deg, white, transparent);
 
 	.pointer {

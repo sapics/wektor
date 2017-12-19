@@ -31,12 +31,19 @@ class SelectionTool extends BaseTool {
 	}
 
 	onMouseDown(event) {
+		console.log(event)
+		this.mousedown = null
+
 		if (this.transformbox) {
 			const couldHandleMouseDown = this.transformbox.handleMouseDown(event)
 			if (!couldHandleMouseDown)
 				this.item && this.releaseItem()
 			return
 		}
+
+		// catch right click
+		if (event.event.button === 2)
+			return
 
 		// catch double click
 		if (event.event.detail === 2) {
@@ -57,10 +64,13 @@ class SelectionTool extends BaseTool {
 			handles: true 
 		})
 
-		this.target.deselectAll()
+		if (!event.modifiers.shift)
+			this.target.deselectAll()
 
-		if (!hitResult)
+		if (!hitResult) {
 			this.item && this.releaseItem()
+			this.mousedown = event.point 
+		}
 
 		switch (hitResult.type) {
 			case 'stroke':
@@ -84,6 +94,11 @@ class SelectionTool extends BaseTool {
 				this.handle = hitResult
 				break
 		}
+	}
+
+	onMouseUp(event) {
+		this.setSelection()
+		this.releaseSelectionRect()
 	}
 
 	onDoubleClick(event) {
@@ -110,6 +125,37 @@ class SelectionTool extends BaseTool {
 			this.dragHandle(this.handle, event)
 		else if (this.segment)
 			this.dragSegment(this.segment, event)
+		else if (this.mousedown)
+			this.drawSelection(this.mousedown, event)
+	}
+
+	drawSelection(startPoint, event) {
+		if (!this.selectionRect) {
+			this.selectionRect = new paper.Path.Rectangle({
+				from: { ...startPoint },
+				to: { ...event.point },
+				style: {
+					strokeWidth: 1,
+					dashArray: [1, 1],
+					strokeColor: 'gray',
+				},
+				data: { iterable: false },
+			})
+		} else {
+			const { topLeft, topRight, bottomLeft, bottomRight } = new paper.Rectangle(startPoint, event.point)
+			this.selectionRect.segments = [topLeft, topRight, bottomRight, bottomLeft]
+		}
+	}
+
+	setSelection() {
+		if (!this.selectionRect) return
+
+		const selectedItems = this.target.getItems({
+			overlapping: this.selectionRect.bounds,
+			match: item => item.className !== 'Layer'
+		})
+
+		this.onlySelect(selectedItems)
 	}
 
 	releaseItem(unselect = true) {
@@ -125,10 +171,17 @@ class SelectionTool extends BaseTool {
 		return transformbox	
 	}	
 
-	releaseTransformbox(item) {
+	releaseTransformbox() {
 		if (this.transformbox) {
 			this.transformbox.remove()
 			this.transformbox = null
+		}
+	}
+
+	releaseSelectionRect() {
+		if (this.selectionRect) {
+			this.selectionRect.remove()
+			this.selectionRect = null
 		}
 	}
 
