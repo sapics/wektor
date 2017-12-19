@@ -97,6 +97,7 @@ import draggable from '@/mixins/draggable'
 import palette from './palette'
 import pointerLine from './components/pointer-line'
 import resizeable from '@/mixins/resizeable'
+import { isFunction } from '@/utils'
 
 export default {
 	name: 'vdialog',
@@ -180,17 +181,43 @@ export default {
 	},
 
 	created() {
+		this.setPosition()
 		this.active = true
-		this.position = this.payload.position || { x: 0, y: 0 }
 		this.referencePoint = this.reference.position
 		this.locked = this.payload.locked || this.locked
+		wektor.on('openDialog', dialog => {
+			if (dialog.id === this.parentId) {
+				this.updateReference()
+			}
+		})
+		wektor.on('closeDialog', dialog => {
+			if (dialog.id === this.parentId) {
+				this.updateReference()
+			}
+		})		
 	},
 
 	mounted() {
 		this.resizeEl = this.$refs.dialog
+		// this.position = this.payload.position || this.reference.bounds.bottomLeft
 	},
 
 	methods: {
+		updateReference() {
+			const reference = this.reference
+			if (reference && isFunction(reference.update)) 
+				this.$nextTick(() => reference.update())
+		},
+
+		setPosition() {
+			const { payload, reference } = this
+			const position = payload.position || (reference.bounds && reference.bounds.topRight) || { x: 0, y: 0 }
+			const margin = this.$settings.dialog.margin
+			position.x += margin.x
+			position.y += margin.y
+			this.position = position
+		},
+
 		onMouseDown(event) {
 			this.active = true
 			if (this.isDragHandle(event.target))

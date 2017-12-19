@@ -2,19 +2,38 @@ import paper from 'paper'
 
 function getBounds(el) {
 	if (el.bounds) {
-		return el.bounds
+		var { top, topLeft, topRight, topCenter, bottom, bottomLeft, bottomRight, bottomCenter, left, leftCenter, right, rightCenter, x, y, width, height, center } = el.bounds 
+		return {
+			top,
+			topLeft: { x: topLeft.x, y: topLeft.y },
+			topRight: { x: topRight.x, y: topRight.y },
+			topCenter: { x: topCenter.x, y: topCenter.y },
+			bottom,
+			bottomLeft: { x: bottomLeft.x, y: bottomLeft.y },
+			bottomRight: { x: bottomRight.x, y: bottomRight.y },
+			bottomCenter: { x: bottomCenter.x, y: bottomCenter.y },
+			left,
+			leftCenter: { x: leftCenter.x, y: leftCenter.y },
+			right,
+			rightCenter: { x: rightCenter.x, y: rightCenter.y },
+			x,
+			y,
+			width,
+			height,
+			center: { x: center.x, y: center.y },
+		}
 	} else if (el.getBoundingClientRect) {
 		const boundingClientRect = el.getBoundingClientRect()
-		const {top, left, bottom, right, width, height} = boundingClientRect
+		var {top, left, bottom, right, width, height} = boundingClientRect
 		return Object.assign(boundingClientRect, {
-			topLeft: {y: top, x: left},
-			topRight: {y: top, x: right},
-			bottomLeft: {y: bottom, x: left},
-			bottomRight: {y: bottom, x: right},
-			leftCenter: {y: (top + height / 2), x: left},
-			topCenter: {y: top, x: (left + width / 2)},
-			rightCenter: {y: (top + height / 2), x: right},
-			center: {y: (top + height / 2), x: (left + width / 2)}			
+			topLeft: { y: top, x: left },
+			topRight: { y: top, x: right },
+			bottomLeft: { y: bottom, x: left },
+			bottomRight: { y: bottom, x: right },
+			leftCenter: { y: (top + height / 2), x: left },
+			topCenter: { y: top, x: (left + width / 2) },
+			rightCenter: { y: (top + height / 2), x: right },
+			center: { y: (top + height / 2), x: (left + width / 2) }			
 		})
 	}
 }

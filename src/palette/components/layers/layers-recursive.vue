@@ -17,7 +17,7 @@
 					v-show="hasChildren"
 					class="chevron"
 					:class="{ opened }"
-					@click.stop="opened = !opened"
+					@click.stop="toggleOpen"
 				>&#9656;</span>
 				<vddl-handle>
 					<span 
@@ -133,7 +133,6 @@ export default {
 		},
 
 		handleSelected() {
-			console.log('selected', this.item)
 			const paperItem = wektor.project.getItem({ id: this.item.id })
 			wektor.project.deselectAll()
 			paperItem.selected = true	
@@ -141,6 +140,12 @@ export default {
 
 		handleContextMenu(event) {
 			
+		},
+
+		toggleOpen() {
+			this.opened = !this.opened
+			const paperItem = wektor.project.getItem({ id: this.item.id })
+			paperItem.data.open = this.opened
 		},
 	},
 }	

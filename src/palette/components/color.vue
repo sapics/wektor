@@ -3,7 +3,8 @@
 		<span class="label">
 			<span>{{labelSegments.prefix}}</span>
 			<span
-				:data-id="`${id}-color-label`" 
+				:data-id="`${id}-color-label`"
+				:id="`${id}-color-label`"
 				class="color-label"
 				ref="colorLabel"
 				:class="{'no-color': !cssColor}"
@@ -112,7 +113,7 @@ export default {
 				parentId: this.dialogId,
 				layout,
 				values,
-				reference: this.$refs.colorLabel,
+				reference: this.$refs.colorLabel.id,
 				payload: {
 					resize: true,
 					css: {

@@ -13,7 +13,7 @@ function createPaperReference(item) {
 		get position() {
 			return getPosition(item)
 		},
-		bounds: item.bounds
+		bounds: getBounds(item)
 	}
 
 	return reference
@@ -26,27 +26,32 @@ function createDomIdReference(id) {
 	}
 
 	function addListeners(el) {
-		el.addEventListener('mouseenter', () => { reference.hover = true })
-		el.addEventListener('mouseleave', () => { reference.hover = false })
+		el.addEventListener('mouseenter', () => { Vue.set(reference, 'hover', true) })
+		el.addEventListener('mouseleave', () => { Vue.set(reference, 'hover', false) })
 	}
 
-	function removeListeners() {
-		el.removeEventListener('mouseenter', () => { reference.hover = true })
-		el.removeEventListener('mouseleave', () => { reference.hover = false })
+	function removeListeners(el) {
+		el.removeEventListener('mouseenter', () => { Vue.set(reference, 'hover', true) })
+		el.removeEventListener('mouseleave', () => { Vue.set(reference, 'hover', false) })
 	}
 
 	let el = document.getElementById(id)
 
 	const reference = {
 		update() {
-			removeListeners(el)
 			el = document.getElementById(id)
-			addListeners(el)
+			el && addListeners(el)	
 		},
 		get position() {
-			return getPosition(el)
-		}
+			return el ? getPosition(el) : null
+		},
+		get bounds() {
+			return el ? getBounds(el) : null
+		},
 	}
+	reference.update()
+
+	return reference
 }
 
 function createDomReference(el) {
@@ -98,8 +103,8 @@ class Dialog {
 
 		if (reference) {
 			this.reference = createReference(reference)
-			const position = this.getReferenceBounds(reference).topRight
-			payload = { position, ...payload }
+			// const position = this.getReferenceBounds(reference).topRight
+			// payload = { position, ...payload }
 		}
 
 		Object.assign(this, {

@@ -1,12 +1,15 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 
+import settings from './settings'
+
 import eventBus from './eventBus.js'
 import store from './store'
 
 import outside from './directives/outside.js'
 import visible from './directives/visible.js'
 import draggable from './directives/draggable.js'
+import inputAutowidth from './directives/input-autowidth'
 
 import wektor from './wektor'
 import WektorUi from './WektorUi.vue'
@@ -16,7 +19,6 @@ import SelectionTool from './tools/SelectionTool/SelectionTool'
 import GridTool from './tools/GridTool'
 
 import Vddl from 'vddl'
-import inputAutowidth from './directives/input-autowidth'
 
 paper.install(window)
 paper.setup('main-canvas')
@@ -33,6 +35,8 @@ Vue.directive('outside', outside)
 Vue.directive('visible', visible)
 Vue.directive('draggable', draggable)
 Vue.directive('autowidth', inputAutowidth)
+
+Vue.prototype.$settings = settings
 
 wektor.setup(paper.project)
 wektor.addTools([BezierTool, GridTool, SelectionTool])

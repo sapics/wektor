@@ -18,7 +18,7 @@
 				:layout="{
 					type: 'layers',
 				}"
-				:payload="{ locked: true }"
+				:payload="{ locked: true, resize: true, position: {x: 700, y: 200}, }"
 			>
 			</vdialog>
 		</div>
