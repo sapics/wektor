@@ -28,7 +28,7 @@ export default {
 		{
 			key: 'g',
 			modifier: 'meta',
-			emit: 'groupItems',
+			method: 'groupItems'
 		},		
 	],
 	dialog: {
@@ -37,7 +37,7 @@ export default {
 			stroke: true,
 			fill: true,
 		},
-		margin: { x: 20, y: -20 },
+		margin: 20,
 		keepAlive: true,
 		layouts: {
 			item: {

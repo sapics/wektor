@@ -31,7 +31,6 @@ class SelectionTool extends BaseTool {
 	}
 
 	onMouseDown(event) {
-		console.log(event)
 		this.mousedown = null
 
 		if (this.transformbox) {

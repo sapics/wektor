@@ -1,7 +1,7 @@
 import paper from 'paper'
 import EventEmitter from 'event-emitter-es6'
 import settings from './settings'
-import { isArray } from '@/utils'
+import { isArray, isFunction } from '@/utils'
 import Dialog from './dialog'
 
 class Wektor extends EventEmitter {
@@ -35,7 +35,6 @@ class Wektor extends EventEmitter {
 		this.initChangeTracking()
 
 		this.on('groupItems', () => this.groupItems())
-		console.log(this.shortcuts)
 	}
 
 	groupItems() {
@@ -115,10 +114,21 @@ class Wektor extends EventEmitter {
 	}
 
 	addShortcut(shortcut) {
-		if (!shortcut.callback && !shortcut.emit)
-			console.warn(`shortcut (${shortcut.modifier} + ${shortcut.key}) doesn't provide a callback or an emit-event-name.`)
-		else if (!shortcut.callback && shortcut.emit)
-			shortcut.callback = () => this.emit(shortcut.emit)
+		if (!shortcut.callback) {
+			const { emit: emitName, method: methodName } = shortcut
+
+			if (methodName || emitName) {
+				shortcut.callback = () => {
+					if (emitName) this.emit(emitName)
+					if (methodName) {
+						if (isFunction(this[methodName]))
+							this[methodName]()
+						else
+							console.warn(`wektor.${methodName} is not a function`)
+					}
+				}
+			}
+		}
 
 		this.shortcuts.push(shortcut)
 	}
@@ -130,8 +140,6 @@ class Wektor extends EventEmitter {
 			activate: () => {
 				this.emit('activateTool', tool)
 			},
-
-			'open-dialog': this.openDialog,
 		})
 		tool.activate()
 

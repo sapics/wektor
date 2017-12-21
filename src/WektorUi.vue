@@ -96,7 +96,6 @@ export default {
 			let shortcutMatched = false
 			for (const shortcut of wektor.shortcuts) {
 				if (this.shortcutMatches(shortcut, event)) {
-					console.log('matched:', shortcut)
 					if (shortcutMatched) console.warn('multiple shortcuts matched event')
 					shortcutMatched = true
 					if (isFunction(shortcut.callback)) shortcut.callback()

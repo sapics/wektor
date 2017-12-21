@@ -160,6 +160,26 @@ function resolveObjectPath(obj, path) {
     }
 }
 
+function isInViewport(arg) {
+	if (!arg) return
+
+	const { top, left, bottom, right } = (arg.getBoundingClientRect ? arg.getBoundingClientRect() : arg)
+
+	return (
+		top >= 0 &&
+		left >= 0 &&
+		bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
+		right <= (window.innerWidth || document.documentElement.clientWidth)
+	)
+}
+
+function getDistance(point1, point2) {
+	const a = point1.x - point2.x
+	const b = point1.y - point2.y
+	const c = Math.sqrt( a * a + b * b )
+	return c
+}
+
 export { 
 	isInt, 
 	isString, 
@@ -179,4 +199,6 @@ export {
 	alphaToWhite,
 	resolvePropertyPath,
 	resolveObjectPath,
+	isInViewport,
+	getDistance,
 }

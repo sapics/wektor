@@ -30,17 +30,13 @@ function createDomIdReference(id) {
 		el.addEventListener('mouseleave', () => { Vue.set(reference, 'hover', false) })
 	}
 
-	function removeListeners(el) {
-		el.removeEventListener('mouseenter', () => { Vue.set(reference, 'hover', true) })
-		el.removeEventListener('mouseleave', () => { Vue.set(reference, 'hover', false) })
-	}
-
 	let el = document.getElementById(id)
 
 	const reference = {
 		update() {
 			el = document.getElementById(id)
-			el && addListeners(el)	
+			el && addListeners(el)
+			this.exists = (el !== null)
 		},
 		get position() {
 			return el ? getPosition(el) : null
@@ -101,11 +97,8 @@ class Dialog {
 			this.values = this.createProxy(convertedValues, values, changeHandler) 
 		}
 
-		if (reference) {
+		if (reference)
 			this.reference = createReference(reference)
-			// const position = this.getReferenceBounds(reference).topRight
-			// payload = { position, ...payload }
-		}
 
 		Object.assign(this, {
 			id: id.toString(),

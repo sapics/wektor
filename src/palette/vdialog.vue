@@ -1,11 +1,11 @@
 <template>
 	<div class="dialog-wrap">
 		<pointer-line
-			v-if="referencePoint"
+			v-if="referencePoint && pointerCorner"
 			v-visible="showPointerLine"
 			class="pointer-line"
-			:css="{zIndex}"
-			:from="position"
+			:style="{zIndex: locked ? '3' : 'auto'}"
+			:from="pointerCorner"
 			:to="referencePoint"
 		></pointer-line>		
 		<div
@@ -97,7 +97,7 @@ import draggable from '@/mixins/draggable'
 import palette from './palette'
 import pointerLine from './components/pointer-line'
 import resizeable from '@/mixins/resizeable'
-import { isFunction } from '@/utils'
+import { isFunction, isInViewport, getBounds, getDistance } from '@/utils'
 
 export default {
 	name: 'vdialog',
@@ -123,8 +123,9 @@ export default {
 
 	data() {
 		return {
-			position: null,
+			position: { x: 0, y: 0 },
 			referencePoint: null,
+			pointerCornerDelta: null,
 			locked: false,
 			hover: false,
 			resizeEl: null, // see mounted()
@@ -171,17 +172,27 @@ export default {
 		zIndex() {
 			return this.active ? 1 : 'auto'
 		},	
+
+		pointerCorner() {
+			const { position, pointerCornerDelta } = this
+			if (!position || !pointerCornerDelta) return
+			return {
+				x: this.position.x - pointerCornerDelta.x,
+				y: this.position.y - pointerCornerDelta.y
+			}
+		}
 	},
 
 	watch: {
 		showPointerLine(show) {
-			if (show)
-				this.referencePoint = this.reference.position
-		}
+			if (!show) return
+			
+			this.referencePoint = this.reference.position
+			this.updatePointerCorner()
+		},
 	},
 
 	created() {
-		this.setPosition()
 		this.active = true
 		this.referencePoint = this.reference.position
 		this.locked = this.payload.locked || this.locked
@@ -199,10 +210,92 @@ export default {
 
 	mounted() {
 		this.resizeEl = this.$refs.dialog
-		// this.position = this.payload.position || this.reference.bounds.bottomLeft
+		this.setPosition()
+		this.$nextTick(() => {
+			this.updatePointerCorner()
+		})
 	},
 
 	methods: {
+		updatePointerCorner() {
+			// get the closest non-covered corner
+			const el = this.$refs.dialog
+			const referencePoint = this.reference.position
+			const position = this.position
+
+			if (!referencePoint) return
+
+			function checkCorner(vertical, horizontal, point, treshold = 0) {
+				const topMostEl = document.elementFromPoint(point.x, point.y)
+				if (topMostEl !== el) return
+
+				if (vertical === 'top' && point.y > referencePoint.y + treshold) return true
+				if (vertical === 'bottom' && point.y < referencePoint.y - treshold) return true
+
+				if (horizontal === 'left' && point.x > referencePoint.x + treshold) return true
+				if (horizontal === 'right' && point.x < referencePoint.x - treshold) return true
+
+				return false
+			}
+
+			const bounds = getBounds(el)
+			let corner
+
+			if (checkCorner('top', 'left', bounds.topLeft))
+				corner = bounds.topLeft
+			else if (checkCorner('top', 'right', bounds.topRight))
+				corner = bounds.topRight
+			else if (checkCorner('bottom', 'left', bounds.bottomLeft))
+				corner = bounds.bottomLeft
+			else if (checkCorner('bottom', 'right', bounds.bottomRight))
+				corner = bounds.bottomRight
+
+			// [bounds.topLeft, bounds.topRight, bounds.bottomLeft, bounds.bottomRight]
+
+			// let possible = false
+			// if (bounds.topLeft.y > referencePoint.y)
+			// 	possibleCorners.push(bounds.topLeft)
+			// else if (bounds.topLeft.x > referencePoint.x)
+
+			// const bounds = getBounds(el)
+			// const cornerNames = [ 'topLeft', 'topRight', 'bottomLeft', 'bottomRight' ]
+			// let minDistance = null
+			// const visibleCorners = []
+			// for (let i = 0; i < cornerNames.length; i++) {
+			// 	const priority = i
+			// 	const cornerName = cornerNames[i]
+			// 	const corner = bounds[cornerName]
+			// 	const topMostEl = document.elementFromPoint(corner.x, corner.y)
+			// 	const distance = getDistance(corner, referencePoint)
+			// 	if (topMostEl === el) {
+			// 		visibleCorners.push({ type: cornerName, point: corner, distance, priority })
+			// 		if (minDistance === null || distance < minDistance) {
+			// 			minDistance = distance
+			// 		}
+			// 	}
+			// }
+
+			// const possibleCorners = visibleCorners.filter(corner => {
+
+			// })
+
+			// const possibleCorners = visibleCorners.filter(corner => corner.distance <= minDistance + (bounds.height - 1))
+
+			// const corner = possibleCorners.reduce((prev, current) => prev.priority < current.priority ? prev : current)
+			
+			if (!corner) {
+				console.log('no corner')
+				return { x: 0, y: 0 }
+			}
+
+			const delta = {
+				x: position.x - corner.x,
+				y: position.y - corner.y
+			}
+
+			this.pointerCornerDelta = delta
+		},
+
 		updateReference() {
 			const reference = this.reference
 			if (reference && isFunction(reference.update)) 
@@ -211,10 +304,61 @@ export default {
 
 		setPosition() {
 			const { payload, reference } = this
-			const position = payload.position || (reference.bounds && reference.bounds.topRight) || { x: 0, y: 0 }
+
+			if (payload.position) {
+				this.position = payload.position
+				return
+			} 
+			if (!reference.bounds) {
+				this.position = { x: 0, y: 0 }
+				return
+			} 
+
+			const el = this.$refs.dialog
+			const { width, height } = el.getBoundingClientRect()
+			const { topRight, topCenter, topLeft, bottomLeft } = reference.bounds
 			const margin = this.$settings.dialog.margin
-			position.x += margin.x
-			position.y += margin.y
+
+			const points = [
+				{
+					x: topRight.x + margin,
+					y: topRight.y,
+				},			
+				{
+					x: topRight.x + margin,
+					y: topRight.y - height,
+				},				
+				{
+					x: topLeft.x - width - margin,
+					y: topLeft.y
+				},
+				{
+					x: topCenter.x - (width / 2),
+					y: topCenter.y - height - margin,
+				},				
+				{
+					x: bottomLeft.x,
+					y: bottomLeft.y + margin
+				}
+			]
+
+			let position
+			for (let i = 0; i < points.length; i++) {
+				const point = points[i]
+				const bounds = {
+					top: point.y,
+					left: point.x,
+					bottom: point.y + height,
+					right: point.x + width,
+
+				}
+				if (isInViewport(bounds)) {
+					console.log(i)
+					position = point
+					break
+				}
+			}
+
 			this.position = position
 		},
 
@@ -225,6 +369,7 @@ export default {
 		},
 
 		onMouseUp(event) {
+			this.updatePointerCorner()
 			this.endDrag()
 		},
 
