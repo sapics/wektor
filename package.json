@@ -12,6 +12,8 @@
   },
   "dependencies": {
     "ace-builds": "^1.2.9",
+    "ace-code-editor": "^1.2.3",
+    "ace-vue2": "^0.3.0",
     "event-emitter-es6": "^1.1.5",
     "paper": "^0.11.5",
     "underscore": "^1.8.3",

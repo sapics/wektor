@@ -118,7 +118,7 @@ import strokeDetails from './components/stroke-details'
 import vselect from './components/vselect'
 import vtext from './components/vtext'
 import popup from './components/popup'
-import code from './components/code'
+import vcode from './components/vcode'
 
 import Vue from 'vue'
 import VueInputAutowidth from 'vue-input-autowidth'
@@ -159,7 +159,7 @@ export default {
 		vselect,
 		vtext,
 		popup,
-		code,
+		vcode,
 	},
 
 	computed: {

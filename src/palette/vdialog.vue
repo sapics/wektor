@@ -10,6 +10,7 @@
 		></pointer-line>		
 		<div
 			class="dialog draghandler"
+			:class="{active}"
 			ref="dialog"
 			:data-id="id"
 			:data-parent-id="parentId"
@@ -26,15 +27,17 @@
 				:layout="layout"
 				:dialogId="id"
 			></palette>	
-			<div 
-				class="lock"
-				:class="{locked}"
-				@click="locked = !locked"
-			></div>	
-			<div v-if="this.payload.resize"
-				class="resize-corner"
-				@mousedown.stop.prevent="startResize"
-			></div>					
+
+				<div 
+					class="lock"
+					:class="{locked}"
+					@click="locked = !locked"
+				></div>	
+				<div v-if="this.payload.resize"
+					class="resize-corner"
+					@mousedown.stop.prevent="startResize"
+				></div>	
+			
 		</div>
 	</div>
 </template>
@@ -49,6 +52,19 @@
 		border: 1px solid black;
 		box-sizing: border-box;
 		overflow: scroll;
+	}
+
+	.active.dialog .dialog-sidebar {
+		z-index: 3;
+	}
+
+	.dialog-sidebar {
+		width: 0.8em;
+		height: 100%;
+		position: absolute;
+		top: 0;
+		right: 0;
+		cursor: grab;
 	}
 
 	.lock {
@@ -69,6 +85,7 @@
 	}
 
 	.resize-corner {
+		cursor: default;
 		position: absolute;
 		right: 0;
 		bottom: 0;

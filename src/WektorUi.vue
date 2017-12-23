@@ -13,21 +13,31 @@
 				:payload="dialog.payload"
 			></vdialog>
 			<vdialog
+				key="scripts"
+				id="scripts"
+				:layout="{
+					type: 'code',
+				}"
+				:payload="{
+					css: { 
+						width: '30%',
+						height: '50%',
+						padding: '0',
+					},
+					resize: true,
+				}"
+			>
+			</vdialog>			
+			<vdialog
 				key="layers"
+				id="layers"
 				:values="layers"
 				:layout="{
 					type: 'layers',
 				}"
 				:payload="{ locked: true, resize: true, position: {x: 700, y: 200}, }"
 			>
-			</vdialog>
-			<vdialog
-				key="scripts"
-				:layout="{
-					type: 'code',
-				}"
-			>
-			</vdialog>			
+			</vdialog>		
 		</div>
 	</div>
 </template>

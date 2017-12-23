@@ -4,7 +4,7 @@ export default {
 		value: null,
 		id: String,
 		dialogId: String,
-		propKey: String,
+		propKey: null,
 		payload: {
 			type: Object,
 			default() {
