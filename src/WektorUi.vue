@@ -21,6 +21,13 @@
 				:payload="{ locked: true, resize: true, position: {x: 700, y: 200}, }"
 			>
 			</vdialog>
+			<vdialog
+				key="scripts"
+				:layout="{
+					type: 'code',
+				}"
+			>
+			</vdialog>			
 		</div>
 	</div>
 </template>

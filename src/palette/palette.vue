@@ -104,6 +104,7 @@
 <script type="text/javascript">
 import { isString, isObject, resolvePropertyPath } from '@/utils'
 
+import paper from 'paper'
 import number from './components/number'
 import checkbox from './components/checkbox'
 import coordinate from './components/coordinate'
@@ -117,7 +118,7 @@ import strokeDetails from './components/stroke-details'
 import vselect from './components/vselect'
 import vtext from './components/vtext'
 import popup from './components/popup'
-import paper from 'paper'
+import code from './components/code'
 
 import Vue from 'vue'
 import VueInputAutowidth from 'vue-input-autowidth'
@@ -158,6 +159,7 @@ export default {
 		vselect,
 		vtext,
 		popup,
+		code,
 	},
 
 	computed: {
