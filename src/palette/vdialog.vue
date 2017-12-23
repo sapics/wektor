@@ -48,6 +48,7 @@
 		background: white;
 		border: 1px solid black;
 		box-sizing: border-box;
+		overflow: scroll;
 	}
 
 	.lock {
@@ -218,7 +219,6 @@ export default {
 
 	methods: {
 		updatePointerCorner() {
-			// get the closest non-covered corner
 			const el = this.$refs.dialog
 			const referencePoint = this.reference.position
 			const position = this.position
@@ -249,44 +249,8 @@ export default {
 				corner = bounds.bottomLeft
 			else if (checkCorner('bottom', 'right', bounds.bottomRight))
 				corner = bounds.bottomRight
-
-			// [bounds.topLeft, bounds.topRight, bounds.bottomLeft, bounds.bottomRight]
-
-			// let possible = false
-			// if (bounds.topLeft.y > referencePoint.y)
-			// 	possibleCorners.push(bounds.topLeft)
-			// else if (bounds.topLeft.x > referencePoint.x)
-
-			// const bounds = getBounds(el)
-			// const cornerNames = [ 'topLeft', 'topRight', 'bottomLeft', 'bottomRight' ]
-			// let minDistance = null
-			// const visibleCorners = []
-			// for (let i = 0; i < cornerNames.length; i++) {
-			// 	const priority = i
-			// 	const cornerName = cornerNames[i]
-			// 	const corner = bounds[cornerName]
-			// 	const topMostEl = document.elementFromPoint(corner.x, corner.y)
-			// 	const distance = getDistance(corner, referencePoint)
-			// 	if (topMostEl === el) {
-			// 		visibleCorners.push({ type: cornerName, point: corner, distance, priority })
-			// 		if (minDistance === null || distance < minDistance) {
-			// 			minDistance = distance
-			// 		}
-			// 	}
-			// }
-
-			// const possibleCorners = visibleCorners.filter(corner => {
-
-			// })
-
-			// const possibleCorners = visibleCorners.filter(corner => corner.distance <= minDistance + (bounds.height - 1))
-
-			// const corner = possibleCorners.reduce((prev, current) => prev.priority < current.priority ? prev : current)
 			
-			if (!corner) {
-				console.log('no corner')
-				return { x: 0, y: 0 }
-			}
+			if (!corner) return { x: 0, y: 0 }
 
 			const delta = {
 				x: position.x - corner.x,

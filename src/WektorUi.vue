@@ -165,6 +165,16 @@ export default {
 
 			if (!(hit && hit.item)) return
 
+			if (wektor.project.selectedItems.length > 1) {
+				wektor.openDialog({
+					id: 'multiple',
+					values: wektor.project.selectedItems,
+					layout: settings.dialog.layouts.item,
+				})
+				console.log('return')
+				return
+			} 
+
 			if (hit.item.responds('contextmenu')) {
 				hit.item.emit('contextmenu')
 			} else {

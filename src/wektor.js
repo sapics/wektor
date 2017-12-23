@@ -165,6 +165,7 @@ class Wektor extends EventEmitter {
 	openDialog(spec) {
 		const dialog = new Dialog(spec)
 		this.dialogs[dialog.id] = { ...dialog, open: true }
+		console.log(dialog.values)
 		this.emit('openDialog', dialog)
 	}
 

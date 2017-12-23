@@ -125,6 +125,7 @@ export default {
 						'min-width': '4em',
 					}
 				},
+				convert: false,
 			})
 
 			this.colorPickerId = id

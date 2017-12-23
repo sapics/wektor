@@ -1,5 +1,6 @@
 import paper from 'paper'
 import { isString, isArray, isObject, isFunction, getBounds, resolveObjectPath } from '@/utils'
+import { isEqual } from 'underscore'
 import wektor from '@/wektor'
 import Vue from 'vue'
 
@@ -87,7 +88,37 @@ function isComponentDescription(layout) {
 
 class Dialog {
 	constructor({ id, parentId, values, layout, reference, payload, changeHandler, convert }) {
-		if (values._converted || (convert === false)) {
+		console.log('values', values, isArray(values))
+		if (isArray(values)) {
+			const convertedValueSets = values.map(set => {
+				const convertedValues = this.convertValues(set, layout)
+				const proxy = this.createProxy(convertedValues, set, changeHandler)
+				return proxy
+			})
+			const commonValues = {}
+			for (const key in convertedValueSets[0]) {
+				let common = true
+				let value = null
+				for (const set of convertedValueSets) {
+					if (value !== null && !isEqual(set[key], value)) {
+						common = false
+						break
+					}
+					value = set[key]
+				}
+				commonValues[key] = common ? value : null
+			}
+			console.log(commonValues)
+			this.values = new Proxy(commonValues, {
+				set(target, key, value) {
+					for (const set of convertedValueSets) {
+						set[key] = value
+					}
+					return true
+				},
+			})
+		} else if (values._converted || (convert === false)) {
+			console.log('false')
 			this.values = values
 			if (changeHandler)
 				console.warn(`changeHandler is already defined for values`)
@@ -149,7 +180,7 @@ class Dialog {
 			set(target, key, value) {
 				if (!convertedKeys.includes(key)) {
 					console.warn(`can't set property '${key}' of dialog values. Dialog's layout doesn't describe this property`)
-					return false   
+					return true   
 				}
 				
 				const { target: rawTarget, key: rawKey } = resolveObjectPath(rawValues, key)
@@ -159,6 +190,7 @@ class Dialog {
 				
 				switch (type) {
 					case 'color': 
+						console.log('set color')
 						rawTarget[rawKey] = paper.Color.importJSON(value)
 						break;
 					default:
