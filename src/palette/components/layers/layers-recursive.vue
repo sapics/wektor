@@ -122,6 +122,7 @@ export default {
 	},
 
 	methods: {
+
 		handleInserted({ index, item: insertedItem, list }) {
 			// in paper.js, items with a lower index are lower in the hierarchy
 			// for the layers panel however we need to show them in inverted hierarchy

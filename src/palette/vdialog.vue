@@ -27,7 +27,9 @@
 				:layout="layout"
 				:dialogId="id"
 			></palette>	
-
+			<div 
+				class="dialog-sidebar draghandler"
+			>
 				<div 
 					class="lock"
 					:class="{locked}"
@@ -37,7 +39,7 @@
 					class="resize-corner"
 					@mousedown.stop.prevent="startResize"
 				></div>	
-			
+			</div>				
 		</div>
 	</div>
 </template>
@@ -55,7 +57,7 @@
 	}
 
 	.active.dialog .dialog-sidebar {
-		z-index: 3;
+		z-index: 100;
 	}
 
 	.dialog-sidebar {
@@ -78,6 +80,7 @@
 		border-radius: 50%;
 		border: 1px solid black;
 		cursor: pointer;
+		background-color: white;
 	}
 
 	.lock.locked {
@@ -214,6 +217,7 @@ export default {
 		this.active = true
 		this.referencePoint = this.reference.position
 		this.locked = this.payload.locked || this.locked
+
 		wektor.on('openDialog', dialog => {
 			if (dialog.id === this.parentId) {
 				this.updateReference()
@@ -223,7 +227,9 @@ export default {
 			if (dialog.id === this.parentId) {
 				this.updateReference()
 			}
-		})		
+		})
+
+		this.$on('end-resize', () => this.$bus.$emit('resize-dialog', this.id))	
 	},
 
 	mounted() {

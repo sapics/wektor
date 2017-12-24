@@ -148,10 +148,12 @@ export default {
 					if (item.data.iterable === false) continue
 					converted.push({
 						id: item.id,
-						name: item.name || item.toString(),
+						name: item.name || `${item.className} ${item.id}`,
+						paperName: item.name,
 						type: item.className,
 						open: item.data.open,
-						children: item.children ? convertItems(item.children) : undefined	        
+						children: item.children ? convertItems(item.children) : undefined,
+						_wektorPastePaperItem: true, // this lets the built-in code editor in wektor know, that when we paste the item into the editor, it'll resolve it to a reference to the item        
 					})					
 				}
 				return converted
@@ -188,7 +190,6 @@ export default {
 					values: wektor.project.selectedItems,
 					layout: settings.dialog.layouts.item,
 				})
-				console.log('return')
 				return
 			} 
 

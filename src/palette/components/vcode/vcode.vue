@@ -11,6 +11,10 @@
 			width="100%"
 			theme="tomorrow"
 		></editor>
+		<span 
+			class="palette-code-run-button"
+			@click="runCode"
+		>&#9656;</span>
 	</div>
 </template>
 
@@ -18,6 +22,19 @@
 .palette-code {
 	width: 100%;
 	height: 100%;
+
+	.palette-code-run-button {
+		position: absolute;
+		width: 0.8em;
+		top: 0.8em;
+		right: 0;
+		cursor: default;
+		z-index: 999999999;
+	}
+
+	.ace_print-margin {
+		display: none;
+	}
 
 	.ace_scroller.ace_scroll-left {
 		box-shadow: initial !important;
@@ -42,6 +59,7 @@
 </style>
 
 <script>
+import paper from 'paper'
 import editor from 'ace-vue2'
 import baseComponent from '../baseComponent'
 import 'brace/mode/javascript'
@@ -55,15 +73,33 @@ export default {
 	mounted() {
 		const editor = this.editor = this.$refs.ace.editor
 		editor.session.$worker.send("changeOptions", [{asi: true}])
-		// editor.on('focus', () => {
-		// 	console.log('focus', this.dialogId)
-		// })
+		editor.container.addEventListener('drop', this.handleDrop)
+		this.$bus.$on('resize-dialog', dialogId => {
+			if (dialogId === this.dialogId) {
+				editor.resize()
+			}
+		})
 	},
 
 	methods: {
 		blur() {
 			this.editor.blur()
-		}
+		},
+
+		runCode() {
+			const code = this.editor.getValue()
+			paper.execute(code)
+		},
+
+		handleDrop(event) {
+			const text = event.dataTransfer.getData('text')
+			const object = JSON.parse(text)
+			if (object._wektorPastePaperItem === true) {
+				const { id, paperName } = object
+				const query = paperName ? `{ name: '${paperName}' }` : `{ id: ${id} }`
+				this.editor.insert(`project.getItem(${query})`)
+			}
+		},
 	},
 }	
 </script>
