@@ -18,6 +18,9 @@ class PathPreview extends Path {
 
 	update(event) {
 		this.segments = [this.path.lastSegment, event.point]
+		// when the path is cleared it'll get unselected automatically
+		// so we have to reselect
+		this.selected = true
 	}
 
 	clear() {

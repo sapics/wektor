@@ -32,6 +32,7 @@ class SelectionTool extends BaseTool {
 
 	onMouseDown(event) {
 		this.mousedown = null
+		this.action = null
 
 		if (this.transformbox) {
 			const couldHandleMouseDown = this.transformbox.handleMouseDown(event)

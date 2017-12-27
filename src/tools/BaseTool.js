@@ -1,4 +1,5 @@
 import paper from 'paper'
+import wektor from '@/wektor'
 import { isArray, makeUniqueId } from '../utils.js'
 
 class BaseTool extends paper.Tool {
@@ -46,7 +47,7 @@ class BaseTool extends paper.Tool {
 	}
 
 	onlySelect(value) {
-		this.target && (this.target.selected = false)
+		this.target && (this.target.deselectAll())
 
 		if (isArray(value)) {
 			for (const item of value)
@@ -106,6 +107,10 @@ class BaseTool extends paper.Tool {
 	// an name like "top-left" will be converted to "topLeft"
 	toPropertyName(name) {
 		return name.replace(/-(.)/, (match, p1) => p1.toUpperCase(p1))	
+	}
+
+	get isActive() {
+		return (wektor.active.tool === this)
 	}  	
 }
 

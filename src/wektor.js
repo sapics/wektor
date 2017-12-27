@@ -3,6 +3,7 @@ import EventEmitter from 'event-emitter-es6'
 import settings from './settings'
 import { isArray, isFunction } from '@/utils'
 import Dialog from './dialog'
+import History from './History'
 
 class Wektor extends EventEmitter {
 	constructor(settings) {
@@ -18,6 +19,7 @@ class Wektor extends EventEmitter {
 				layer: null,
 			},
 			dialogs: {},
+			history: new History(settings.history),
 			settings
 		})
 	}
@@ -174,6 +176,14 @@ class Wektor extends EventEmitter {
 		if (!dialog) return
 		dialog.open = false
 		this.emit('closeDialog', dialog)
+	}
+
+	undo() {
+		this.history.undo()
+	}
+
+	redo() {
+		this.history.redo()
 	}
 }
 

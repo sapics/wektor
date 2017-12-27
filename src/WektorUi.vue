@@ -12,7 +12,7 @@
 				:reference="dialog.reference"
 				:payload="dialog.payload"
 			></vdialog>
-			<vdialog
+<!-- 			<vdialog
 				key="scripts"
 				id="scripts"
 				:layout="{
@@ -26,7 +26,7 @@
 					},
 					resize: true,
 				}"
-			>
+			> -->
 			</vdialog>			
 			<vdialog
 				key="layers"
@@ -203,6 +203,14 @@ export default {
 					reference: hit.item,
 				})
 			}
+		},
+
+		undo() {
+			wektor.history.undo()
+		},
+
+		redo() {
+			wektor.history.redo()
 		},
 	},
 }

@@ -29,8 +29,21 @@ export default {
 			key: 'g',
 			modifier: 'meta',
 			method: 'groupItems'
-		},		
+		},
+		{
+			key: 'z',
+			modifier: 'meta',
+			method: 'undo'
+		},
+		{
+			key: 'y',
+			modifier: 'meta',
+			method: 'redo'
+		},
 	],
+	history: {
+		maxUndos: 80,
+	},
 	dialog: {
 		hitOptions: {
 			tolerance: 5,

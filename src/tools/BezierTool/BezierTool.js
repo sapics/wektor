@@ -2,6 +2,7 @@ import paper from 'paper'
 import SelectionTool from '../SelectionTool/SelectionTool.js'
 import PathPreview from './PathPreview.js'
 import specDefault from './specDefault.js'
+import wektor from '@/wektor'
 
 const {Path, Key} = paper
 
@@ -13,7 +14,8 @@ class BezierTool extends SelectionTool {
 
 	onDeactivate() {
 		this.segment && (this.segment.selected = false)
-		this.releasePath(false)
+		this.path && this.releasePath(false)
+		this.releasePathPreview()
 	}
 
 	onKeyDown(event) {
@@ -26,8 +28,14 @@ class BezierTool extends SelectionTool {
 	onMouseDown(event) {
 		this.target.deselectAll()
 
-		if (!this.path)
+		// this holds the action we are starting in mouseDown. The action might not be finished untill mouseMove
+		// and / or mouseUp (see onMouseUp) 
+		this.action = null
+
+		if (!this.path) {
 			this.path = this.createPath()
+			this.action = 'createPath'
+		}
 
 		if (this.options.pathPreview)
 			this.pathPreview = this.pathPreview || new PathPreview(this.path)
@@ -40,17 +48,70 @@ class BezierTool extends SelectionTool {
 
 		if (this.path.firstSegment && this.path.firstSegment.point.equals(event.point)) {
 			this.path.closed = true
+			wektor.history.add({
+				redo: () => { this.path.closed = true },
+				undo: () => { this.path.closed = false }
+			})			
 			this.segment = this.path.firstSegment
 			this.onlySelect(this.segment)
 			this.releasePath(false)
 		} else {
 			this.segment = this.addSegment(this.path, event)
+			this.action = this.action || 'addSegment'
 		}
 
 		this.handle = {
 			type: 'handle-out',
 			segment: this.segment,
 		}
+	}
+
+	onMouseUp(event) {
+		switch (this.action) {
+			case 'createPath':
+				// we set x and y explicit, because if we use event.point.x in the undo/redo functions
+				// event will reference to a new event
+				const { x, y } = event.point
+				let id = this.path.id
+				wektor.history.add({
+					redo: () => {
+						this.path = this.createPath()
+						// wer setting the id directly because we need the path.id to stay the same (see releasePath())
+						// even if we remove and create the path while undo/redo. For us this is undo/redoing the
+						// same path, for paper.js they are different und so have different id's by default
+						this.path._id = id
+						this.path.add([x, y])
+						this.path.selected = true
+						if (this.isActive) {
+							this.pathPreview = new PathPreview(this.path)
+							this.pathPreview.update(event)
+						}
+					},
+					undo: () => { 
+						this.path.remove()
+						this.path = null
+						this.releasePathPreview()
+					}
+				})
+				break
+			case 'addSegment':
+				const segment = this.path.lastSegment
+				wektor.history.add({
+					redo: () => {
+						this.path.addSegments([segment])
+						this.onlySelect(this.path.lastSegment)
+						this.pathPreview && this.pathPreview.update(event)
+					},
+					undo: () => {
+						this.path.removeSegments(this.path.segments.length - 1)
+						this.onlySelect(this.path.lastSegment)
+						this.pathPreview && this.pathPreview.update(event)
+					}
+				})
+				break
+		}
+
+		this.action = null
 	}
 
 	onMouseMove(event) {
@@ -74,16 +135,28 @@ class BezierTool extends SelectionTool {
 	}
 
 	createPath() {
-		return new Path() // return this.target.addChild(new Path())
+		return new Path()
 	}
 
 	releasePath(unselect = true) {
-		this.releasePathPreview()
+		const pathId = this.path.id
 
-		if (unselect)
-			this.path.selected = false
+		const command = wektor.history.add({
+			redo: () => {
+				this.releasePathPreview()
+				if (unselect) this.path.selected = false
+				this.path = null
+			},
+			undo: () => {
+				this.path = wektor.project.getItem({ id: pathId })
+				this.path.selected = true
+				if (this.isActive)
+					this.pathPreview = new PathPreview(this.path)
+			}
+		})
 
-		this.path = null
+		// trigger the command
+		command.redo()
 	}
 
 	releasePathPreview() {
