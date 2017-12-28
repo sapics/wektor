@@ -1,9 +1,12 @@
 import paper from 'paper'
 import EventEmitter from 'event-emitter-es6'
-import settings from './settings'
+import settings from '@/settings'
 import { isArray, isFunction } from '@/utils'
-import Dialog from './dialog'
+import Dialog from '@/dialog'
 import History from './History'
+import ChangeTracker from './ChangeTracker'
+import ChangeFlag from './ChangeFlag'
+import State from './State'
 
 class Wektor extends EventEmitter {
 	constructor(settings) {
@@ -18,8 +21,10 @@ class Wektor extends EventEmitter {
 				tool: null,
 				layer: null,
 			},
+			changeTracker: null, // gets defined in setup()
+			state: null,
 			dialogs: {},
-			history: new History(settings.history),
+			history: null,
 			settings
 		})
 	}
@@ -33,10 +38,40 @@ class Wektor extends EventEmitter {
 		this.project = project
 		this.active.layer = this.project.activeLayer
 
+		this.history = new History(this)
+		this.state = new State(this.project)
 		this.initShortcuts()
 		this.initChangeTracking()
 
 		this.on('groupItems', () => this.groupItems())
+	}
+
+	initChangeTracking() {
+		const changeTracker = this.changeTracker = new ChangeTracker(this.project)
+		changeTracker.on('change', change => this.handleChange(change))
+		changeTracker.on('changes', changes => this.handleChanges(changes))		
+	}
+
+	handleChange(change) {
+		if (change.flags & ChangeFlag.INSERTION)
+			this.history.updateAutoHistory(change)	
+	}
+
+	handleChanges(changes) {
+		let updateFn
+
+		for (const change of changes) {
+			const { item, flags } = change
+
+			if (flags & ChangeFlag.ATTRIBUTE)
+				updateFn = () => this.state.update(item, { recursive: false })
+			
+			if (flags & ChangeFlag.INSERTION)
+				updateFn = () => this.state.update()
+		}
+
+		console.log(updateFn)
+		updateFn && updateFn()
 	}
 
 	groupItems() {
@@ -61,52 +96,6 @@ class Wektor extends EventEmitter {
 			children: selectedItems,
 			selected: true
 		})
-	}
-
-	initChangeTracking() {
-		const project = this.project
-		const view = project.view
-
-		const ChangeFlag = {
-			APPEARANCE: 1 << 0,
-			CHILDREN: 1 << 1,
-			INSERTION: 1 << 2,
-			GEOMETRY: 1 << 3,
-			SEGMENTS: 1 << 4,
-			STROKE: 1 << 5,
-			STYLE: 1 << 6,
-			ATTRIBUTE: 1 << 7,
-			CONTENT: 1 << 8,
-			PIXELS: 1 << 9,
-			CLIPPING: 1 << 10,
-			VIEW: 1 << 11
-		}
-
-		project._changes = []
-		project._changesById = {}
-
-		view.onFrame = () => {
-			if (project._changes.length) {
-				for (const change of project._changes) {
-					const { item, flags } = change
-					for (const name in ChangeFlag) {
-						const mask = ChangeFlag[name]
-						if (flags & mask) {
-							switch (name) {
-								case 'CHILDREN':
-									this.emit('updateChildren')
-									break
-								case 'ATTRIBUTE':
-									this.emit('updateAttribute')
-									break
-							}
-						}
-					}
-				}
-			}
-			project._changes = []
-			project._changesById = {}
-		}
 	}
 
 	initShortcuts() {

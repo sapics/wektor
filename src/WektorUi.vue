@@ -12,7 +12,7 @@
 				:reference="dialog.reference"
 				:payload="dialog.payload"
 			></vdialog>
-<!-- 			<vdialog
+			<vdialog
 				key="scripts"
 				id="scripts"
 				:layout="{
@@ -26,7 +26,7 @@
 					},
 					resize: true,
 				}"
-			> -->
+			>
 			</vdialog>			
 			<vdialog
 				key="layers"
@@ -94,9 +94,13 @@ export default {
 		wektor.on('openDialog', this.openDialog)
 		wektor.on('closeDialog', this.closeDialog)
 
-		wektor.on('updateChildren', this.updateChildren)
-		wektor.on('updateAttribute', this.updateChildren)
-		wektor.on('updateAttribute', this.updateSelection)
+		wektor.state.on('update', state => { 
+			this.layers = state.nested 
+		})
+
+		// wektor.on('updateChildren', this.updateChildren)
+		// wektor.on('updateAttribute', this.updateChildren)
+		// wektor.on('updateAttribute', this.updateSelection)
 	},
 
 	methods: {
