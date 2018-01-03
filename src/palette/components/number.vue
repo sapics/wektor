@@ -44,7 +44,7 @@ import baseComponent from './baseComponent'
 import paper from 'paper'
 import { getUnit, round, convertUnits } from '@/utils.js' 
 import settings from '@/settings.js'
-import { UnitValidator } from './unitUtils'
+import { UnitValidator, UnitValue } from './unitUtils'
 
 const unitValidator = new UnitValidator(settings.units)
 
@@ -66,6 +66,18 @@ export default {
 		this.updateInputField()
 	},
 
+	watch: {
+		value(value) {
+			// we set this.input to true when we emit 'input' (see updateValue())
+			// so this functuion will only watch if the value gets changed from outside
+			if (!this.input) {
+				this.unitValue = UnitValue.convertValue(value, 'px', this.unit)
+				this.updateInputField()
+			}
+			this.input = false
+		}
+	},
+
 	computed: {
 		space() {
 			return this.payload.space
@@ -84,9 +96,11 @@ export default {
 				if (result === false) return false
 
 				this.unit = result.unit
-				value = this.unitValue = result.unitValue
+				this.unitValue = result.unitValue
+				value = result.value
 			}
 
+			this.input = true
 			this.$emit('input', value)
 		},
 

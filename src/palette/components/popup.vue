@@ -3,6 +3,7 @@
 		<span
 			ref="label"
 			class="label"
+			:id="`${id}-popup-label`"
 			@mousedown="openDialog"
 		>{{ label }}</span>
 	</div>
@@ -35,12 +36,11 @@ export default {
 
 	methods: {
 		openDialog() {
-			wektor.openDialog({
+			wektor.openChildDialog({
 				id: this.id,
 				parentId: this.dialogId,
+				reference: this.$refs.label.id,
 				layout: this.layout,
-				values: this.values,
-				reference: this.$refs.label,
 			})
 		},
 	},

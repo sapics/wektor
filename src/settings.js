@@ -63,6 +63,11 @@ export default {
 					stroke: {
 						'label': 'stroke',
 						'popup': true,
+						'strokeWidth': {
+							type: 'number',
+							label: 'width',
+							unit: 'px',
+						},
 						strokeCap: {
 							type: 'select',
 							label: 'cap',
