@@ -20,6 +20,7 @@
 							height: '30%',
 							padding: '0',
 						},
+						fitContent: true,
 						resize: true,
 					} 
 				}"
@@ -36,6 +37,7 @@
 					payload: {
 						locked: true, 
 						resize: true, 
+						fitContent: true,
 						position: { x: 700, y: 200 },
 					},
 				}"

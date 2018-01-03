@@ -10,7 +10,7 @@
 		></pointer-line>		
 		<div
 			class="dialog draghandler"
-			:class="{active}"
+			:class="{active, fitContent}"
 			ref="dialog"
 			:data-id="id"
 			:data-parent-id="parentId"
@@ -55,7 +55,11 @@
 		background: white;
 		border: 1px solid black;
 		box-sizing: border-box;
-		overflow: scroll;
+
+		&.fitContent .palette {
+			width: 100%;
+			height: 100%;
+		}	
 	}
 
 	.active.dialog .dialog-sidebar {
@@ -110,7 +114,7 @@
 		pointer-events: none;
 		position: absolute;
 		border: 1px solid black;
-	}	
+	}
 }
 </style>
 
@@ -191,6 +195,10 @@ export default {
 
 		customCss() {
 			return this.payload.css || {}
+		},
+
+		fitContent() {
+			return this.payload.fitContent
 		},
 
 		css() {

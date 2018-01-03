@@ -55,6 +55,7 @@ export default {
 		layouts: {
 			item: {
 				name: {
+					label: 'name:',
 					type: 'text',
 				},
 				group: {

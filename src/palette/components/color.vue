@@ -114,6 +114,7 @@ export default {
 				layout,
 				payload: {
 					resize: true,
+					fitContent: true,
 					css: {
 						'padding': 'none', // reset the default padding
 						'padding-right': '1em',

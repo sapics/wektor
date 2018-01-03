@@ -16,6 +16,7 @@
 		box-sizing: border-box;
 		border: none;
 		outline: none;
+		width: 5em;
 	}
 }	
 </style>

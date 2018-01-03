@@ -158,6 +158,8 @@ class Wektor extends EventEmitter {
 		if (!dialog) {
 			dialog = new Dialog(spec)
 			this.dialogs[dialog.id] = dialog
+		} else {
+			dialog.bridge && dialog.bridge.update()
 		}
 
 		this.emit('openDialog', dialog)
@@ -165,10 +167,12 @@ class Wektor extends EventEmitter {
 
 	openChildDialog(spec) {
 		const parentDialog = this.dialogs[spec.parentId]
+
 		if (!parentDialog) {
 			console.warn(`Child-Dialog has to have a parent. None found with id '${spec.parentId}'`)
 			return
 		}
+
 		if (parentDialog.bridge)
 			spec.bridge = parentDialog.bridge
 		else

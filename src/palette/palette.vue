@@ -38,11 +38,6 @@
 
 <style lang="scss" scoped>
 .palette-wrap {
-	&, .palette {
-		width: 100%;
-		height: 100%;
-	}
-
 	.label {
 		cursor: default;
 	}
