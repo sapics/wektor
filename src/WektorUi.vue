@@ -5,37 +5,40 @@
 			<vdialog
 				v-for="(dialog, id) in dialogs"
 				:key="id"
-				:id="id"
-				:parentId="dialog.parentId"
-				:values="dialog.values"
-				:layout="dialog.layout"
-				:reference="dialog.reference"
-				:payload="dialog.payload"
+				:spec="dialog"
 			></vdialog>
 			<vdialog
 				key="scripts"
-				id="scripts"
-				:layout="{
-					type: 'code',
-				}"
-				:payload="{
-					css: { 
-						width: '30%',
-						height: '50%',
-						padding: '0',
+				:spec="{
+					id: 'scripts',
+					layout: {
+						type: 'code',
 					},
-					resize: true,
+					payload: {
+						css: { 
+							width: '50%',
+							height: '30%',
+							padding: '0',
+						},
+						resize: true,
+					} 
 				}"
 			>
 			</vdialog>			
 			<vdialog
 				key="layers"
-				id="layers"
-				:values="layers"
-				:layout="{
-					type: 'layers',
+				:spec="{
+					id: 'layers',
+					values: layers,
+					layout: {
+						type: 'layers',			
+					},
+					payload: {
+						locked: true, 
+						resize: true, 
+						position: { x: 700, y: 200 },
+					},
 				}"
-				:payload="{ locked: true, resize: true, position: {x: 700, y: 200}, }"
 			>
 			</vdialog>		
 		</div>

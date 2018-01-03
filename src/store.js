@@ -5,6 +5,44 @@ import wektor from '@/wektor'
 
 Vue.use(Vuex)
 
+// const store = new Vuex.Store({
+// 	state: {
+// 		active: {
+// 			tool: null,
+// 			dialog: null,
+// 		},
+// 		dialogs: {},
+// 		hierarchy: [],
+// 		watchedItems: [],
+// 	},
+
+// 	mutations: {
+// 		openDialog(state, spec) {
+
+// 		},
+
+// 		closeDialog(state, id) {
+
+// 		},
+
+// 		modifyDialog(state, {}) {
+
+// 		},
+
+// 		updateHierarchy() {
+
+// 		},
+
+// 		watchItem() {
+
+// 		},
+
+// 		unwatchItem() {
+
+// 		},
+// 	},
+// })
+
 const store = new Vuex.Store({
 	state: {
 		dialogs: {},

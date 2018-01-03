@@ -6,7 +6,7 @@
 		<editor
 			ref="ace"
 			class="palette-code-editor"
-			:content="'test()'"
+			:content="`project.getItem({ name: 'rot' }).fillColor.hue = 0`"
 			height="100%"
 			width="100%"
 			theme="tomorrow"

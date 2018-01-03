@@ -111,6 +111,11 @@ function jsonToColor(json, oldColor = {}) {
 			var [, red, green, blue, alpha] = json
 			var [hue, saturation, brightness] = converters['rgb-hsb'](red, green, blue)
 			break
+
+		case 'hsl':
+			var [,, hue, saturation, lightness, alpha] = json
+			var [red, green, blue] = converters['hsl-rgb'](hue, saturation, lightness)
+			var [,, brightness] = converters['rgb-hsb'](red, green, blue)
 	}
 
 	alpha = (alpha !== undefined) ? alpha : 1
@@ -122,10 +127,10 @@ function jsonToColor(json, oldColor = {}) {
 		saturation = oldColor.saturation || 0
 
 	if (hue === 0)
-		hue = oldColor.hue || 0
+		hue = (oldColor.hue === 360) ? 360 : 0
 
 	return {
-		alpha, red, green, blue, hue, saturation, brightness,
+		alpha, red, green, blue, hue, saturation, brightness, lightness
 	}
 }
 
@@ -135,10 +140,14 @@ function colorToJson(color, returnType = 'rgb') {
 	const colorType = color.type || 'hsb'
 
 	switch (colorType) {
+		case 'hsl':
+			var { hue, saturation, lightness, alpha } = color
+			var [ red, green, blue ] = converters['hsl-rgb']( hue, saturation, lightness )
+			break
+
 		case 'hsb':
 			var { hue, saturation, brightness, alpha } = color
 			var [ red, green, blue ] = converters['hsb-rgb']( hue, saturation, brightness)
-
 			break
 
 		case 'rgb':

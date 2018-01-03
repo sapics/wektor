@@ -128,19 +128,41 @@ export default {
 	components: { pointerLine, palette },
 
 	props: {
-		id: String,
-		parentId: String,
-		values: null,
-		layout: Object,
-		reference: {
+		spec: {
 			type: Object,
-			default: () => { return {} }
+			default: () => Object()
 		},
-		payload: {
-			type: Object,
-			default: () => { return {} }
-		}
 	},
+
+	// props: {
+	// 	id: String,
+	// 	parentId: String,
+	// 	bridge: Object,
+	// 	layout: Object,
+	// 	reference: {
+	// 		type: Object,
+	// 		default: () => Object()
+	// 	},
+	// 	payload: {
+	// 		type: Object,
+	// 		default: () => Object()
+	// 	},
+	// },
+
+	// props: {
+	// 	id: String,
+	// 	parentId: String,
+	// 	values: null,
+	// 	layout: Object,
+	// 	reference: {
+	// 		type: Object,
+	// 		default: () => { return {} }
+	// 	},
+	// 	payload: {
+	// 		type: Object,
+	// 		default: () => { return {} }
+	// 	}
+	// },
 
 	data() {
 		return {
@@ -154,6 +176,17 @@ export default {
 	},
 
 	computed: {
+		id () { return this.spec.id },
+		parentId() { return this.spec.parentId },
+		bridge() { return this.spec.bridge || {} },
+		layout() { return this.spec.layout || {} },
+		payload() { return this.spec.payload || {} },
+		reference() { return this.spec.reference || {} },
+
+		values() {
+			return this.bridge.values || this.spec.values
+		},
+
 		customCss() {
 			return this.payload.css || {}
 		},
@@ -211,6 +244,10 @@ export default {
 			this.referencePoint = this.reference.position
 			this.updatePointerCorner()
 		},
+
+		hover(hover) {
+			if (hover) this.updateBridge()
+		}
 	},
 
 	created() {
@@ -241,6 +278,10 @@ export default {
 	},
 
 	methods: {
+		updateBridge() {
+			this.bridge.update && this.bridge.update()
+		},
+
 		updatePointerCorner() {
 			const el = this.$refs.dialog
 			const referencePoint = this.reference.position

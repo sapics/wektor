@@ -21,7 +21,7 @@ class Wektor extends EventEmitter {
 				tool: null,
 				layer: null,
 			},
-			changeTracker: null, // gets defined in setup()
+			changeTracker: null,
 			state: null,
 			dialogs: {},
 			history: null,
@@ -70,7 +70,6 @@ class Wektor extends EventEmitter {
 				updateFn = () => this.state.update()
 		}
 
-		console.log(updateFn)
 		updateFn && updateFn()
 	}
 
@@ -155,9 +154,23 @@ class Wektor extends EventEmitter {
 
 	openDialog(spec) {
 		const dialog = new Dialog(spec)
-		this.dialogs[dialog.id] = { ...dialog, open: true }
-		console.log(dialog.values)
+		this.dialogs[dialog.id] = dialog
 		this.emit('openDialog', dialog)
+		window.openDialog = dialog
+	}
+
+	openChildDialog(spec) {
+		const parentDialog = this.dialogs[spec.parentId]
+		if (!parentDialog) {
+			console.warn(`Child-Dialog has to have a parent. Non found with id '${spec.parentId}'`)
+			return
+		}
+		if (parentDialog.bridge)
+			spec.bridge = parentDialog.bridge
+		else
+			spec.values = parentDialog.values
+
+		this.openDialog(spec)
 	}
 
 	closeDialog(id) {

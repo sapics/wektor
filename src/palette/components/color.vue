@@ -106,14 +106,12 @@ export default {
 					label: this.label,
 				}
 			}
-			const values = this.$parent.values
 
-			wektor.openDialog({
+			wektor.openChildDialog({
 				id,
 				parentId: this.dialogId,
-				layout,
-				values,
 				reference: this.$refs.colorLabel.id,
+				layout,
 				payload: {
 					resize: true,
 					css: {
@@ -124,8 +122,7 @@ export default {
 						'min-height': '4em',
 						'min-width': '4em',
 					}
-				},
-				convert: false,
+				},				
 			})
 
 			this.colorPickerId = id

@@ -3,6 +3,7 @@ import { isString, isArray, isObject, isFunction, getBounds, resolveObjectPath }
 import { isEqual } from 'underscore'
 import wektor from '@/wektor'
 import Vue from 'vue'
+import DialogBridge from './DialogBridge'
 
 function createPaperReference(item) {
 	function getPosition(item) {
@@ -87,8 +88,27 @@ function isComponentDescription(layout) {
 }
 
 class Dialog {
+	constructor({ id, parentId, bridge, values, layout, reference, payload }) {
+		if (reference)
+			reference = createReference(reference)
+
+		if (!bridge)
+			bridge = new DialogBridge(values, layout)
+
+		Object.assign(this, {
+			id: id.toString(),
+			parentId: (parentId && parentId.toString()),
+			bridge,
+			layout,
+			reference,
+			payload,
+			values,
+		})		
+	}	
+}
+
+class DialogOLD {
 	constructor({ id, parentId, values, layout, reference, payload, changeHandler, convert }) {
-		console.log('values', values, isArray(values))
 		if (isArray(values)) {
 			const convertedValueSets = values.map(set => {
 				const convertedValues = this.convertValues(set, layout)
@@ -118,7 +138,6 @@ class Dialog {
 				},
 			})
 		} else if (values._converted || (convert === false)) {
-			console.log('false')
 			this.values = values
 			if (changeHandler)
 				console.warn(`changeHandler is already defined for values`)
@@ -136,12 +155,13 @@ class Dialog {
 			parentId: (parentId && parentId.toString()),
 			layout,
 			payload,
-		})		
+		})	
 	}
 
-	getReferenceBounds(arg) {
-		const item = isString(arg) ? document.getElementById(arg) : arg
-		return getBounds(item)
+	updateValues() {
+		this.values = {
+			fillColor: ['Color', 1, 1, 0],
+		}
 	}
 
 	convertValues(values, layout) {
