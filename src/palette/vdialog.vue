@@ -26,6 +26,7 @@
 				:values="values"
 				:layout="layout"
 				:dialogId="id"
+				:id="id"
 			></palette>	
 			<div 
 				class="dialog-sidebar draghandler"
@@ -50,6 +51,7 @@
 .dialog-wrap {
 	.dialog {
 		position: absolute;
+		isolation: isolate;
 		background: white;
 		border: 1px solid black;
 		box-sizing: border-box;

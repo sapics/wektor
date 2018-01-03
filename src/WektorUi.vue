@@ -204,7 +204,7 @@ export default {
 				hit.item.emit('contextmenu')
 			} else {
 				wektor.openDialog({
-					id: hit.item.toString(), 
+					id: hit.item.name || (hit.item.className + hit.item.id), 
 					values: hit.item, 
 					layout: settings.dialog.layouts.item,
 					reference: hit.item,

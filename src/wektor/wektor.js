@@ -166,7 +166,7 @@ class Wektor extends EventEmitter {
 	openChildDialog(spec) {
 		const parentDialog = this.dialogs[spec.parentId]
 		if (!parentDialog) {
-			console.warn(`Child-Dialog has to have a parent. Non found with id '${spec.parentId}'`)
+			console.warn(`Child-Dialog has to have a parent. None found with id '${spec.parentId}'`)
 			return
 		}
 		if (parentDialog.bridge)
