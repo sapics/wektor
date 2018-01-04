@@ -4,6 +4,7 @@
 
 <style lang="scss" scoped>
 canvas {
+	mix-blend-mode: difference;
 	position: absolute;
 	pointer-events: none;
 	top: 0;
@@ -51,6 +52,7 @@ export default {
 			ctx.beginPath()
 			ctx.moveTo(from.x, from.y)
 			ctx.lineTo(to.x, to.y)
+			ctx.strokeStyle = "#ffffff"
 			ctx.stroke()
 		},
 

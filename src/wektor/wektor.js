@@ -1,12 +1,13 @@
 import paper from 'paper'
 import EventEmitter from 'event-emitter-es6'
 import settings from '@/settings'
-import { isArray, isFunction } from '@/utils'
+import { isArray, isFunction, moveArrayElementToEnd } from '@/utils'
 import Dialog from '@/dialog'
 import History from './History'
 import ChangeTracker from './ChangeTracker'
 import ChangeFlag from './ChangeFlag'
 import State from './State'
+import StackingOrder from './StackingOrder'
 
 class Wektor extends EventEmitter {
 	constructor(settings) {
@@ -24,6 +25,7 @@ class Wektor extends EventEmitter {
 			changeTracker: null,
 			state: null,
 			dialogs: {},
+			dialogsStackingOrder: new StackingOrder(),
 			history: null,
 			settings
 		})
@@ -157,11 +159,13 @@ class Wektor extends EventEmitter {
 
 		if (!dialog) {
 			dialog = new Dialog(spec)
+			console.log('new dialog', dialog)
 			this.dialogs[dialog.id] = dialog
 		} else {
 			dialog.bridge && dialog.bridge.update()
 		}
 
+		this.dialogsStackingOrder.add(dialog.id)
 		this.emit('openDialog', dialog)
 	}
 
@@ -185,7 +189,14 @@ class Wektor extends EventEmitter {
 		const dialog = this.dialogs[id]
 		if (!dialog) return
 		dialog.open = false
+		this.dialogsStackingOrder.remove(id)
 		this.emit('closeDialog', dialog)
+	}
+
+	activateDialog(id) {
+		const dialog = this.dialogs[id]
+		if (!dialog) return
+		this.dialogsStackingOrder.activate(id)
 	}
 
 	undo() {

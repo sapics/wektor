@@ -180,6 +180,17 @@ function getDistance(point1, point2) {
 	return c
 }
 
+function moveArrayElementToEnd(array, element) {
+	const from = array.indexOf(element)
+	const to = array.length - 1
+	array.splice(to, 0, array.splice(from, 1)[0])
+	return array
+}
+
+function removeArrayElement(array, element) {
+	
+}
+
 export { 
 	isInt, 
 	isString, 
@@ -201,4 +212,5 @@ export {
 	resolveObjectPath,
 	isInViewport,
 	getDistance,
+	moveArrayElementToEnd,
 }

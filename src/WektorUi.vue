@@ -4,10 +4,28 @@
 		<div ref="dialogs">
 			<vdialog
 				v-for="(dialog, id) in dialogs"
+				v-if="dialog.vfor !== false"
 				:key="id"
 				:spec="dialog"
 			></vdialog>
-			<vdialog
+<!-- 			<vdialog
+				key="layers"
+				:spec="{
+					id: 'layers',
+					values: layers,
+					layout: {
+						type: 'layers',			
+					},
+					payload: {
+						locked: true, 
+						resize: true, 
+						fitContent: true,
+						position: { x: 700, y: 200 },
+					},
+					convert: false,			
+				}"
+			></vdialog> -->
+<!-- 			<vdialog
 				key="scripts"
 				:spec="{
 					id: 'scripts',
@@ -25,24 +43,7 @@
 					} 
 				}"
 			>
-			</vdialog>			
-			<vdialog
-				key="layers"
-				:spec="{
-					id: 'layers',
-					values: layers,
-					layout: {
-						type: 'layers',			
-					},
-					payload: {
-						locked: true, 
-						resize: true, 
-						fitContent: true,
-						position: { x: 700, y: 200 },
-					},
-				}"
-			>
-			</vdialog>		
+			</vdialog>				 -->
 		</div>
 	</div>
 </template>
@@ -67,7 +68,7 @@ export default {
 	data() {
 		return {
 			dialogs: {},
-			layers: null,
+			layers: [],
 		}
 	},
 
@@ -79,13 +80,6 @@ export default {
 		settings() {
 			return settings
 		},
-
-		test() {
-			const layers = this.layers
-			return {
-				layers
-			}
-		}
 	},
 
 	mounted() {
@@ -99,9 +93,16 @@ export default {
 		wektor.on('openDialog', this.openDialog)
 		wektor.on('closeDialog', this.closeDialog)
 
-		wektor.state.on('update', state => { 
-			this.layers = state.nested 
+		wektor.state.on('update', state => {
+			// if we assign "this.layers = state.nested" directly, vue won't update the layers-vdialog
+			// witch uses this.layers als values
+			this.layers.length = 0
+			this.layers.push(...state.nested) 
 		})
+
+		wektor.dialogsStackingOrder.on('update', this.updateDialogStackingOrder)
+
+		this.openDefaultDialogs()
 
 		// wektor.on('updateChildren', this.updateChildren)
 		// wektor.on('updateAttribute', this.updateChildren)
@@ -109,6 +110,25 @@ export default {
 	},
 
 	methods: {
+		openDefaultDialogs() {
+			// wektor.registerDialog('layers')
+			// this.openDialog({ id: 'layers', vfor: false })
+			wektor.openDialog({
+				id: 'layers',
+				values: this.layers,
+				layout: {
+					type: 'layers',			
+				},
+				payload: {
+					locked: true, 
+					resize: true, 
+					fitContent: true,
+					position: { x: 700, y: 200 },
+				},
+				convert: false,			
+			})			
+		},
+
 		...mapMutations([
 			// 'openDialog',
 			'addTool',
@@ -183,7 +203,17 @@ export default {
 
 		closeDialog(dialog) {
 			this.$delete(this.dialogs, dialog.id)
-		},		
+		},
+
+		updateDialogStackingOrder(stack, updateType) {
+			// when a dialog is added it will automatically be activated so this would cause a double update
+			if (updateType === 'add') return
+
+			for (const [index, id] of stack.entries()) {
+				const dialog = this.dialogs[id]
+				dialog && this.$set(dialog, 'stackingIndex', index)
+			}
+		},	
 
 		onContextmenu(event) {
 			event.preventDefault()
@@ -231,7 +261,12 @@ export default {
 
 @include font-face('HKGrotesk', '/static/fonts/HKGrotesk/HKGrotesk-Light', 300);
 @include font-face('HKGrotesk', '/static/fonts/HKGrotesk/HKGrotesk-LightItalic', 300, italic);
+@include font-face('HKGrotesk', '/static/fonts/HKGrotesk/HKGrotesk-Regular', 400);
 @include font-face('HKGrotesk', '/static/fonts/HKGrotesk/HKGrotesk-Medium', 500);
+
+	#main-canvas {
+		background-color: white;
+	}
 
 #wektor {
 	&, input, textarea, button {

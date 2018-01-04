@@ -4,7 +4,7 @@
 			v-if="referencePoint && pointerCorner"
 			v-visible="showPointerLine"
 			class="pointer-line"
-			:style="{zIndex: locked ? '3' : 'auto'}"
+			:style="{zIndex}"
 			:from="pointerCorner"
 			:to="referencePoint"
 		></pointer-line>		
@@ -214,6 +214,9 @@ export default {
 		active: {
 			set(value) {
 				if (value)
+					wektor.activateDialog(this.id)
+
+				if (value)
 					this.$store.commit('activateDialog', this.id)
 				else
 					this.$store.commit('deactivateDialog', this.id)
@@ -234,7 +237,9 @@ export default {
 		},
 
 		zIndex() {
-			return this.active ? 1 : 'auto'
+			const stackingIndex = this.spec.stackingIndex
+			return this.spec.stackingIndex
+			// return (stackingIndex !== undefined) ? stackingIndex : 'auto'
 		},	
 
 		pointerCorner() {
@@ -391,7 +396,6 @@ export default {
 
 				}
 				if (isInViewport(bounds)) {
-					console.log(i)
 					position = point
 					break
 				}
