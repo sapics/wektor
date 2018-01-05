@@ -66,7 +66,7 @@ class Wektor extends EventEmitter {
 			const { item, flags } = change
 
 			if (flags & ChangeFlag.ATTRIBUTE)
-				updateFn = () => this.state.update(item, { recursive: false })
+				updateFn = () => this.state.update(/*item, { recursive: false }*/)
 			
 			if (flags & ChangeFlag.INSERTION)
 				updateFn = () => this.state.update()

@@ -25,7 +25,7 @@ class WektorState extends EventEmitter {
 					type: item.className,
 					open: item.data.open,
 					selected: item.selected,
-					children: item.children ? convertItems(item.children) : undefined,
+					children: (item.children && (item.data.iterableChildren !== false)) ? convertItems(item.children) : undefined,
 					_wektorPastePaperItem: true, // this lets the built-in code editor in wektor know, that when we paste the item into the editor, it'll resolve it to a reference to the item        
 				}
 				flat[item.id] = convertedItem

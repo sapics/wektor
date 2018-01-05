@@ -106,7 +106,7 @@ export default {
 
 	data() {
 		return {
-			opened: this.open,
+			opened: (this.item.open !== false),
 		}
 	},
 
