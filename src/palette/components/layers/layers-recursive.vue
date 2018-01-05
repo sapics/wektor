@@ -117,7 +117,7 @@ export default {
 		},
 
 		selected() {
-			return this.$store.getters.itemIsSelected(this.item.id)
+			return this.item.selected
 		},
 	},
 

@@ -124,9 +124,28 @@ export default {
 					resize: true, 
 					fitContent: true,
 					position: { x: 700, y: 200 },
+					css: {
+						overflow: 'scroll',
+					},
 				},
 				convert: false,			
-			})			
+			})	
+
+			wektor.openDialog({
+				id: 'scripts',
+				layout: {
+					type: 'code',
+				},
+				payload: {
+					css: { 
+						width: '50%',
+						height: '30%',
+						padding: '0',
+					},
+					fitContent: true,
+					resize: true,
+				} 
+			})
 		},
 
 		...mapMutations([

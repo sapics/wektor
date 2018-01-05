@@ -159,7 +159,6 @@ class Wektor extends EventEmitter {
 
 		if (!dialog) {
 			dialog = new Dialog(spec)
-			console.log('new dialog', dialog)
 			this.dialogs[dialog.id] = dialog
 		} else {
 			dialog.bridge && dialog.bridge.update()

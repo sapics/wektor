@@ -24,6 +24,7 @@ class WektorState extends EventEmitter {
 					paperName: item.name,
 					type: item.className,
 					open: item.data.open,
+					selected: item.selected,
 					children: item.children ? convertItems(item.children) : undefined,
 					_wektorPastePaperItem: true, // this lets the built-in code editor in wektor know, that when we paste the item into the editor, it'll resolve it to a reference to the item        
 				}
@@ -42,7 +43,10 @@ class WektorState extends EventEmitter {
 		} else {
 			items = isArray(items) ? items : [items]
 			const converted = convertItems(items)
-			console.log(converted)	
+			const con = converted[0]
+			const n = this.flat[con.id]
+			n.name = 'fuuuuuuu'
+			console.log(this.nested)
 		}
 
 		this.emit('update', { flat: this.flat, nested: this.nested })
