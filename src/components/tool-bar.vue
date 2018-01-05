@@ -11,12 +11,7 @@ import wektor from '@/wektor'
 const { Tool } = paper
 
 export default {
-	props: {
-		tools: {
-			type: Object,
-			default: () => {},
-		}
-	},
+	props: ['tools'],
 
 	components: { toolSelect },
 
@@ -33,6 +28,7 @@ export default {
 		},
 
 		toolSelectOptions() {
+			console.log('change')
 			const options = []
 
 			for (const [id, tool] of Object.entries(this.tools)) {

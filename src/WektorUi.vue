@@ -8,42 +8,6 @@
 				:key="id"
 				:spec="dialog"
 			></vdialog>
-<!-- 			<vdialog
-				key="layers"
-				:spec="{
-					id: 'layers',
-					values: layers,
-					layout: {
-						type: 'layers',			
-					},
-					payload: {
-						locked: true, 
-						resize: true, 
-						fitContent: true,
-						position: { x: 700, y: 200 },
-					},
-					convert: false,			
-				}"
-			></vdialog> -->
-<!-- 			<vdialog
-				key="scripts"
-				:spec="{
-					id: 'scripts',
-					layout: {
-						type: 'code',
-					},
-					payload: {
-						css: { 
-							width: '50%',
-							height: '30%',
-							padding: '0',
-						},
-						fitContent: true,
-						resize: true,
-					} 
-				}"
-			>
-			</vdialog>				 -->
 		</div>
 	</div>
 </template>
@@ -69,14 +33,11 @@ export default {
 		return {
 			dialogs: {},
 			layers: [],
+			tools: {},
 		}
 	},
 
 	computed: {
-		tools() {
-			return wektor.tools
-		},
-
 		settings() {
 			return settings
 		},
@@ -86,12 +47,25 @@ export default {
 		document.addEventListener('keydown', this.onKeydown)
 		document.addEventListener('contextmenu', this.onContextmenu)
 
-		wektor.on('activateTool', tool => {
-			this.setActiveTool(tool.id)
+		wektor.on('activateTool', ({ id, tool }) => {
+			this.setActiveTool(id)
 		})
 
 		wektor.on('openDialog', this.openDialog)
 		wektor.on('closeDialog', this.closeDialog)
+
+		wektor.on('addTool', ({ id, tool }) => {
+			this.$set(this.tools, id, {
+				label: tool.label,
+				value: id,
+				id,
+				shortcut: tool.shortcut				
+			})
+		})
+
+		wektor.on('removeTool', ({ id }) => {
+			this.$delete(this.tools, id)
+		})
 
 		wektor.state.on('update', state => {
 			// if we assign "this.layers = state.nested" directly, vue won't update the layers-vdialog
@@ -137,6 +111,7 @@ export default {
 					type: 'code',
 				},
 				payload: {
+					locked: true,
 					css: { 
 						width: '50%',
 						height: '30%',

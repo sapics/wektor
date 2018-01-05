@@ -38,8 +38,9 @@ Vue.directive('autowidth', inputAutowidth)
 
 Vue.prototype.$settings = settings
 
+window.wektor = wektor
 wektor.setup(paper.project)
-wektor.addTools([BezierTool, GridTool, SelectionTool])
+wektor.addTools({ BezierTool, GridTool, SelectionTool })
 
 var p = new paper.Path.Circle({
 	radius: 100,

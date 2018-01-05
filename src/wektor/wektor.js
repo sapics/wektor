@@ -8,6 +8,7 @@ import ChangeTracker from './ChangeTracker'
 import ChangeFlag from './ChangeFlag'
 import State from './State'
 import StackingOrder from './StackingOrder'
+import Vue from 'vue'
 
 class Wektor extends EventEmitter {
 	constructor(settings) {
@@ -125,32 +126,53 @@ class Wektor extends EventEmitter {
 		this.shortcuts.push(shortcut)
 	}
 
-	addTool(ToolClass, spec) {
-		const tool = new ToolClass(this.project, spec)
+	removeTool(id) {
+		const tool = this.tools[id]
+		tool && tool.remove()
+		delete this.tools[id]
+		this.emit('removeTool', { id })
+	}
+
+	addTool(id, arg) {
+		let tool
+
+		if (this.tools[id]) {
+			console.warn(`Tool with id '${id}' already exists! It will be overwritten.`)
+			this.removeTool(id)
+		}
+
+		if (isFunction(arg)) {
+			// class declarations are also functions in javascript
+			const ToolClass = arg
+			tool = new ToolClass(this.project)
+		} else {
+			const toolSpec = arg
+			tool = new paper.Tool(toolSpec)
+		}
+
+		tool._wektorToolId = id
 
 		tool.on({
 			activate: () => {
-				this.emit('activateTool', tool)
+				this.emit('activateTool', { id, tool })
 			},
 		})
-		tool.activate()
 
-		this.tools[tool.id] = tool
+		this.tools[id] = tool
 		this.addShortcut({
 			modifier: this.settings.shortcutModifiers.tool,
 			key: tool.shortcut,
 			callback: () => tool.activate(),			
 		})
 
-		this.emit('addTool', tool)
+		this.emit('addTool', { id, tool })
+		// activate after emit, so the tool-list has added the tool before selecting it
+		tool.activate()
 	}
 
-	addTools(array) {
-		for (const item of array) {
-			if (isArray(item))
-				this.addTool(item[0], item[1])
-			else
-				this.addTool(item)
+	addTools(object) {
+		for (const [id, item] of Object.entries(object)) {
+			this.addTool(id, item)
 		}
 	}
 
