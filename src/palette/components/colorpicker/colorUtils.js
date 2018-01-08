@@ -130,7 +130,8 @@ function colorToJson(color) {
 	const paperColor = new paper.Color({
 		hue: color.hue,
 		saturation: color.saturation,
-		brightness: color.brightness
+		brightness: color.brightness,
+		alpha: color.alpha,
 	})
 	paperColor.type = color.type || 'rgb'
 
