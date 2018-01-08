@@ -32,6 +32,10 @@ class Wektor extends EventEmitter {
 		})
 	}
 
+	execute(string) {
+		this.project._scope.execute(string)
+	}
+
 	setup(project) {
 		if (!(project instanceof paper.Project)) {
 			console.warn(`project (${project}) must be a paper.Project`)

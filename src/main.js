@@ -56,8 +56,6 @@ var p = new paper.Path.Circle({
 	fillColor: 'red'
 })
 
-p.fillColor.hue = 250
-
 new Vue({
 	el: '#wektor',
 

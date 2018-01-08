@@ -64,6 +64,7 @@ import editor from 'ace-vue2'
 import baseComponent from '../baseComponent'
 import 'brace/mode/javascript'
 import 'brace/theme/tomorrow'
+import wektor from '@/wektor'
 
 export default {
 	extends: baseComponent,
@@ -88,7 +89,7 @@ export default {
 
 		runCode() {
 			const code = this.editor.getValue()
-			paper.execute(code)
+			wektor.execute(code)
 		},
 
 		handleDrop(event) {

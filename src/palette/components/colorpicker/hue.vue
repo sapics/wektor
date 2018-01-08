@@ -58,7 +58,7 @@ export default {
 				return this.color.hue
 			},
 			set(value) {
-				this.$emit('input', { ...this.color, hue: value, type: 'hsb' })
+				this.$emit('input', { ...this.color, hue: value })
 			}
 		},		
 	},

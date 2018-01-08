@@ -71,7 +71,7 @@ export default {
 			},
 			set(value) {
 				const { x: saturation, y: brightness } = value
-				this.$emit('input', { ...this.color, saturation, brightness, type: 'hsb' })
+				this.$emit('input', { ...this.color, saturation, brightness })
 			}
 		},
 

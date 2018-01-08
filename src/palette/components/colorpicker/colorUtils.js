@@ -1,3 +1,4 @@
+import paper from 'paper'
 // converters taken from paper.js' Color Class (https://github.com/paperjs/paper.js/blob/5291043a5fdd1f5191702fa8acfda570cb0b0c1a/src/style/Color.js)
 
 // For hsb-rgb conversion, used to lookup the right parameters in the
@@ -104,21 +105,12 @@ var converters = {
 function jsonToColor(json, oldColor = {}) {
 	if (!json) return
 
-	const type = (typeof json[1] === 'string') ? json[1] : 'rgb'
+	const paperColor = new paper.Color()
+	paperColor.importJSON(json)
+	const type = paperColor.type // the original color-type is stored
+	paperColor.type = 'hsb' // we set the paperColor's type to hsb to get the correct hsb-values
 
-	switch (type) {
-		case 'rgb':
-			var [, red, green, blue, alpha] = json
-			var [hue, saturation, brightness] = converters['rgb-hsb'](red, green, blue)
-			break
-
-		case 'hsl':
-			var [,, hue, saturation, lightness, alpha] = json
-			var [red, green, blue] = converters['hsl-rgb'](hue, saturation, lightness)
-			var [,, brightness] = converters['rgb-hsb'](red, green, blue)
-	}
-
-	alpha = (alpha !== undefined) ? alpha : 1
+	let { red, green, blue, hue, saturation, brightness, lightness, alpha } = paperColor
 
 	if (saturation === 0) 
 		hue = oldColor.hue || 0
@@ -129,40 +121,20 @@ function jsonToColor(json, oldColor = {}) {
 	if (hue === 0)
 		hue = (oldColor.hue === 360) ? 360 : 0
 
-	return {
-		alpha, red, green, blue, hue, saturation, brightness, lightness
-	}
+	return { red, green, blue, hue, saturation, brightness, lightness, alpha, type }
 }
 
-function colorToJson(color, returnType = 'rgb') {
+function colorToJson(color) {
 	if (!color) return
 
-	const colorType = color.type || 'hsb'
+	const paperColor = new paper.Color({
+		hue: color.hue,
+		saturation: color.saturation,
+		brightness: color.brightness
+	})
+	paperColor.type = color.type || 'rgb'
 
-	switch (colorType) {
-		case 'hsl':
-			var { hue, saturation, lightness, alpha } = color
-			var [ red, green, blue ] = converters['hsl-rgb']( hue, saturation, lightness )
-			break
-
-		case 'hsb':
-			var { hue, saturation, brightness, alpha } = color
-			var [ red, green, blue ] = converters['hsb-rgb']( hue, saturation, brightness)
-			break
-
-		case 'rgb':
-			var { red, green, blue, alpha } = color
-			var [ hue, saturation, brightness ] = converters['rgb-hsb'](red, green, blue)
-			break
-	}	
-
-	switch (returnType) {
-		case 'rgb':
-			return ['Color', red, green, blue, alpha]
-
-		case 'hsb':
-			return ['Color', 'hsb', hue, saturation, brightness, alpha]
-	}
+	return paperColor.toJSON()
 }
 
 export { converters, colorToJson, jsonToColor }

@@ -113,11 +113,17 @@ class Grid extends Group {
 		this.lines = new Group({
 			children: [this.clippingMask],
 			clipped: true,
+			data: {
+				iterable: false,
+			}
 		})
 
 		this.lineVertical = new Path.Line({
 			from: window.view.bounds.topLeft,
 			to: window.view.bounds.bottomLeft,
+			data: {
+				iterable: false,
+			}
 		})
 		this.lineVertical.pivot = this.lineVertical.bounds.topLeft
 		this.lineVerticalSymbolDefinition = new SymbolDefinition(this.lineVertical)
@@ -158,6 +164,9 @@ class Grid extends Group {
 
 		for (let x = 0; x < width; x += this.options.spacing.horizontal) {		
 			let newLine = this.lineVertical.clone()
+			newLine.data = {
+				iterable: false,
+			}
 			newLine.position = {
 				x: this.background.bounds.topLeft.x + x,
 				y: 0
