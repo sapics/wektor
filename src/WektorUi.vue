@@ -267,6 +267,7 @@ export default {
 
 		onContextmenu(event) {
 			event.preventDefault()
+			event.stopPropagation()
 
 			const point = { x: event.x, y: event.y }
 			const hit = wektor.project.hitTest(point, settings.dialog.hitOptions)

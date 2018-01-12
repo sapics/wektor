@@ -39,9 +39,15 @@ class Snapper extends paper.Group {
 		Object.assign(this, specDefault, spec)
 	}
 
-	snap() {
-		for (const child of this.children) {
-			this.snapItem(child, child.data.original)
+	snap(items) {
+		items = items || this.children
+
+		for (const item of item) {
+			if (item.children.length)
+				this.snap(item.children)
+			else 
+				this.snap
+			this.snapItem(item, item.data.original)
 		}
 	}
 

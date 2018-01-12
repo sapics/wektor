@@ -13,6 +13,7 @@
 .plaette-popup {
 	.label {
 		text-decoration: underline;
+		padding-right: 0; // for this component is only a clickable label we dont need the right margin
 	}
 }	
 </style>

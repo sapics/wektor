@@ -37,9 +37,13 @@
 </template>
 
 <style lang="scss">
+@import "src/sass/variables";
+
 .palette-wrap {
 	.label {
 		cursor: default;
+		display: inline-block;
+		padding-right: $space;
 	}
 
 	input {
