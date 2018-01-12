@@ -37,7 +37,6 @@ export default {
 			customCss: {
 				fontSize: 14,
 				color: 'black',
-				background: 'white',
 				dialog: {
 					color: 'black',
 					fontStyle: 'normal',
@@ -135,17 +134,17 @@ export default {
 			// 	} 
 			// })
 			
-			// const customCss = this.customCss
-			// wektor.openDialog({
-			// 	id: 'ui-style',
-			// 	payload: { 
-			// 		locked: true,
-			// 		applyCustomTheme: false,
-			// 	},
-			// 	layout: settings.dialog.layouts.uiStyle,
-			// 	values: customCss,
-			// 	changeHandler: (...args) => this.handleCustomCssChange(...args)
-			// })
+			const customCss = this.customCss
+			wektor.openDialog({
+				id: 'ui-style',
+				payload: { 
+					locked: true,
+					applyCustomTheme: false,
+				},
+				layout: settings.dialog.layouts.uiStyle,
+				values: customCss,
+				changeHandler: (...args) => this.handleCustomCssChange(...args)
+			})
 		},
 
 		handleCustomCssChange(target, key, value) {
@@ -156,9 +155,6 @@ export default {
 			
 			const styleSheet = document.createElement('style')
 			styleSheet.innerHTML = `
-				#main-canvas {
-					background: ${customCss.background}!important;
-				}
 				#wektor {
 					color: ${customCss.color}!important;
 					font-size: ${customCss.fontSize}pt!important;

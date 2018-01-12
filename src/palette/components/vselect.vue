@@ -4,7 +4,7 @@
 		:class="{dropDown, open}"
 		v-outside:mousedown="close"
 	>
-		<span class="label">{{ label }}</span>
+		<span class="label" v-if="label">{{ label }}</span>
 		<div class="palette-select-options-wrap" ref="wrap">
 			<div
 				class="palette-select-active-option input"

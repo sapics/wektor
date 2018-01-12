@@ -20,6 +20,7 @@
 .color {
 	.label {
 		display: inline-block;
+		padding-right: 0;
 	}
 
 	.color-label {

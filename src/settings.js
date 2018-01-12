@@ -111,17 +111,13 @@ export default {
 						label: 'font',
 						fontSize: {
 							type: 'number',
-							label: 'size',
+							unit: 'pt',
 						},
 						color: {
 							type: 'color',
 							label: 'color',
 							returnType: 'css',
 						},
-					},
-					background: {
-						type: 'color',
-						label: 'background'
 					},
 					input: {
 							align: 'columns',

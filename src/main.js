@@ -46,19 +46,21 @@ wektor.setup(paper.project)
 wektor.addTools({ BezierTool, GridTool, SelectionTool, SnapperTool, DrawingTool })
 wektor.tools['BaseTool'] = BaseTool
 
-var p = new paper.Path.Circle({
+var p1 = new paper.Path.Circle({
 	radius: 100,
 	position: [400, 400],
 	name: 'gelb',
 	fillColor: 'yellow'
 })
 
-var p = new paper.Path.Circle({
+var p2 = new paper.Path.Circle({
 	radius: 100,
 	position: [500, 400],
 	name: 'rot',
 	fillColor: 'red'
 })
+
+new paper.Group([p1, p2])
 
 new Grid({
 	options: {

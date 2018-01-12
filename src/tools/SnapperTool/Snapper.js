@@ -32,7 +32,34 @@ const specDefault = {
 	}
 }
 
-class Snapper extends paper.Group {
+class Mirror extends paper.Group {
+	mirrorItem(item) {
+		if (this.mirrorsItem(item)) return
+
+		if (item.hasChildren()) {
+			wektor.changeTracker.onItemChange(item.id, ChangeFlag.CHILDREN, () => {
+				this.mirrorItem(item)
+			})
+			for (const child of item.children) {
+				this.mirrorItem(child)
+			}
+		} else {
+			const clone = item.clone()
+			clone.data.originalId = item.id
+			this.addChild(clone)
+		}
+	}
+
+	mirrorsItem(item) {
+		return this.getItem({
+			data: {
+				originalId: item.id,
+			}
+		})
+	}
+}
+
+class Snapper extends Mirror {
 	constructor(spec) {
 		super()
 
@@ -42,12 +69,11 @@ class Snapper extends paper.Group {
 	snap(items) {
 		items = items || this.children
 
-		for (const item of item) {
-			if (item.children.length)
+		for (const item of items) {
+			if (item.hasChildren())
 				this.snap(item.children)
 			else 
-				this.snap
-			this.snapItem(item, item.data.original)
+				this.snapItem(item, item.data.original)
 		}
 	}
 
@@ -63,13 +89,33 @@ class Snapper extends paper.Group {
 	}
 
 	initSnapItem(item) {
-		const clone = new item.constructor()
-		clone.data.original = item
-		this.addChild(clone)
-		wektor.changeTracker.onItemChange(item.id, ChangeFlag.GEOMETRY, () => {
-			this.snapItem(clone, item)
-		})
+		item.opacity = 0
+		this.mirrorItem(item)
 	}
+
+	// initSnapItem(item) {
+	// 	if (item.hasChildren()) {
+	// 		for (const child of item.children)
+	// 			this.initSnapItem(child)
+	// 			wektor.changeTracker.onItemChange(item.id, ChangeFlag.CHILDREN, () => {
+	// 				this.initSnapItem(item)
+	// 			})	
+	// 	} else {
+	// 		if (this.getItem({ data: { originalId: item.id } })) {
+	// 			return
+	// 		}
+	// 		const clone = item.clone()
+	// 		item.opacity = 0
+	// 		clone.data.original = item
+	// 		clone.data.originalId = item.id
+	// 		clone.locked = true
+	// 		this.addChild(clone)
+
+	// 		wektor.changeTracker.onItemChange(item.id, ChangeFlag.GEOMETRY, () => {
+	// 			this.snapItem(clone, item)
+	// 		})
+	// 	}
+	// }
 
 	snapSegment(segment) {
 		const snappedSegment = new paper.Segment( this.snapPoint(segment.point) )
