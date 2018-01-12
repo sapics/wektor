@@ -114,6 +114,8 @@ import vselect from './components/vselect'
 import vtext from './components/vtext'
 import popup from './components/popup'
 import vcode from './components/vcode'
+import drop from './components/drop'
+import boolean from './components/boolean'
 
 import Vue from 'vue'
 import VueInputAutowidth from 'vue-input-autowidth'
@@ -155,6 +157,8 @@ export default {
 		vtext,
 		popup,
 		vcode,
+		drop,
+		boolean,
 	},
 
 	computed: {

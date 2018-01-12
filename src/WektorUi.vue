@@ -85,8 +85,6 @@ export default {
 
 	methods: {
 		openDefaultDialogs() {
-			// wektor.registerDialog('layers')
-			// this.openDialog({ id: 'layers', vfor: false })
 			wektor.openDialog({
 				id: 'layers',
 				values: this.layers,
@@ -105,22 +103,22 @@ export default {
 				convert: false,			
 			})	
 
-			wektor.openDialog({
-				id: 'scripts',
-				layout: {
-					type: 'code',
-				},
-				payload: {
-					locked: true,
-					css: { 
-						width: '50%',
-						height: '30%',
-						padding: '0',
-					},
-					fitContent: true,
-					resize: true,
-				} 
-			})
+			// wektor.openDialog({
+			// 	id: 'scripts',
+			// 	layout: {
+			// 		type: 'code',
+			// 	},
+			// 	payload: {
+			// 		locked: true,
+			// 		css: { 
+			// 			width: '50%',
+			// 			height: '30%',
+			// 			padding: '0',
+			// 		},
+			// 		fitContent: true,
+			// 		resize: true,
+			// 	} 
+			// })
 		},
 
 		...mapMutations([
@@ -205,6 +203,7 @@ export default {
 
 			for (const [index, id] of stack.entries()) {
 				const dialog = this.dialogs[id]
+				console.log('dialog', dialog)
 				dialog && this.$set(dialog, 'stackingIndex', index)
 			}
 		},	

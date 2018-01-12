@@ -12,7 +12,10 @@ class SelectionTool extends BaseTool {
 	}
 
 	onActivate() {
-		this.item = this.target.getItem({selected: true})
+		this.item = this.target.getItem({
+			selected: true,
+			match: ({item}) => item.data.iterable !== false,
+		})
 	}
 
 	onDeactivate() {
@@ -61,7 +64,8 @@ class SelectionTool extends BaseTool {
 			fill: true, 
 			stroke: true, 
 			segments: true, 
-			handles: true 
+			handles: true,
+			match: ({item}) => item.data.iterable !== false,
 		})
 
 		if (!event.modifiers.shift)

@@ -11,12 +11,15 @@ import visible from './directives/visible.js'
 import draggable from './directives/draggable.js'
 import inputAutowidth from './directives/input-autowidth'
 
-import wektor from './wektor'
+import { wektor, ChangeFlag } from './wektor'
 import WektorUi from './WektorUi.vue'
 import paper from 'paper'
 import BezierTool from './tools/BezierTool/BezierTool'
 import SelectionTool from './tools/SelectionTool/SelectionTool'
-import GridTool from './tools/GridTool'
+import { GridTool, Grid } from './tools/GridTool'
+import SnapperTool from './tools/SnapperTool'
+import DrawingTool from './tools/DrawingTool'
+import BaseTool from './tools/BaseTool'
 
 import Vddl from 'vddl'
 
@@ -40,7 +43,8 @@ Vue.prototype.$settings = settings
 
 window.wektor = wektor
 wektor.setup(paper.project)
-wektor.addTools({ BezierTool, GridTool, SelectionTool })
+wektor.addTools({ BezierTool, GridTool, SelectionTool, SnapperTool, DrawingTool })
+wektor.tools['BaseTool'] = BaseTool
 
 var p = new paper.Path.Circle({
 	radius: 100,
@@ -54,6 +58,15 @@ var p = new paper.Path.Circle({
 	position: [500, 400],
 	name: 'rot',
 	fillColor: 'red'
+})
+
+new Grid({
+	options: {
+		spacing: {
+			vertical: 20,
+			horizontal: 20,
+		}
+	}
 })
 
 new Vue({

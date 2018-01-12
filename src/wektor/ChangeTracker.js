@@ -1,10 +1,14 @@
 import EventEmitter from 'event-emitter-es6'
 import ChangeFlag from './ChangeFlag'
+import { isFunction } from '@/utils'
 
 class ChangeTracker extends EventEmitter {
 	constructor(project) {
 		super()
 		this.project = project
+		this.listeners = {
+			itemChange: {},
+		}
 		this.init()
 	}
 
@@ -25,6 +29,13 @@ class ChangeTracker extends EventEmitter {
 						continue
 					}
 
+					const itemChangeListener = this.listeners.itemChange[item.id]
+					if (itemChangeListener) {
+						const callback = itemChangeListener.callback
+						if (flags & itemChangeListener.flag)
+							isFunction(callback) && callback()
+					}
+
 					if (flags & (ChangeFlag.INSERTION | ChangeFlag.ATTRIBUTE)) {
 						this.emit('change', change)
 						changed = true
@@ -35,6 +46,17 @@ class ChangeTracker extends EventEmitter {
 			project._changes = []
 			project._changesById = {}
 		}
+	}
+
+	onItemChange(id, flag, callback) {
+		this.listeners.itemChange[id] = {
+			flag,
+			callback
+		}
+	}
+
+	offItemChange(id) {
+		delete this.listeners.itemChange[id]
 	}
 }
 

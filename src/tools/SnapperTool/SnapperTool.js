@@ -1,10 +1,13 @@
 import BaseTool from '@/tools/BaseTool'
-import specDefault from './spec'
-import { makeUniqueId } from '@/utils.js'
-import Grid from './Grid'
+import Snapper from './Snapper'
 import paper from 'paper'
 
-class GridTool extends BaseTool {
+const specDefault = {
+	shortcut: 'n',
+	label: 'snapper'
+}
+
+class SnapperTool extends BaseTool {
 	constructor(target, spec) {
 		spec = Object.assign({}, specDefault, spec)
 		super(target, spec)
@@ -14,8 +17,9 @@ class GridTool extends BaseTool {
 		// mousedown will close our new dialog directly after we opend it so we have to stop the event
 		event.stopPropagation()
 
-		var group = new Grid()
+		const snapper = new Snapper()
+		snapper.openDialog(event)
 	}
 }
 
-export default GridTool
+export default SnapperTool

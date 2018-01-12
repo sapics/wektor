@@ -22,7 +22,7 @@ class WektorState extends EventEmitter {
 					parentId: (item.parent || item.project || {}).id,
 					name: item.name || `${item.className} ${item.id}`,
 					paperName: item.name,
-					type: item.className,
+					type: item.constructor.name,
 					open: item.data.open,
 					selected: item.selected,
 					children: (item.children && (item.data.iterableChildren !== false)) ? convertItems(item.children) : undefined,

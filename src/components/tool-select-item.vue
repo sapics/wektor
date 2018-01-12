@@ -1,10 +1,11 @@
 <template>
 	<div
 		class="tool-select-item"
-		v-html="label"
 		@click="$emit('click', $event)"
 		@contextmenu="onContextmenu($event)"
-	></div>
+	>
+		<span class="label" ref="label" v-html="label"></span>
+	</div>
 </template>
 
 <style lang="scss" scoped>
@@ -14,6 +15,8 @@
 </style>
 
 <script>
+import wektor from '@/wektor'
+
 export default {
 	props: {
 		option: {
@@ -47,11 +50,11 @@ export default {
 
 	methods: {
 		onContextmenu(event) {
-			const tool = this.tool
-			this.$emit('contextmenu', event)
-			tool && tool.emit('opensettings', {
-				referenceEl: this.$el,
-			})
+			const toolSpec = this.tool
+			const toolId = toolSpec.value // value is the same as id
+			const tool = wektor.tools[toolId]
+			
+			tool && tool.emit && tool.emit('contextmenu', event)
 		},
 	},	
 }	

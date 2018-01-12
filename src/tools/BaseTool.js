@@ -27,24 +27,47 @@ class BaseTool extends paper.Tool {
 				this.on(key.substr(2).toLowerCase(), event)
 			}
 		}
+
+		this.on('contextmenu', this.handleContextMenu)
 	}
 
-	openDialog(dialog, id) {
-		const values = Object.assign({}, this, this.options)
-		id = id
-			? this.constructor.name + '>' + id
-			: this.constructor.name + makeUniqueId()
-		this.emit('open-dialog', { id, values, ...dialog })
+	handleContextMenu(event) {
+		this.openDialog(event)
 	}
 
-	onOpenSettings(payload) {
-		if (!(this.dialogs && this.dialogs.settings)) {
-			console.log(`Tool ${this.label} (${this.constructor.name}) doesn't provide a settings dialog`)
-			return
-		}
-
-		this.openDialog({ ...this.dialogs.settings, payload }, 'settings')
+	handleDialogChange() {
+		
 	}
+
+	openDialog(event) {
+		if (!this.options || !this.dialog) return
+
+		wektor.openDialog({
+			id: this.constructor.name,
+			values: this.options,
+			...this.dialog,
+			reference: event && event.target,
+			// we can't pass the handler directly because we need the right this-context
+			changeHandler: (...args) => this.handleDialogChange(...args)
+		})
+	}
+
+	// openDialog(dialog, id) {
+	// 	const values = Object.assign({}, this, this.options)
+	// 	id = id
+	// 		? this.constructor.name + '>' + id
+	// 		: this.constructor.name + makeUniqueId()
+	// 	this.emit('open-dialog', { id, values, ...dialog })
+	// }
+
+	// onOpenSettings(payload) {
+	// 	if (!(this.dialogs && this.dialogs.settings)) {
+	// 		console.log(`Tool ${this.label} (${this.constructor.name}) doesn't provide a settings dialog`)
+	// 		return
+	// 	}
+
+	// 	this.openDialog({ ...this.dialogs.settings, payload }, 'settings')
+	// }
 
 	onlySelect(value) {
 		this.target && (this.target.deselectAll())

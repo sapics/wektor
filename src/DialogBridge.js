@@ -6,19 +6,19 @@ function isComponentDescription(layout) {
 }
 
 class DialogBridge {
-	constructor(rawValues, layout) {
+	constructor(rawValues, layout, changeHandler) {
 		// faking private properties, so vue won't be able to watch them
 		this.getPrivateProperties = () => {
-			return { rawValues, layout }
+			return { rawValues, layout, changeHandler }
 		}
 
 		this.update()
 	}
 
 	update() {
-		const { rawValues, layout } = this.getPrivateProperties()
+		const { rawValues, layout, changeHandler } = this.getPrivateProperties()
 		const convertedValues = this.convertValues(rawValues, layout)
-		this.values = this.createProxy(convertedValues, rawValues)		
+		this.values = this.createProxy(convertedValues, rawValues, changeHandler)		
 	}
 
 	convertValues(values, layout) {

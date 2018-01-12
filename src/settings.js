@@ -49,6 +49,7 @@ export default {
 			tolerance: 5,
 			stroke: true,
 			fill: true,
+			match: ({item}) => item.data.iterable !== false,
 		},
 		margin: 20,
 		keepAlive: true,

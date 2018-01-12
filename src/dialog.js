@@ -88,12 +88,12 @@ function isComponentDescription(layout) {
 }
 
 class Dialog {
-	constructor({ id, parentId, bridge, values, layout, reference, payload, convert }) {
+	constructor({ id, parentId, bridge, values, layout, reference, payload, convert, changeHandler }) {
 		if (reference)
 			reference = createReference(reference)
 
 		if (!bridge && convert !== false) {
-			bridge = new DialogBridge(values, layout)
+			bridge = new DialogBridge(values, layout, changeHandler)
 		}
 
 		Object.assign(this, {
