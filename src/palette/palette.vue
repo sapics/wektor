@@ -36,10 +36,14 @@
 	</div>
 </template>
 
-<style lang="scss" scoped>
+<style lang="scss">
 .palette-wrap {
 	.label {
 		cursor: default;
+	}
+
+	input {
+		background: transparent!important;
 	}
 }
 

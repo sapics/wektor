@@ -1,10 +1,19 @@
 import paper from 'paper'
+import { isArray } from '@/utils'
 
-function jsonToColor(json, oldColor = {}) {
-	if (!json) return
+function valueToColor(value, oldColor = {}) {
+	if (!value) return
 
-	const paperColor = new paper.Color()
-	paperColor.importJSON(json)
+	let paperColor, format
+	if (isArray(value)) {
+		paperColor = new paper.Color()
+		paperColor.importJSON(value)
+		format = 'json'
+	} else {
+		paperColor = new paper.Color(value)
+		format = 'css'
+	}
+
 	const type = paperColor.type // the original color-type is stored
 	paperColor.type = 'hsb' // we set the paperColor's type to hsb to get the correct hsb-values
 
@@ -19,10 +28,10 @@ function jsonToColor(json, oldColor = {}) {
 	if (hue === 0)
 		hue = (oldColor.hue === 360) ? 360 : 0
 
-	return { red, green, blue, hue, saturation, brightness, lightness, alpha, type }
+	return { red, green, blue, hue, saturation, brightness, lightness, alpha, type, format }	
 }
 
-function colorToJson(color) {
+function colorToValue(color) {
 	if (!color) return
 
 	const paperColor = new paper.Color({
@@ -33,7 +42,17 @@ function colorToJson(color) {
 	})
 	paperColor.type = color.type || 'rgb'
 
-	return paperColor.toJSON()
+	let value
+	switch (color.format) {
+		case 'json':
+			value = paperColor.toJSON()
+			break
+		case 'css':
+			value = paperColor.toCSS()
+			break
+	}
+
+	return value
 }
 
-export { colorToJson, jsonToColor }
+export { colorToValue, valueToColor }

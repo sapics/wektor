@@ -28,15 +28,15 @@ class BaseTool extends paper.Tool {
 			}
 		}
 
-		this.on('contextmenu', this.handleContextMenu)
+		this.on('contextmenu', this.onContextMenu)
 	}
 
-	handleContextMenu(event) {
+	onContextMenu(event) {
 		this.openDialog(event)
 	}
 
-	handleDialogChange() {
-		
+	onDialogChange() {
+		console.log('change')
 	}
 
 	openDialog(event) {
@@ -48,7 +48,7 @@ class BaseTool extends paper.Tool {
 			...this.dialog,
 			reference: event && event.target,
 			// we can't pass the handler directly because we need the right this-context
-			changeHandler: (...args) => this.handleDialogChange(...args)
+			changeHandler: (...args) => this.onDialogChange(...args)
 		})
 	}
 

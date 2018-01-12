@@ -94,7 +94,7 @@ import hue from './hue'
 import alpha from './alpha'
 import number from '../number'
 import paper from 'paper'
-import { converters, jsonToColor, colorToJson } from './colorUtils.js'
+import { valueToColor, colorToValue } from './colorUtils.js'
 import { isString } from '@/utils'
 
 // the colorpicker is inspired by vue-color (https://github.com/xiaokaike/vue-color)
@@ -105,13 +105,9 @@ export default {
 
 	components: {saturation, hue, alpha, number},
 
-	props: {
-		value: Array,
-	},
-
 	data() {
 		return {
-			internalColor: jsonToColor(this.value || ['Color', 0, 0, 0])
+			internalColor: valueToColor(this.value || ['Color', 0, 0, 0])
 		}
 	},
 
@@ -124,10 +120,9 @@ export default {
 			get() {
 				return this.internalColor
 			},
-			set(value) {
-				if (value)
-					this.internalColor = value
-				this.$emit('input', colorToJson(value))
+			set(color) {
+				if (color) this.internalColor = color
+				this.$emit('input', colorToValue(color))
 			}
 		},
 	},
@@ -135,7 +130,7 @@ export default {
 	watch: {
 		value(value) {
 			if (value)
-				this.internalColor = jsonToColor(value, this.color)
+				this.internalColor = valueToColor(value, this.color)
 		}
 	},
 

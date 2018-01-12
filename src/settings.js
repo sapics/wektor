@@ -103,7 +103,64 @@ export default {
 						options: ['normal', 'multiply', 'screen', 'overlay', 'soft-light', 'hard-light', 'color-dodge', 'color-burn', 'darken', 'lighten', 'difference', 'exclusion', 'hue', 'saturation', 'luminosity', 'color', 'add', 'subtract', 'average', 'pin-light', 'negation', 'source-over', 'source-in', 'source-out', 'source-atop', 'destination-over', 'destination-in', 'destination-out', 'destination-atop', 'lighter', 'darker', 'copy', 'xor']
 					},			
 				},				
-			},		
+			},
+			uiStyle: {
+				layout: {
+					font: {
+						align: 'columns',
+						label: 'font',
+						fontSize: {
+							type: 'number',
+							label: 'size',
+						},
+						color: {
+							type: 'color',
+							label: 'color',
+							returnType: 'css',
+						},
+					},
+					background: {
+						type: 'color',
+						label: 'background'
+					},
+					input: {
+							align: 'columns',
+							label: 'input',
+							'input.color': {
+								type: 'color',
+								label: 'color'
+							},
+							'input.fontStyle': {
+								type: 'select',
+								options: ['normal', 'italic'],
+							},	
+					},						
+					dialog: {
+						label: 'dialog',
+						align: 'indent',
+						'dialog.background': {
+							type: 'color',
+							label: 'background color',
+						},
+						'dialog.borderColor': {
+							type: 'color',
+							label: 'border color'
+						},
+						font: {
+							align: 'columns',
+							label: 'font',
+							'dialog.color': {
+								type: 'color',
+								label: 'color'
+							},
+							'dialog.fontStyle': {
+								type: 'select',
+								options: ['normal', 'italic'],
+							},			
+						},
+					},				
+				},	
+			}				
 		}
 	},
 	units: {

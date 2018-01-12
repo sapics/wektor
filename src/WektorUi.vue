@@ -34,6 +34,21 @@ export default {
 			dialogs: {},
 			layers: [],
 			tools: {},
+			customCss: {
+				fontSize: 14,
+				color: 'black',
+				background: 'white',
+				dialog: {
+					color: 'black',
+					fontStyle: 'normal',
+					background: 'white',
+					borderColor: 'black',
+				},
+				input: {
+					fontStyle: 'normal',
+					color: 'black',
+				}				
+			},
 		}
 	},
 
@@ -119,6 +134,49 @@ export default {
 			// 		resize: true,
 			// 	} 
 			// })
+			
+			// const customCss = this.customCss
+			// wektor.openDialog({
+			// 	id: 'ui-style',
+			// 	payload: { 
+			// 		locked: true,
+			// 		applyCustomTheme: false,
+			// 	},
+			// 	layout: settings.dialog.layouts.uiStyle,
+			// 	values: customCss,
+			// 	changeHandler: (...args) => this.handleCustomCssChange(...args)
+			// })
+		},
+
+		handleCustomCssChange(target, key, value) {
+			const { customStyleSheet, customCss } = this
+
+			if (customStyleSheet)
+				customStyleSheet.parentNode.removeChild(customStyleSheet)
+			
+			const styleSheet = document.createElement('style')
+			styleSheet.innerHTML = `
+				#main-canvas {
+					background: ${customCss.background}!important;
+				}
+				#wektor {
+					color: ${customCss.color}!important;
+					font-size: ${customCss.fontSize}pt!important;
+				}
+				.dialog {
+					color: ${customCss.dialog.color}!important;
+					font-style: ${customCss.dialog.fontStyle}!important;
+					background: ${customCss.dialog.background}!important;
+					border-color: ${customCss.dialog.borderColor}!important;
+				}
+				#wektor input, .input {
+					color: ${customCss.input.color}!important;
+					font-style: ${customCss.input.fontStyle}!important;
+					font-size: ${customCss.fontSize}pt!important;
+				}
+			`
+			document.body.appendChild(styleSheet)
+			this.customStyleSheet = styleSheet
 		},
 
 		...mapMutations([
@@ -203,7 +261,6 @@ export default {
 
 			for (const [index, id] of stack.entries()) {
 				const dialog = this.dialogs[id]
-				console.log('dialog', dialog)
 				dialog && this.$set(dialog, 'stackingIndex', index)
 			}
 		},	

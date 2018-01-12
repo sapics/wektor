@@ -9,7 +9,7 @@
 			:to="referencePoint"
 		></pointer-line>		
 		<div
-			class="dialog draghandler"
+			class="dialog draghandler dontApplyCustomTheme"
 			:class="{active, fitContent}"
 			ref="dialog"
 			:data-id="id"

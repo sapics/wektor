@@ -18,8 +18,6 @@
 
 <style lang="scss">
 .color {
-	display: inline-block;
-
 	.label {
 		display: inline-block;
 	}
@@ -38,7 +36,7 @@
 import { mapMutations, mapGetters } from 'vuex'
 import baseComponent from './baseComponent'
 import { isObject, isString, round, mapValue, getContrast, alphaToWhite } from '@/utils.js'
-import { jsonToColor } from './colorpicker/colorUtils'
+import { valueToColor } from './colorpicker/colorUtils'
 import wektor from '@/wektor'
 
 export default {
@@ -77,7 +75,7 @@ export default {
 		},
 
 		color() {
-			return jsonToColor(this.value)
+			return valueToColor(this.value)
 		},
 
 		cssColor() {

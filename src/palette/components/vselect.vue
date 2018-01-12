@@ -4,14 +4,14 @@
 		:class="{dropDown, open}"
 		v-outside:mousedown="close"
 	>
-		<span class="label">{{ label }}&nbsp;</span>
+		<span class="label">{{ label }}</span>
 		<div class="palette-select-options-wrap" ref="wrap">
 			<div
-				class="palette-select-active-option"
+				class="palette-select-active-option input"
 				@click="open = !open"
 			>{{ selectedOption.label }}</div>
 			<div 
-				class="palette-select-options" 
+				class="palette-select-options input" 
 				ref="options"
 				v-visible="!dropDown || open"
 			>
