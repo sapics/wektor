@@ -130,11 +130,59 @@ function elementsOverlap(el1, el2) {
 			rect1.top > rect2.bottom)
 }
 
-function getContrast(color, alpha = true) {
-	const { red, green, blue } = alpha ? alphaToWhite(color) : color
+// function getContrast(color, alpha = true) {
+// 	const { red, green, blue } = alpha ? alphaToWhite(color) : color
 
-	return 1 - (0.2126 * red + 0.7152 * green + 0.0722 * blue)
+// 	return 1 - (0.2126 * red + 0.7152 * green + 0.0722 * blue)
+// }
+// 
+
+function getLuminance(color) {
+	let components = [color.red, color.green, color.blue]
+
+	components = components.map(component => {
+		return component < 0.03928 
+			? component / 12.92 
+			: Math.pow((component + 0.055) / 1.055, 2.4)
+	})
+
+	return 0.2126 * components[0] + 0.7152 * components[1] + 0.0722 * components[2]	
 }
+
+// function luminance(r, g, b) {
+//     var colorArray = [r, g, b];
+//     var colorFactor;
+//     var i;
+//     for (i = 0; i < colorArray.length; i++) {
+//         colorFactor = colorArray[i];
+//         if (colorFactor <= 0.03928) {
+//             colorFactor = colorFactor / 12.92;
+//         } else {
+//             colorFactor = Math.pow(((colorFactor + 0.055) / 1.055), 2.4);
+//         }
+//         colorArray[i] = colorFactor;
+//     }
+//     return (colorArray[0] * 0.2126 + colorArray[1] * 0.7152 + colorArray[2] * 0.0722) // + 0.05;
+// }
+
+function getContrast(color1, color2) {
+	const luminance1 = getLuminance(color1)
+	const luminance2 = getLuminance(color2)
+	let ratio = luminance1 / luminance2
+	
+	return Math.abs(luminance1 - luminance2)
+}
+
+function getBrightness(color) {
+	const { red, green, blue } = (color.alpha !== undefined) ? alphaToWhite(color) : color
+	return (0.2126 * red + 0.7152 * green + 0.0722 * blue)
+}
+
+// function getContrast(color1, color2) {
+// 	const brightness1 = getBrightness(color1)
+// 	const brightness2 = color2 ? getBrightness(color2) : 1
+// 	return Math.abs(brightness2 - brightness1)
+// }
 
 function alphaToWhite(color) {
 	return {
@@ -142,6 +190,50 @@ function alphaToWhite(color) {
 		green: 1 + (color.green - 1) * color.alpha,
 		blue: 1 + (color.blue - 1) * color.alpha,
 	}
+}
+
+// colorToLab and getDeltaE are based on antimatter15's rgb-lab
+// https://github.com/antimatter15/rgb-lab/blob/master/color.js
+
+function colorToLab(color) {
+	let { red: r, green: g, blue: b } = color
+	let x, y, z
+
+	r = (r > 0.04045) ? Math.pow((r + 0.055) / 1.055, 2.4) : r / 12.92
+	g = (g > 0.04045) ? Math.pow((g + 0.055) / 1.055, 2.4) : g / 12.92
+	b = (b > 0.04045) ? Math.pow((b + 0.055) / 1.055, 2.4) : b / 12.92
+
+	x = (r * 0.4124 + g * 0.3576 + b * 0.1805) / 0.95047
+	y = (r * 0.2126 + g * 0.7152 + b * 0.0722) / 1.00000
+	z = (r * 0.0193 + g * 0.1192 + b * 0.9505) / 1.08883
+
+	x = (x > 0.008856) ? Math.pow(x, 1 / 3) : (7.787 * x) + (16 / 116)
+	y = (y > 0.008856) ? Math.pow(y, 1 / 3) : (7.787 * y) + (16 / 116)
+	z = (z > 0.008856) ? Math.pow(z, 1 / 3) : (7.787 * z) + (16 / 116)
+
+	return [(116 * y) - 16, 500 * (x - y), 200 * (y - z)]
+}
+
+function getDeltaE(colorA, colorB) {
+	const labA = colorToLab(colorA)
+	const labB = colorToLab(colorB)
+	const deltaL = labA[0] - labB[0]
+	const deltaA = labA[1] - labB[1]
+	const deltaB = labA[2] - labB[2]
+	const c1 = Math.sqrt(labA[1] * labA[1] + labA[2] * labA[2])
+	const c2 = Math.sqrt(labB[1] * labB[1] + labB[2] * labB[2])
+	const deltaC = c1 - c2
+	let deltaH = deltaA * deltaA + deltaB * deltaB - deltaC * deltaC
+	deltaH = deltaH < 0 ? 0 : Math.sqrt(deltaH)
+	const sc = 1.0 + 0.045 * c1
+	const sh = 1.0 + 0.015 * c1
+	const deltaLKlsl = deltaL / (1.0)
+	const deltaCkcsc = deltaC / (sc)
+	const deltaHkhsh = deltaH / (sh)
+	const i = deltaLKlsl * deltaLKlsl + deltaCkcsc * deltaCkcsc + deltaHkhsh * deltaHkhsh
+	const percent = i < 0 ? 0 : Math.sqrt(i)
+	const factor = percent / 100
+	return factor
 }
 
 function resolvePropertyPath(obj, str, resolveKey = true) {
@@ -234,5 +326,7 @@ export {
 	isInViewport,
 	getDistance,
 	moveArrayElementToEnd,
-	deepExtend
+	deepExtend,
+	colorToLab,
+	getDeltaE,
 }

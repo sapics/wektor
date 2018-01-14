@@ -21,6 +21,7 @@ import settings from './settings.js'
 import { isArray, isFunction } from './utils.js'
 import wektor from '@/wektor'
 import createDialog from '@/dialog'
+import WektorUiTheme from './WektorUiTheme'
 
 export default {
 	name: 'wektorUi',
@@ -34,20 +35,7 @@ export default {
 			dialogs: {},
 			layers: [],
 			tools: {},
-			customCss: {
-				fontSize: 14,
-				color: 'black',
-				dialog: {
-					color: 'black',
-					fontStyle: 'normal',
-					background: 'white',
-					borderColor: 'black',
-				},
-				input: {
-					fontStyle: 'normal',
-					color: 'black',
-				}				
-			},
+			theme: null,
 		}
 	},
 
@@ -55,6 +43,11 @@ export default {
 		settings() {
 			return settings
 		},
+	},
+
+	created() {
+		this.theme = new WektorUiTheme()
+		this.theme.activate()
 	},
 
 	mounted() {
@@ -134,7 +127,7 @@ export default {
 			// 	} 
 			// })
 			
-			const customCss = this.customCss
+			const theme = this.theme
 			wektor.openDialog({
 				id: 'ui-style',
 				payload: { 
@@ -142,8 +135,8 @@ export default {
 					applyCustomTheme: false,
 				},
 				layout: settings.dialog.layouts.uiStyle,
-				values: customCss,
-				changeHandler: (...args) => this.handleCustomCssChange(...args)
+				values: theme,
+				changeHandler: () => theme.update()
 			})
 		},
 
@@ -169,6 +162,12 @@ export default {
 					color: ${customCss.input.color}!important;
 					font-style: ${customCss.input.fontStyle}!important;
 					font-size: ${customCss.fontSize}pt!important;
+				}
+				.theme-border {
+					border: 1px solid ${customCss.dialog.borderColor}!important;
+				}
+				.theme-border_background {
+					background: ${customCss.dialog.borderColor}!important;
 				}
 			`
 			document.body.appendChild(styleSheet)
@@ -318,8 +317,8 @@ export default {
 #wektor {
 	&, input, textarea, button {
 		font-family: HKGrotesk;
-		font-size: 14pt;
-		font-weight: 300;
+		// font-size: 14pt;
+		// font-weight: 300;
 	}
 
 	input {

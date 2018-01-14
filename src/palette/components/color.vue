@@ -25,6 +25,7 @@
 
 	.color-label {
 		cursor: pointer;
+		color: black;
 		text-decoration: underline;
 	}
 	.color-label.no-color {
@@ -36,9 +37,10 @@
 <script>
 import { mapMutations, mapGetters } from 'vuex'
 import baseComponent from './baseComponent'
-import { isObject, isString, round, mapValue, getContrast, alphaToWhite } from '@/utils.js'
+import { isObject, isString, round, mapValue, getContrast, alphaToWhite, getDeltaE } from '@/utils.js'
 import { valueToColor } from './colorpicker/colorUtils'
 import wektor from '@/wektor'
+import paper from 'paper'
 
 export default {
 	extends: baseComponent,
@@ -89,20 +91,30 @@ export default {
 		colorLabelShadow() {
 			if (!this.color) return
 
-			const contrast = getContrast(this.color)
-			let shadow = 1 - (mapValue(contrast, { min: 0, max: 0.03 }, { min: 0, max: 1 }))
-			if (shadow < 0) shadow = 0
-			return `rgba(180, 180, 180, ${shadow}) 1px 1px`
+			const dialogColorCss = getComputedStyle(document.querySelector('.dialog')).backgroundColor
+			const dialogPaperColor = new paper.Color(dialogColorCss)
+			
+			const deltaE = getDeltaE(dialogPaperColor, this.color)
+
+			if (deltaE > 0.15) return
+
+			const blackShadowContrast = getContrast(new paper.Color('black'), dialogPaperColor)
+
+			const shadowColor = blackShadowContrast > 0.03 ? 'black' : 'rgba(255, 255, 255, 0.5)'
+
+			return `${shadowColor} 1px 1px`
 		},
 	},
 
 	methods: {
 		openColorpicker() {
 			const id = this.id
+			const returnType = this.payload.return
 			const layout = {
 				[this.propKey]: {
 					type: 'colorpicker',
 					label: this.label,
+					return: returnType,
 				}
 			}
 

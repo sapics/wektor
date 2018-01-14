@@ -116,7 +116,7 @@ export default {
 						color: {
 							type: 'color',
 							label: 'color',
-							returnType: 'css',
+							return: 'css',
 						},
 					},
 					input: {
@@ -124,7 +124,8 @@ export default {
 							label: 'input',
 							'input.color': {
 								type: 'color',
-								label: 'color'
+								label: 'color',
+								return: 'css',
 							},
 							'input.fontStyle': {
 								type: 'select',
@@ -137,17 +138,20 @@ export default {
 						'dialog.background': {
 							type: 'color',
 							label: 'background color',
+							return: 'css',
 						},
 						'dialog.borderColor': {
 							type: 'color',
-							label: 'border color'
+							label: 'border color',
+							return: 'css',
 						},
 						font: {
 							align: 'columns',
 							label: 'font',
 							'dialog.color': {
 								type: 'color',
-								label: 'color'
+								label: 'color',
+								return: 'css',
 							},
 							'dialog.fontStyle': {
 								type: 'select',

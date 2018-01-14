@@ -76,6 +76,7 @@
 	.chevron {
 		position: absolute;
 		left: 0;
+		font-style: normal;
 
 		&.opened {
 			transform: rotate(90deg);

@@ -33,7 +33,7 @@
 			>
 				<div 
 					class="lock"
-					:class="{locked}"
+					:class="{ locked }"
 					@click="locked = !locked"
 				></div>	
 				<div v-if="this.payload.resize"

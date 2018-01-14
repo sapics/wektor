@@ -107,7 +107,7 @@ export default {
 
 	data() {
 		return {
-			internalColor: valueToColor(this.value || ['Color', 0, 0, 0])
+			internalColor: this.value ? valueToColor(this.value) : this.createDefaultColor(this.value)
 		}
 	},
 
@@ -135,6 +135,21 @@ export default {
 	},
 
 	methods: {
+		createDefaultColor() {
+			const returnFormat = this.payload.return
+
+			let colorValue
+			switch (returnFormat) {
+				case 'css':
+					colorValue = 'rgb(0, 0, 0)'
+					break
+				default:
+					colorValue = ['Color', 0, 0, 0]
+			}
+
+			return valueToColor(colorValue)
+		},
+
 		unsetColor() {
 			this.$emit('input', null)
 		},
