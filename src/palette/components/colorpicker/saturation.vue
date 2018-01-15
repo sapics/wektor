@@ -23,7 +23,7 @@
 		box-sizing: border-box;
 		width: 10px;
 		height: 10px;
-		border: 1px solid;
+		border: 1px solid black;
 	}	
 }
 </style>
@@ -84,8 +84,8 @@ export default {
 		},
 
 		pointerColor() {
-			// const contrast = getContrast(this.color, { red: 0, green: 0, blue: 0 }) // ignore alpha
-			// return contrast < 0.5 ? 'black' : 'white'	
+			const contrastToBlack = getContrast(this.color, { red: 0, green: 0, blue: 0 }) // ignore alpha
+			return contrastToBlack < 0.25 ? 'white' : 'black'	
 		},
 	},
 }

@@ -94,9 +94,9 @@ export default {
 			const dialogColorCss = getComputedStyle(document.querySelector('.dialog')).backgroundColor
 			const dialogPaperColor = new paper.Color(dialogColorCss)
 			
-			const deltaE = getDeltaE(dialogPaperColor, this.color)
+			const deltaE = getDeltaE(dialogPaperColor, alphaToWhite(this.color))
 
-			if (deltaE > 0.15) return
+			if (deltaE > 0.2) return
 
 			const blackShadowContrast = getContrast(new paper.Color('black'), dialogPaperColor)
 

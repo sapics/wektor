@@ -29,8 +29,8 @@
 		margin-top: -1px;
 		width: 100%;
 		height: 5px;
-		border-top: 1px solid;
-		border-bottom: 1px solid;
+		border-top: 1px solid black;
+		border-bottom: 1px solid black;
 		box-sizing: border-box;
 	}
 }
