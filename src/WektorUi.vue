@@ -17,7 +17,7 @@ import Vue from 'vue'
 import { mapGetters, mapMutations, mapState } from 'vuex'
 import toolBar from './components/tool-bar.vue'
 import vdialog from './palette/vdialog.vue'
-import settings from './settings.js'
+import settings from './settings'
 import { isArray, isFunction } from './utils.js'
 import wektor from '@/wektor'
 import createDialog from '@/dialog'
@@ -252,7 +252,7 @@ export default {
 
 		updateDialogStackingOrder(stack, updateType) {
 			// when a dialog is added it will automatically be activated so this would cause a double update
-			if (updateType === 'add') return
+			// if (updateType === 'add') return
 
 			for (const [index, id] of stack.entries()) {
 				const dialog = this.dialogs[id]

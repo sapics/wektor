@@ -44,7 +44,7 @@
 import baseComponent from './baseComponent'
 import paper from 'paper'
 import { getUnit, round, convertUnits } from '@/utils.js' 
-import settings from '@/settings.js'
+import settings from '@/settings'
 import { UnitValidator, UnitValue } from './unitUtils'
 
 const unitValidator = new UnitValidator(settings.units)
