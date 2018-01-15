@@ -143,44 +143,16 @@ export default {
 		},
 	},
 
-	// props: {
-	// 	id: String,
-	// 	parentId: String,
-	// 	bridge: Object,
-	// 	layout: Object,
-	// 	reference: {
-	// 		type: Object,
-	// 		default: () => Object()
-	// 	},
-	// 	payload: {
-	// 		type: Object,
-	// 		default: () => Object()
-	// 	},
-	// },
-
-	// props: {
-	// 	id: String,
-	// 	parentId: String,
-	// 	values: null,
-	// 	layout: Object,
-	// 	reference: {
-	// 		type: Object,
-	// 		default: () => { return {} }
-	// 	},
-	// 	payload: {
-	// 		type: Object,
-	// 		default: () => { return {} }
-	// 	}
-	// },
-
 	data() {
 		return {
 			position: { x: 0, y: 0 },
 			referencePoint: null,
-			pointerCornerDelta: null,
+			pointerCornerDelta: { x: 0, y: 0 },
 			locked: false,
 			hover: false,
 			resizeEl: null, // see mounted()
+			width: 100,
+			height: 100,
 		}
 	},
 
@@ -265,6 +237,10 @@ export default {
 
 		hover(hover) {
 			if (hover) this.updateBridge()
+		},
+
+		position() {
+			this.updatePointerCorner()
 		}
 	},
 
@@ -291,6 +267,9 @@ export default {
 		this.resizeEl = this.$refs.dialog
 		this.setPosition()
 		this.$nextTick(() => {
+			const bounds = this.$refs.dialog.getBoundingClientRect()
+			this.width = bounds.width
+			this.height = bounds.height
 			this.updatePointerCorner()
 		})
 	},
@@ -300,7 +279,28 @@ export default {
 			this.bridge.update && this.bridge.update()
 		},
 
-		updatePointerCorner() {
+		updatePointerCorner(checkVisibility = false) {
+			const { position, width, height, reference } = this
+
+			if (!(reference && reference.position)) return
+
+			const corners = [
+				{ x: position.x, y: position.y },
+				{ x: position.x + width, y: position.y },
+				{ x: position.x, y: position.y + height },
+				{ x: position.x + width, y: position.y + height },				
+			]
+
+			const distances = corners.map(corner => getDistance(corner, reference.position))
+			const nearestCorner = corners[ distances.indexOf(Math.min(...distances)) ]
+			
+			this.pointerCornerDelta = {
+				x: position.x - nearestCorner.x,
+				y: position.y - nearestCorner.y
+			}					
+		},
+
+		updatePointerCornerOLD() {
 			const el = this.$refs.dialog
 			const referencePoint = this.reference.position
 			const position = this.position
@@ -308,8 +308,8 @@ export default {
 			if (!referencePoint) return
 
 			function checkCorner(vertical, horizontal, point, treshold = 0) {
-				const topMostEl = document.elementFromPoint(point.x, point.y)
-				if (topMostEl !== el) return
+				// const topMostEl = document.elementFromPoint(point.x, point.y)
+				// if (topMostEl !== el) return
 
 				if (vertical === 'top' && point.y > referencePoint.y + treshold) return true
 				if (vertical === 'bottom' && point.y < referencePoint.y - treshold) return true

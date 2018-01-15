@@ -84,7 +84,7 @@ export default {
 		},
 
 		pointerColor() {
-			const contrastToBlack = getContrast(this.color, { red: 0, green: 0, blue: 0 }) // ignore alpha
+			const contrastToBlack = getContrast(this.color, { red: 0, green: 0, blue: 0 })
 			return contrastToBlack < 0.25 ? 'white' : 'black'	
 		},
 	},

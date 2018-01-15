@@ -2,7 +2,9 @@ export default {
 	data() {
 		return {
 			resizeEl: null, // use this property to specify a custom el to be resized
-			resizeDelta: { x: 0, y: 0 }
+			resizeDelta: { x: 0, y: 0 },
+			width: 0,
+			height: 0,
 		}
 	},
 
@@ -32,6 +34,8 @@ export default {
 
 			el.style.width = newWidth + 'px'
 			el.style.height = newHeight + 'px'
+			this.width = newWidth
+			this.height = newHeight
 			this.$emit('resize')
 		},
 
