@@ -14,6 +14,7 @@
 			v-autowidth
 			:value="inputFieldValue"
 			@input="updateValue($event.target.value)"
+			@blur="updateInputField"
 		>
 	</div>
 </template>
@@ -71,7 +72,7 @@ export default {
 			// we set this.input to true when we emit 'input' (see updateValue())
 			// so this functuion will only watch if the value gets changed from outside
 			if (!this.input) {
-				this.unitValue = UnitValue.convertValue(value, 'px', this.unit)
+				this.unitValue = UnitValue.convertValue(value, this.valueUnit, this.unit)
 				this.updateInputField()
 			}
 			this.input = false
@@ -82,13 +83,25 @@ export default {
 		space() {
 			return this.payload.space
 		},
+
+		returnUnit() {
+			return this.payload.return || 'px'
+		},
+
+		valueUnit() {
+			return this.payload.unit || 'px'
+		},
+
+		allowedUnits() {
+			return this.payload.allowedUnits || [this.valueUnit]
+		},
 	},
 
 	methods: {
 		updateValue(string) {
 			let value
 
-			if (!this.unit) {
+			if (!this.unit || this.unit === this.valueUnit) {
 				value = parseFloat(string)
 			} else {
 				const result = unitValidator.parse(string)

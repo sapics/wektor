@@ -53,6 +53,8 @@ class UnitValue {
 		let pxValue
 		let convertedValue
 
+		if (from === to) return value
+
 		if (from === 'px') {
 			pxValue = value
 		} else {
@@ -83,7 +85,7 @@ class UnitValidator {
 	constructor(options) {
 		const defaultOptions = {
 			defaultUnit: 'px',
-			allowedUnits: ['px', 'cm'],
+			allowedUnits: ['px', 'cm', 'mm'],
 			decimals: 2,
 			resolution: 72,
 		}
