@@ -5,6 +5,7 @@ import { deepExtend } from '@/utils'
 const specDefault = {
 	color: 'black',
 	fontSize: 14, // pt
+	highlightColor: 'yellow',
 	input: {
 		color: false,
 		fontStyle: 'normal', 
@@ -38,6 +39,18 @@ class WektorUiTheme {
 
 	update() {
 		this.styleSheet.innerHTML = `
+			:root {
+				--wektor-color: ${this.color};
+				--wektor-input-color: ${this.input.color || this.color};
+				--wektor-dialog-color: ${this.dialog.color || this.color};
+				--wektor-dialog-background: ${this.dialog.background};
+				--wektor-dialog-border-color: ${this.dialog.borderColor};
+			}
+
+			#wektor .highlight {
+				background-color: ${this.highlightColor};
+			}
+
 			#wektor {
 				color: ${this.color};
 				font-size: ${this.fontSize}pt;

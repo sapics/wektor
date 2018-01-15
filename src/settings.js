@@ -119,6 +119,11 @@ export default {
 							return: 'css',
 						},
 					},
+					highlightColor: {
+						type: 'color',
+						label: 'highlight',
+						return: 'css',
+					}, 
 					input: {
 							align: 'columns',
 							label: 'input',

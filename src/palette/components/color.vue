@@ -38,7 +38,7 @@
 import { mapMutations, mapGetters } from 'vuex'
 import baseComponent from './baseComponent'
 import { isObject, isString, round, mapValue, getContrast, alphaToWhite, getDeltaE } from '@/utils.js'
-import { valueToColor } from './colorpicker/colorUtils'
+import { valueToColor } from './colorpicker/utils'
 import wektor from '@/wektor'
 import paper from 'paper'
 

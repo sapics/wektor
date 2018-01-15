@@ -310,9 +310,9 @@ export default {
 @include font-face('HKGrotesk', '/static/fonts/HKGrotesk/HKGrotesk-Regular', 400);
 @include font-face('HKGrotesk', '/static/fonts/HKGrotesk/HKGrotesk-Medium', 500);
 
-	#main-canvas {
-		background-color: white;
-	}
+#main-canvas {
+	background-color: white;
+}
 
 #wektor {
 	&, input, textarea, button {

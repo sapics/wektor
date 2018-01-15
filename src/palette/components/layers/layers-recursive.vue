@@ -22,7 +22,7 @@
 				<vddl-handle>
 					<span 
 						class="label"
-						:class="{ selected }"
+						:class="{ selected, highlight: selected }"
 					>{{ item.name }}</span>
 				</vddl-handle>
 			</vddl-nodrag>
@@ -60,10 +60,6 @@
 .palette-layers-recursive {
 	position: relative;
 
-	.selected {
-		background: yellow;
-	}
-
 	&.hasChildren {
 		padding-left: 0.65em;
 	}
@@ -77,6 +73,7 @@
 		position: absolute;
 		left: 0;
 		font-style: normal;
+		color: var(--wektor-dialog-border-color);
 
 		&.opened {
 			transform: rotate(90deg);

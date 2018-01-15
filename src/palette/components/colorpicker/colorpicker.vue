@@ -43,6 +43,7 @@
 	height: 100%;
 	min-width: 3em;
 	min-height: 3em;
+	overflow: hidden;
 
 	.saturation {
 		float: left;
@@ -71,7 +72,8 @@
 			box-sizing: border-box;
 			width: 1em;
 			height: 1em;
-			cursor: pointer;		
+			cursor: pointer;	
+			background-color: white;	
 		}
 	}
 
@@ -94,7 +96,7 @@ import hue from './hue'
 import alpha from './alpha'
 import number from '../number'
 import paper from 'paper'
-import { valueToColor, colorToValue } from './colorUtils.js'
+import { valueToColor, colorToValue } from './utils.js'
 import { isString } from '@/utils'
 
 // the colorpicker is inspired by vue-color (https://github.com/xiaokaike/vue-color)

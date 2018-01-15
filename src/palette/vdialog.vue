@@ -36,10 +36,13 @@
 					:class="{ locked }"
 					@click="locked = !locked"
 				></div>	
-				<div v-if="this.payload.resize"
-					class="resize-corner"
+				<svg 
+					class="resize-corner" viewBox="0 0 7 7"
 					@mousedown.stop.prevent="startResize"
-				></div>	
+				>
+					<line x1="0" y1="7" x2="7" y2="0" />
+					<line x1="4" y1="7" x2="7" y2="4" />
+				</svg>
 			</div>				
 		</div>
 	</div>
@@ -84,23 +87,23 @@
 		right: 0;
 		top: 0;
 		border-radius: 50%;
-		border: 1px solid black;
+		border: 1px solid var(--wektor-dialog-border-color);
 		cursor: pointer;
 		background-color: white;
 	}
 
 	.lock.locked {
-		background-color: black;
+		background-color: var(--wektor-dialog-border-color);
 	}
 
 	.resize-corner {
 		cursor: default;
 		position: absolute;
-		right: 0;
-		bottom: 0;
-		width: 9px;
-		height: 9px;
-		background-image: url('/static/icons/resize-corner.gif');
+		right: 1px;
+		bottom: 1px;
+		width: 7px;
+		height: 7px;
+		stroke: var(--wektor-dialog-border-color);
 	}
 
 	.wire-frame {
