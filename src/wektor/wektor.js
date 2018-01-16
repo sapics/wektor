@@ -1,7 +1,7 @@
 import paper from 'paper'
 import EventEmitter from 'event-emitter-es6'
 import settings from '@/settings'
-import { isArray, isFunction, moveArrayElementToEnd } from '@/utils'
+import { isArray, isFunction, isString, moveArrayElementToEnd } from '@/utils'
 import Dialog from '@/dialog'
 import History from './History'
 import ChangeTracker from './ChangeTracker'
@@ -21,6 +21,7 @@ class Wektor extends EventEmitter {
 			shortcuts: [],
 			active: {
 				tool: null,
+				toolId: null,
 				layer: null,
 			},
 			changeTracker: null,
@@ -49,8 +50,17 @@ class Wektor extends EventEmitter {
 		this.state = new State(this.project)
 		this.initShortcuts()
 		this.initChangeTracking()
+		this.initMenu()
 
 		this.on('groupItems', () => this.groupItems())
+	}
+
+	initMenu() {
+		this.menu = this.settings.menu
+
+		for (const entry of this.settings.menu) {
+			this.addShortcut(entry.shortcut)
+		}
 	}
 
 	initChangeTracking() {
@@ -158,7 +168,9 @@ class Wektor extends EventEmitter {
 
 		tool.on({
 			activate: () => {
-				this.emit('activateTool', { id, tool })
+				Vue.set(this.active, 'tool',  tool)
+				Vue.set(this.active, 'toolId',  tool._wektorToolId)
+				this.emit('activateTool', tool)
 			},
 		})
 
@@ -180,7 +192,21 @@ class Wektor extends EventEmitter {
 		}
 	}
 
-	openDialog(spec) {
+	addDialog(spec) {
+		if (this.dialogs[spec.id]) {
+			console.warn(`Dialog with id '${spec.id}' already exists`)
+			return
+		}
+
+		const dialog = new Dialog(spec)
+		this.dialogs[dialog.id] = dialog
+		this.dialogsStackingOrder.add(dialog.id)
+		this.emit('addDialog', dialog)
+	}
+
+	openDialog(arg) {
+		const spec = isString(arg) ? { id: arg } : arg
+
 		let dialog = this.dialogs[spec.id]
 
 		if (!dialog) {
@@ -190,8 +216,24 @@ class Wektor extends EventEmitter {
 			dialog.bridge && dialog.bridge.update()
 		}
 
-		this.dialogsStackingOrder.add(dialog.id)
+		dialog.open = true
+
 		this.emit('openDialog', dialog)
+		this.dialogsStackingOrder.add(dialog.id)
+	}
+
+	toggleDialog(id) {
+		let dialog = this.dialogs[id]
+
+		if (!dialog) {
+			console.warn(`There is no dialog with id '${id}'`)
+			return
+		}
+
+		if (dialog.open) 
+			this.closeDialog(id)
+		else 
+			this.openDialog(id)
 	}
 
 	openChildDialog(spec) {

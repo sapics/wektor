@@ -1,59 +1,65 @@
 <template>
-	<div class="tool-select"
+	<div
+		v-show="options.length"
+		class="tool-select"
 		@keydown.down.prevent="focusOption('next')" 
 		@keydown.up.prevent="focusOption('prev')"
 		@keydown.enter.prevent="onEnter()"
+		v-outside:mousedown="blur"
 	>
-		<input ref="search" v-model="searchQuery">
-		<div ref="select">
-			<tool-select-item
-				v-for="option in filteredOptions"
-				class="option"
-				:key="option.key"
-				:class="{'selected': option === selected, 'focused': option === focused}"
-				@click="selectOption(option)"
-				:option="option"
-			></tool-select-item>
-		</div>	
+		<tool-select-option
+			v-for="option in options"
+			:key="option.key || option.label"
+			:option="option"
+			@click.stop="selectOption(option)"
+			:class="{
+				'selected': option === selected, 
+				'focused': option === focused, 
+				'highlight': (option === focused && option !== selected)
+			}"
+		></tool-select-option>	
 	</div>
 </template>
 
-<style lang="scss">
-.tool-select {
-	.option {
-		cursor: pointer;
-
-		.bullet {
-			visibility: hidden;
-			margin-right: 0.25em;
-		}
-
-		.shortcut {
-			text-decoration: underline;
-		}
-	}
-
-	.option.selected .bullet {
-		visibility: visible;
-	}
-
-	.option.focused {
-		font-weight: 500;
-
-		.bullet {
-			font-style: normal;
-		}
-	}
-}
-</style>
-
 <script>
-import searchSelect from './search-select.vue'
-import toolSelectItem from './tool-select-item.vue'
-
+import vselect from './vselect'
+import toolSelectOption from './tool-select-option'
+import searchable from '@/mixins/searchable'
 export default {
-	extends: searchSelect,
+	extends: vselect,
 
-	components: {toolSelectItem},
+	mixins: [searchable],
+
+	components: {toolSelectOption},
+
+	props: {
+		searchQuery: String,
+	},
+
+	data() {
+		return {
+			searchPropKey: 'label',
+		}
+	},
+
+	computed: {
+		items() {
+			return this.payload.options
+		},
+
+		options() {
+			return this.filteredItems
+		},
+	},
+
+	methods: {
+		focusItem(selector) {
+			this.focusOption(selector)
+		},
+
+		selectItem(selector) {
+			this.selectOption(selector)
+		}
+	},
 }	
 </script>

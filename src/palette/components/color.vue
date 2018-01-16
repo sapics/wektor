@@ -5,7 +5,7 @@
 			<span
 				:data-id="`${id}-color-label`"
 				:id="`${id}-color-label`"
-				class="color-label"
+				class="color-label input"
 				ref="colorLabel"
 				:class="{'no-color': !cssColor}"
 				@mousedown="openColorpicker"

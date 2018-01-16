@@ -6,8 +6,8 @@ class BaseTool extends paper.Tool {
 	constructor(target, spec) {
 		super()
 
-		const id = makeUniqueId()
-		this.set({ ...spec, target, id, })
+		// const id = makeUniqueId()
+		this.set({ ...spec, target })
 
 		const eventKeys = [
 			'onMouseDown',

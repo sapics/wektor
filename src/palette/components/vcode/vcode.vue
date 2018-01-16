@@ -6,7 +6,6 @@
 		<editor
 			ref="ace"
 			class="palette-code-editor"
-			:content="`project.getItem({ name: 'rot' }).fillColor.hue = 0`"
 			height="100%"
 			width="100%"
 			theme="tomorrow"
@@ -30,6 +29,7 @@
 		right: 0;
 		cursor: default;
 		z-index: 999999999;
+		color: var(--wektor-dialog-border-color);
 	}
 
 	.ace_print-margin {
@@ -49,7 +49,7 @@
 	}
 
 	.ace_gutter {
-		border-right: 1px solid black;
+		border-right: 1px solid var(--wektor-dialog-border-color);
 	}
 
 	.ace_active-line {

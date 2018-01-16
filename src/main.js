@@ -26,8 +26,8 @@ import Vddl from 'vddl'
 paper.install(window)
 paper.setup('main-canvas')
 paper.project.currentStyle = {
-	strokeColor: 'green',
-	strokeWidth: 10,
+	strokeColor: 'blue',
+	strokeWidth: 2,
 }
 
 Vue.config.productionTip = false
@@ -45,6 +45,7 @@ window.wektor = wektor
 wektor.setup(paper.project)
 wektor.addTools({ BezierTool, GridTool, SelectionTool, SnapperTool, DrawingTool })
 wektor.tools['BaseTool'] = BaseTool
+wektor.tools.SelectionTool.activate()
 
 var p1 = new paper.Path.Circle({
 	radius: 100,

@@ -4,20 +4,31 @@
 		@click="$emit('click', $event)"
 		@contextmenu="onContextmenu($event)"
 	>
-		<span class="label" ref="label" v-html="label"></span>
+		<span class="label" ref="label" v-html="labelHtml"></span>
 	</div>
 </template>
 
 <style lang="scss" scoped>
 .tool-select-item {
 	user-select: none;
+	position: relative;
+	cursor: pointer;
+
+	&.selected:before {
+		content: '\25CF\00a0';
+		position: absolute;
+		transform: translate(-100%);
+	}
 }
 </style>
 
 <script>
 import wektor from '@/wektor'
+import labelShortcut from '@/mixins/labelShortcut'
 
 export default {
+	mixins: [labelShortcut],
+
 	props: {
 		option: {
 			type: Object,
@@ -31,21 +42,12 @@ export default {
 		},
 
 		label() {
-			if (!this.tool) return null
+			return this.tool.label
+		},
 
-			const { label, shortcut } = this.tool
-			const shortcutPos = label.indexOf(shortcut)
-
-			if (label === '') console.warn(`Tool doesn't provide a label.`)
-
-			let labelHtml = ''
-			labelHtml += '<span class="bullet">●</span>'
-			labelHtml += label.slice(0, shortcutPos)
-			labelHtml += `<span class="shortcut">${shortcut}</span>`
-			labelHtml += label.slice(shortcutPos + shortcut.length, label.length)
-
-			return labelHtml			
-		}
+		shortcut() {
+			return { key: this.tool.shortcut }
+		},
 	},
 
 	methods: {

@@ -45,6 +45,7 @@ class WektorUiTheme {
 				--wektor-dialog-color: ${this.dialog.color || this.color};
 				--wektor-dialog-background: ${this.dialog.background};
 				--wektor-dialog-border-color: ${this.dialog.borderColor};
+				--wektor-highlight-color: ${this.highlightColor};
 			}
 
 			#wektor .highlight {

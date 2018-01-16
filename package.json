@@ -14,6 +14,7 @@
     "ace-builds": "^1.2.9",
     "ace-code-editor": "^1.2.3",
     "ace-vue2": "^0.3.0",
+    "bowser": "^1.9.1",
     "es6-mixins": "^1.0.2",
     "event-emitter-es6": "^1.1.5",
     "mixin": "^0.2.0",

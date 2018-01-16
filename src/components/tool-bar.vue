@@ -1,34 +1,36 @@
 <template>
-	<tool-select class="tool-bar" ref="select" :options="toolSelectOptions" v-model="activeToolId"></tool-select>
+	<tool-select
+		ref="select"
+		:value="activeToolId"
+		:payload="{ options: toolSelectOptions }"
+		:searchQuery="searchQuery"
+		@input="activateTool($event)"
+	></tool-select>
 </template>
 
 <script>
-import { mapState, mapMutations } from 'vuex'
-import toolSelect from './tool-select.vue'
-import paper from 'paper'
 import wektor from '@/wektor'
-
-const { Tool } = paper
+import toolSelect from './tool-select'
 
 export default {
-	props: ['tools'],
-
 	components: { toolSelect },
 
-	computed: {
-		activeToolId: {
-			get() {
-				return this.$store.state.active.tool
-			},
-			set(id) {
-				const tool = wektor.tools[id]
-				tool && tool.activate()
-				this.$store.commit('setActiveTool', id)
-			},
-		},
+	data() {
+		return {
+			activeToolId: (wektor.active.tool && wektor.active.tool._wektorToolId),
+		}
+	},
 
+	props: {
+		tools: {
+			type: Object,
+			default: () => Object()
+		},
+		searchQuery: String,
+	},
+
+	computed: {
 		toolSelectOptions() {
-			console.log('change')
 			const options = []
 
 			for (const [id, tool] of Object.entries(this.tools)) {
@@ -41,23 +43,39 @@ export default {
 
 			return options
 		},
+
+		filteredItems() {
+			return this.$refs.select.filteredItems
+		}
 	},
 
-	mounted() {
-		const {select} = this.$refs
-		this.$bus.$on('toolSearch', () => this.focus())
-		this.$bus.$on('toolSelectNext', () => select.selectOption('next'))
-		this.$bus.$on('toolSelectPrev', () => select.selectOption('prev'))
+	created() {
+		wektor.on('activateTool', tool => { 
+			this.activeToolId = tool._wektorToolId 
+		})
 	},
 
 	methods: {
+		activateTool(id) {
+			const tool = wektor.tools[id]
+			tool && tool.activate()		
+		},
+
 		focus() {
 			this.$refs.select.focus()
 		},
 
 		blur() {
 			this.$refs.select.blur()
-		},		
-	},
-}
+		},
+
+		focusItem(selector) {
+			this.$refs.select.focusItem(selector)
+		},
+
+		selectItem(selector) {
+			this.$refs.select.selectItem(selector)
+		},
+	},			
+}	
 </script>

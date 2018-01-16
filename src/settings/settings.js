@@ -13,11 +13,6 @@ export default {
 	],
 	shortcuts: [
 		{
-			key: 'e',
-			modifier: 'meta',
-			emit: 'toolSearch',			
-		},
-		{
 			key: 'ArrowDown',
 			modifier: 'meta',
 			emit: 'toolSelectNext'
@@ -42,6 +37,32 @@ export default {
 			modifier: 'meta',
 			method: 'redo'
 		},
+	],
+	menu: [
+		{
+			'label': 'search',
+			'shortcut': {
+				key: 'h',
+				modifier: 'meta',
+				callback: ({wektor}) => wektor.emit('search'),
+			},
+		},
+		{
+			'label': 'theme',
+			'shortcut': {
+				key: 'e',
+				modifier: 'meta',
+				callback: ({wektor}) => wektor.toggleDialog('ui-theme'),
+			},
+		},
+		{
+			'label': 'scripts',
+			'shortcut': {
+				key: 'i',
+				modifier: 'meta',
+				callback: ({wektor}) => wektor.toggleDialog('scripts'),
+			},
+		},		
 	],
 	history: {
 		maxUndos: 80,

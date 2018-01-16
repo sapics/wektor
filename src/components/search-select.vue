@@ -20,12 +20,11 @@
 import { isInt, isString, isObject, isHtml } from '../utils.js'
 
 export default {
-	props: ['value', 'options'],
+	props: ['value', 'options', 'searchQuery'],
 	
 	data() {
 		return {
 			searchQuery: '',
-			selected: null,
 			focused: null,
 		}
 	},
@@ -46,12 +45,10 @@ export default {
 
 			return filteredOptions				
 		},
-	},
 
-	watch: {
-		value(value) {
-			if (value) this.selected = this.filteredOptions.find(option => option.value === value)
-		},
+		selected() {
+			return this.options.find(option => option.value === this.value)
+		}
 	},
 
 	methods: {
@@ -70,10 +67,10 @@ export default {
 		},
 
 		selectOption(selector) {
-			this.selected = this.getOption(selector, this.selected)
-			if (this.selected) {
+			const selected = this.getOption(selector, this.selected)
+			if (selected) {
 				this.blur()
-				this.$emit('input', this.selected.value)
+				this.$emit('input', selected.value)
 			}
 		},
 

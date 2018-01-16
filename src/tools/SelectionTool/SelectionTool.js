@@ -14,7 +14,7 @@ class SelectionTool extends BaseTool {
 	onActivate() {
 		this.item = this.target.getItem({
 			selected: true,
-			match: ({item}) => item.data.iterable !== false,
+			match: ({item}) => item && item.data.iterable !== false,
 		})
 	}
 

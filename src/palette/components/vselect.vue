@@ -34,6 +34,10 @@
 		display: table-cell;
 	}
 
+	.label {
+		padding-right: 0.27em;
+	}
+
 	&.open {
 		.palette-select-active-option {
 			text-decoration: none;
@@ -64,7 +68,7 @@
 	.palette-select-options {
 		position: absolute;
 		z-index: 1;
-		background: white;
+		background: var(--wektor-dialog-background);
 		border: 1px solid black;
 		margin-left: -$space;	
 		max-height: 200px;

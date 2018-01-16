@@ -1,6 +1,25 @@
 <template>
 	<div id="wektor">
-		<tool-bar ref="toolbar" class="tool-bar" :tools="tools"></tool-bar>
+		<div id="wektor-sidebar">
+			<wektor-search
+				id="wektor-search"
+				ref="search" 
+				v-model="searchQuery"
+			>
+				<tool-bar
+					ref="toolbar"
+					id="wektor-tool-bar"
+					:tools="tools"
+					:searchQuery="searchQuery"
+				></tool-bar>
+				<vmenu 
+					ref="menu" 
+					id="wektor-menu" 
+					:items="menu"
+					:searchQuery="searchQuery"
+				></vmenu>
+			</wektor-search>
+		</div>
 		<div ref="dialogs">
 			<vdialog
 				v-for="(dialog, id) in dialogs"
@@ -22,13 +41,15 @@ import { isArray, isFunction } from './utils.js'
 import wektor from '@/wektor'
 import createDialog from '@/dialog'
 import WektorUiTheme from './WektorUiTheme'
+import vmenu from './components/vmenu'
+import wektorSearch from './components/wektor-search'
 
 export default {
 	name: 'wektorUi',
 
 	props: ['target'],
 
-	components: { toolBar, vdialog },
+	components: { toolBar, vdialog, vmenu, wektorSearch },
 
 	data() {
 		return {
@@ -36,6 +57,8 @@ export default {
 			layers: [],
 			tools: {},
 			theme: null,
+			menu: wektor.menu,
+			searchQuery: null,
 		}
 	},
 
@@ -80,14 +103,13 @@ export default {
 			this.layers.length = 0
 			this.layers.push(...state.nested) 
 		})
+		wektor.state.update()
+
+		wektor.on('search', this.$refs.search.focus)
 
 		wektor.dialogsStackingOrder.on('update', this.updateDialogStackingOrder)
 
 		this.openDefaultDialogs()
-
-		// wektor.on('updateChildren', this.updateChildren)
-		// wektor.on('updateAttribute', this.updateChildren)
-		// wektor.on('updateAttribute', this.updateSelection)
 	},
 
 	methods: {
@@ -110,33 +132,33 @@ export default {
 				convert: false,			
 			})	
 
-			// wektor.openDialog({
-			// 	id: 'scripts',
-			// 	layout: {
-			// 		type: 'code',
-			// 	},
-			// 	payload: {
-			// 		locked: true,
-			// 		css: { 
-			// 			width: '50%',
-			// 			height: '30%',
-			// 			padding: '0',
-			// 		},
-			// 		fitContent: true,
-			// 		resize: true,
-			// 	} 
-			// })
+			wektor.addDialog({
+				id: 'scripts',
+				layout: {
+					type: 'code',
+				},
+				payload: {
+					locked: true,
+					css: { 
+						width: '50%',
+						height: '30%',
+						padding: '0',
+					},
+					fitContent: true,
+					resize: true,
+				} 
+			})
 			
 			const theme = this.theme
-			wektor.openDialog({
-				id: 'ui-style',
+			wektor.addDialog({
+				id: 'ui-theme',
 				payload: { 
 					locked: true,
 					applyCustomTheme: false,
 				},
-				layout: settings.dialog.layouts.uiStyle,
+				layout: settings.dialog.layouts.uiTheme,
 				values: theme,
-				changeHandler: () => theme.update()
+				changeHandler: () => theme.update()	
 			})
 		},
 
@@ -183,13 +205,13 @@ export default {
 		onKeydown(event) {			
 			const exlcude = settings.shortcutTargetExlude
 			if (exlcude.includes(event.target.tagName.toLowerCase())) return
-
+				
 			let shortcutMatched = false
 			for (const shortcut of wektor.shortcuts) {
 				if (this.shortcutMatches(shortcut, event)) {
 					if (shortcutMatched) console.warn('multiple shortcuts matched event')
 					shortcutMatched = true
-					if (isFunction(shortcut.callback)) shortcut.callback()
+					if (isFunction(shortcut.callback)) shortcut.callback({ event, wektor })
 					event.preventDefault()		
 				}
 			}
@@ -326,11 +348,32 @@ export default {
 		padding: 0;
 	}
 
-	.tool-bar {
-		position: absolute;
-		top: 0;
-		left: 0;
-		padding: $padding;
+	.shortcut {
+		text-decoration: underline;
+	}
+}
+
+#wektor-sidebar {
+	position: absolute;
+	box-sizing: border-box;
+	top: 0;
+	left: 0;
+	width: 20%;
+	height: 100%;
+	margin: $padding;
+	margin-right: 0;
+
+	#wektor-search {
+		width: 100%;
+		input {
+			width: 100%;
+			position: absolute;
+			transform: translate(0, -100%);			
+		}
+	}
+
+	#wektor-tool-bar {
+		margin-bottom: $padding;
 	}
 }
 

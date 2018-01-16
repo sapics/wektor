@@ -49,7 +49,7 @@ const item = {
 	},				
 }
 
-const uiStyle = {
+const uiTheme = {
 	font: {
 		align: 'columns',
 		label: 'font',
@@ -78,7 +78,7 @@ const uiStyle = {
 			},
 			'input.fontStyle': {
 				type: 'select',
-				options: ['normal', 'italic'],
+				options: ['normal', 'italic', 'bold'],
 			},	
 	},						
 	dialog: {
@@ -104,10 +104,10 @@ const uiStyle = {
 			},
 			'dialog.fontStyle': {
 				type: 'select',
-				options: ['normal', 'italic'],
+				options: ['normal', 'italic', 'bold'],
 			},			
 		},
 	},				
 }
 
-export default { item, uiStyle }
+export default { item, uiTheme }
