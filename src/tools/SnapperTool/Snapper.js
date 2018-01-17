@@ -7,31 +7,6 @@ function getPaperItemFromId(id) {
 	return paperItem
 }
 
-const specDefault = {
-	options: {
-		item: null,
-		grid: null
-	},
-
-	dialog: {
-		payload: {
-			locked: true,
-			position: {x: 400, y: 400},
-		},
-		layout: {
-			item: {
-				type: 'drop',
-				label: 'drop item',
-			},
-			grid: {
-				type: 'drop',
-				label: 'drop grid',
-				allowedTypes: 'Grid'
-			}
-		}
-	}
-}
-
 class Mirror extends paper.Group {
 	constructor() {
 		super()
@@ -79,6 +54,42 @@ class Mirror extends paper.Group {
 class Snapper extends Mirror {
 	constructor(spec) {
 		super()
+		const self = this
+
+		const specDefault = {
+			options: {
+				item: null,
+				grid: null,
+				set name(value) {
+					self.name = value
+				},
+				get name() {
+					return self.name
+				},
+			},
+
+			dialog: {
+				payload: {
+					locked: true,
+					position: {x: 400, y: 400},
+				},
+				layout: {
+					name: {
+						type: 'text',
+						label: 'name:',
+					},
+					item: {
+						type: 'drop',
+						label: 'drop item',
+					},
+					grid: {
+						type: 'drop',
+						label: 'drop grid',
+						allowedTypes: 'Grid'
+					}
+				}
+			}
+		}		
 
 		Object.assign(this, specDefault, spec)
 		this.name = `Snapper ${this.id}`

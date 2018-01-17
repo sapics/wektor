@@ -348,6 +348,25 @@ export default {
 		padding: 0;
 	}
 
+	.underline {
+		position: relative;
+
+		&::after {
+			position: absolute;
+			margin: 0 auto;
+			color: inherit;
+			content: '';
+			left: 0;
+			right: 0;
+			width: 100%;
+			left: 0;
+			bottom: 3px;
+			height: 0;
+			background: none;
+			border-bottom: calc(1em * 0.08) solid;
+		}
+	}
+
 	.shortcut {
 		text-decoration: underline;
 	}

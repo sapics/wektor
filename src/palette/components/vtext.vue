@@ -2,7 +2,7 @@
 	<div
 		class="palette-text"
 	>	
-		<span class="label">{{ label }}</span>
+		<span class="label" v-if="label">{{ label }}</span>
 		<input
 			v-model="text"
 			type="text"

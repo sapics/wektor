@@ -51,7 +51,6 @@ class WektorUiTheme {
 			#wektor .highlight {
 				background-color: ${this.highlightColor};
 			}
-
 			#wektor {
 				color: ${this.color};
 				font-size: ${this.fontSize}pt;

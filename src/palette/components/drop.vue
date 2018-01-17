@@ -4,9 +4,19 @@
 		@dragover.prevent
 		@drop="onDrop"
 	>
-		<span class="label">{{label}}:</span>&nbsp;<span>{{item.name}}</span>
+		<span class="label">{{label}}:</span><!--
+	--><span class="input" :class="{'underline': !item.name}">{{item.name || '&#8203;'}}</span>
 	</div>
 </template>
+
+<style lang="scss">
+.palette-drop {
+	.input {
+		display: inline-block;
+		min-width: 3em;
+	}
+}	
+</style>
 
 <script>
 import baseComponent from './baseComponent'
