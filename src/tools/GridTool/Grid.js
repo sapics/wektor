@@ -90,7 +90,7 @@ class Grid extends Group {
 		this.background = new Path({
 			name: 'background',
 			segments: [
-				[0, 0], [200, 0], [200, 200], [0, 200]
+				[0, 0], [600, 0], [600, 600], [0, 600]
 			],
 			closed: true,
 			position: (window.view && window.view.center) || [0, 0],

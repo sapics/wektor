@@ -33,6 +33,11 @@ const specDefault = {
 }
 
 class Mirror extends paper.Group {
+	constructor() {
+		super()
+		this.locked = true
+	}
+
 	mirrorItem(item) {
 		if (this.mirrorsItem(item)) return
 
@@ -45,15 +50,27 @@ class Mirror extends paper.Group {
 			}
 		} else {
 			const clone = item.clone()
-			clone.data.originalId = item.id
+			clone.data.original = item
+			clone.data.iterable = true
+			clone.locked = true
 			this.addChild(clone)
+			if (item.data.iterable !== false)
+				this.update(clone, item)
+			wektor.changeTracker.onItemChange(item.id, ChangeFlag.GEOMETRY, () => {
+				if (item.data.iterable === false) return
+				this.update(clone, item)
+			})					
 		}
+	}
+
+	update(item, original) {
+		item.segments = original.segments
 	}
 
 	mirrorsItem(item) {
 		return this.getItem({
 			data: {
-				originalId: item.id,
+				original: item,
 			}
 		})
 	}
@@ -64,6 +81,7 @@ class Snapper extends Mirror {
 		super()
 
 		Object.assign(this, specDefault, spec)
+		this.name = `Snapper ${this.id}`
 	}
 
 	snap(items) {
@@ -80,42 +98,23 @@ class Snapper extends Mirror {
 	snapItem(item, original) {
 		if (!this.grid) return
 
+		original.opacity = 0	
 		item.removeSegments()
 		item.closed = original.closed
 
 		for (const segment of original.segments) {
-			item.addSegment( this.snapSegment(segment) ).selected = true
+			item.addSegment( this.snapSegment(segment) )
 		}
 	}
 
 	initSnapItem(item) {
-		item.opacity = 0
+		// item.opacity = 0
 		this.mirrorItem(item)
 	}
 
-	// initSnapItem(item) {
-	// 	if (item.hasChildren()) {
-	// 		for (const child of item.children)
-	// 			this.initSnapItem(child)
-	// 			wektor.changeTracker.onItemChange(item.id, ChangeFlag.CHILDREN, () => {
-	// 				this.initSnapItem(item)
-	// 			})	
-	// 	} else {
-	// 		if (this.getItem({ data: { originalId: item.id } })) {
-	// 			return
-	// 		}
-	// 		const clone = item.clone()
-	// 		item.opacity = 0
-	// 		clone.data.original = item
-	// 		clone.data.originalId = item.id
-	// 		clone.locked = true
-	// 		this.addChild(clone)
-
-	// 		wektor.changeTracker.onItemChange(item.id, ChangeFlag.GEOMETRY, () => {
-	// 			this.snapItem(clone, item)
-	// 		})
-	// 	}
-	// }
+	update(item, original) {
+		this.snapItem(item, original)
+	}
 
 	snapSegment(segment) {
 		const snappedSegment = new paper.Segment( this.snapPoint(segment.point) )

@@ -1,5 +1,6 @@
 import paper from 'paper'
 import BaseTool from '@/tools/BaseTool'
+import wektor from '@/wektor'
 const { Path } = paper
 
 const specDefault = {
@@ -60,6 +61,7 @@ class DrawingTool extends BaseTool {
 	onMouseDown(event) {
 		this.path = new Path()
 		this.path.add(event.point)
+		this.path.data.iterable = false
 	}
 	
 	onMouseDrag(event) {
@@ -71,7 +73,6 @@ class DrawingTool extends BaseTool {
 	}
 
 	onDialogChange(target, key, value) {
-		console.log(target, key, value)
 		switch (key) {
 			case 'minDistance':
 			case 'maxDistance':
@@ -88,7 +89,8 @@ class DrawingTool extends BaseTool {
 			options.simplify && path.simplify(options.simplify)
 			options.smooth && path.smooth()
 			options.flatten && path.flatten(options.flatten)
-			console.log(options)
+			path.data.iterable = true
+			wektor.state.update()
 		} else {
 			path.remove()
 		}

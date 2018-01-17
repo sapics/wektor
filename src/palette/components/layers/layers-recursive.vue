@@ -23,6 +23,7 @@
 					<span 
 						class="label"
 						:class="{ selected, highlight: selected }"
+						@click="handleClickLabel"
 					>{{ item.name }}</span>
 				</vddl-handle>
 			</vddl-nodrag>
@@ -84,6 +85,7 @@
 
 <script>
 import wektor from '@/wektor'
+import { isFunction } from '@/utils' 
 
 export default {
 	name: 'nested-tree',
@@ -120,6 +122,10 @@ export default {
 	},
 
 	methods: {
+		handleClickLabel() {
+			const paperItem = wektor.project.getItem({ id: this.item.id })
+			paperItem && isFunction(paperItem.activate) && paperItem.activate()
+		},
 
 		handleInserted({ index, item: insertedItem, list }) {
 			// in paper.js, items with a lower index are lower in the hierarchy
