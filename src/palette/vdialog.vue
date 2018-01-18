@@ -9,8 +9,8 @@
 			:to="referencePoint"
 		></pointer-line>		
 		<div
-			class="dialog draghandler dontApplyCustomTheme"
-			:class="{active, fitContent}"
+			class="dialog draghandler"
+			:class="{ active, fitContent }"
 			ref="dialog"
 			:data-id="id"
 			:data-parent-id="parentId"
@@ -21,20 +21,14 @@
 			@mouseleave="hover = false"		
 			v-outside:mousedown="onMouseDownOutside"
 		>
-			<palette
-				class="draghandler"
-				:values="values"
-				:layout="layout"
-				:dialogId="id"
-				:id="id"
-			></palette>	
 			<div 
 				class="dialog-sidebar draghandler"
 			>
 				<div 
-					class="lock"
+					ref="lock"
+					class="dialog-lock draghandler"
 					:class="{ locked }"
-					@click="locked = !locked"
+					@mouseup="!drag && (locked = !locked)"
 				></div>	
 				<svg 
 					class="resize-corner" viewBox="0 0 7 7"
@@ -43,7 +37,14 @@
 					<line x1="0" y1="7" x2="7" y2="0" />
 					<line x1="4" y1="7" x2="7" y2="4" />
 				</svg>
-			</div>				
+			</div>
+			<palette
+				class="palette draghandler"
+				:values="values"
+				:layout="layout"
+				:dialogId="id"
+				:id="id"
+			></palette>								
 		</div>
 	</div>
 </template>
@@ -62,14 +63,15 @@
 		&.fitContent .palette {
 			width: 100%;
 			height: 100%;
-		}	
+		}
 	}
 
-	.active.dialog .dialog-sidebar {
-		z-index: 100;
-	}
+	// .active.dialog .dialog-sidebar {
+	// 	z-index: 1;
+	// }
 
 	.dialog-sidebar {
+		z-index: 1;
 		width: 0.8em;
 		height: 100%;
 		position: absolute;
@@ -78,22 +80,19 @@
 		cursor: grab;
 	}
 
-	.lock {
+	.dialog-lock {
+		@include bullet();
 		position: absolute;
-		box-sizing: border-box;
-		width: 0.6em;
-		height: 0.6em;
 		margin: 0.2em;
 		right: 0;
 		top: 0;
-		border-radius: 50%;
 		border: 1px solid var(--wektor-dialog-border-color);
+		background: white;
 		cursor: pointer;
-		background-color: white;
 	}
 
-	.lock.locked {
-		background-color: var(--wektor-dialog-border-color);
+	.dialog-lock.locked {
+		background: var(--wektor-dialog-border-color);
 	}
 
 	.resize-corner {
@@ -163,6 +162,10 @@ export default {
 		layout() { return this.spec.layout || {} },
 		payload() { return this.spec.payload || {} },
 		reference() { return this.spec.reference || {} },
+
+		globalLocked() {
+			return this.$bus.globalLocked
+		},
 
 		values() {
 			return this.bridge.values || this.spec.values
@@ -408,6 +411,7 @@ export default {
 		},
 
 		onMouseDown(event) {
+			console.log(event)
 			this.active = true
 			if (this.isDragHandle(event.target))
 				this.startDrag(event)

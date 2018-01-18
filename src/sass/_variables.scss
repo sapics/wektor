@@ -1,3 +1,10 @@
 $padding: 2em;
 $space: 0.27em;
 $thin-space: 0.17em;
+
+@mixin bullet() {
+	box-sizing: border-box;
+	width: 11px;
+	height: 11px;
+	border-radius: 50%;
+}

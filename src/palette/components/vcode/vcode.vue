@@ -21,6 +21,7 @@
 .palette-code {
 	width: 100%;
 	height: 100%;
+	isolation: isolate;
 
 	.palette-code-run-button {
 		position: absolute;

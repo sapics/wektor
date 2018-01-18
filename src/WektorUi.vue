@@ -66,6 +66,15 @@ export default {
 		settings() {
 			return settings
 		},
+
+		globalLocked: {
+			get() {
+				return this.$bus.globalLocked
+			},
+			set(value) {
+				this.$bus.globalLocked = value
+			},
+		},
 	},
 
 	created() {
@@ -113,6 +122,10 @@ export default {
 	},
 
 	methods: {
+		// toggleGlobalLock() {
+		// 	this.gl
+		// },
+
 		openDefaultDialogs() {
 			wektor.openDialog({
 				id: 'layers',
@@ -123,7 +136,6 @@ export default {
 				payload: {
 					locked: true, 
 					resize: true, 
-					fitContent: true,
 					position: { x: 700, y: 200 },
 					css: {
 						overflow: 'scroll',
@@ -160,40 +172,6 @@ export default {
 				values: theme,
 				changeHandler: () => theme.update()	
 			})
-		},
-
-		handleCustomCssChange(target, key, value) {
-			const { customStyleSheet, customCss } = this
-
-			if (customStyleSheet)
-				customStyleSheet.parentNode.removeChild(customStyleSheet)
-			
-			const styleSheet = document.createElement('style')
-			styleSheet.innerHTML = `
-				#wektor {
-					color: ${customCss.color}!important;
-					font-size: ${customCss.fontSize}pt!important;
-				}
-				.dialog {
-					color: ${customCss.dialog.color}!important;
-					font-style: ${customCss.dialog.fontStyle}!important;
-					background: ${customCss.dialog.background}!important;
-					border-color: ${customCss.dialog.borderColor}!important;
-				}
-				#wektor input, .input {
-					color: ${customCss.input.color}!important;
-					font-style: ${customCss.input.fontStyle}!important;
-					font-size: ${customCss.fontSize}pt!important;
-				}
-				.theme-border {
-					border: 1px solid ${customCss.dialog.borderColor}!important;
-				}
-				.theme-border_background {
-					background: ${customCss.dialog.borderColor}!important;
-				}
-			`
-			document.body.appendChild(styleSheet)
-			this.customStyleSheet = styleSheet
 		},
 
 		...mapMutations([

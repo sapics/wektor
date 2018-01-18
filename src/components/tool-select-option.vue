@@ -9,15 +9,20 @@
 </template>
 
 <style lang="scss" scoped>
+@import 'src/sass/variables';
+
 .tool-select-item {
 	user-select: none;
 	position: relative;
 	cursor: pointer;
 
 	&.selected:before {
-		content: '\25CF\00a0';
+		content: '';
+		@include bullet();
+		background-color: var(--wektor-color);
+		top: 6px;
+		left: -16px;
 		position: absolute;
-		transform: translate(-100%);
 	}
 }
 </style>

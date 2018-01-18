@@ -9,7 +9,6 @@ export default {
 
 	methods: {
 		startDrag(event) {
-			this.drag = true
 			const el = this.$refs.dialog
 			const {top, left} = el.getBoundingClientRect()
 			this.dragDelta = {
@@ -20,6 +19,7 @@ export default {
 		},
 
 		onDrag(event) {
+			this.drag = true
 			event.preventDefault()
 			this.position = { 
 				x: event.x - this.dragDelta.x,

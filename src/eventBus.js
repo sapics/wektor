@@ -1,6 +1,10 @@
 import Vue from 'vue'
 
-const eventBus = new Vue({})
+const eventBus = new Vue({
+	data: {
+		globalLocked: false,
+	},
+})
 
 export default {
 	install(Vue) {
