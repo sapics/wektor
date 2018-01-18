@@ -1,6 +1,6 @@
 <template>
 	<div
-		class="tool-select-item"
+		class="tool-select-option"
 		@click="$emit('click', $event)"
 		@contextmenu="onContextmenu($event)"
 	>
@@ -11,7 +11,7 @@
 <style lang="scss" scoped>
 @import 'src/sass/variables';
 
-.tool-select-item {
+.tool-select-option {
 	user-select: none;
 	position: relative;
 	cursor: pointer;

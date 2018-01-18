@@ -40,7 +40,7 @@ export default {
 		},
 
 		endResize() {
-			this.$emit('end-resize')
+			this.$emit('endResize')
 			window.removeEventListener('mousemove', this.resize)
 			window.removeEventListener('mouseup', this.endResize)
 		},

@@ -15,7 +15,6 @@
 			:class="{
 				'selected': option === selected, 
 				'focused': option === focused, 
-				'highlight': (option === focused && option !== selected)
 			}"
 		></tool-select-option>	
 	</div>

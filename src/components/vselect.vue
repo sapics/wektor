@@ -11,7 +11,7 @@
 			v-for="option in options"
 			:key="option.key || option.label"
 			@click="selectOption(option)"
-			:class="{'selected': option === selected, 'focused': option === focused, 'highlight': option === focused}"
+			:class="{'selected': option === selected, 'focused': option === focused}"
 		>{{option.label}}</div>	
 	</div>
 </template>
@@ -73,7 +73,6 @@ export default {
 
 		focusOption(selector) {
 			this.focused = this.getOption(selector, this.focused)
-			console.log('focus item', selector, this.focused)
 			if (this.focused) this.$emit('focus', this.focused)
 		},
 

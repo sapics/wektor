@@ -12,6 +12,8 @@
 		></editor>
 		<span 
 			class="palette-code-run-button"
+			ref="runCodeButton"
+			style="cursor: pointer"
 			@click="runCode"
 		>&#9656;</span>
 	</div>
@@ -76,11 +78,14 @@ export default {
 		const editor = this.editor = this.$refs.ace.editor
 		editor.session.$worker.send("changeOptions", [{asi: true}])
 		editor.container.addEventListener('drop', this.handleDrop)
-		this.$bus.$on('resize-dialog', dialogId => {
-			if (dialogId === this.dialogId) {
+
+		wektor.on('resizeDialog', dialog => {
+			if (dialog.id === this.dialogId)
 				editor.resize()
-			}
 		})
+
+		const dialog = document.querySelector(`.dialog[data-id='${this.dialogId}']`)
+		dialog && dialog.querySelector('.dialog-sidebar').appendChild(this.$refs.runCodeButton)
 	},
 
 	methods: {

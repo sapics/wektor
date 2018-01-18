@@ -23,7 +23,8 @@
 		<div ref="dialogs">
 			<vdialog
 				v-for="(dialog, id) in dialogs"
-				v-if="dialog.vfor !== false"
+				v-if="dialog.open"
+				v-show="dialog.show"
 				:key="id"
 				:spec="dialog"
 			></vdialog>
@@ -33,7 +34,6 @@
 
 <script>
 import Vue from 'vue' 
-import { mapGetters, mapMutations, mapState } from 'vuex'
 import toolBar from './components/tool-bar.vue'
 import vdialog from './palette/vdialog.vue'
 import settings from './settings'
@@ -66,15 +66,6 @@ export default {
 		settings() {
 			return settings
 		},
-
-		globalLocked: {
-			get() {
-				return this.$bus.globalLocked
-			},
-			set(value) {
-				this.$bus.globalLocked = value
-			},
-		},
 	},
 
 	created() {
@@ -83,15 +74,13 @@ export default {
 	},
 
 	mounted() {
-		document.addEventListener('keydown', this.onKeydown)
-		document.addEventListener('contextmenu', this.onContextmenu)
-
-		wektor.on('activateTool', ({ id, tool }) => {
-			this.setActiveTool(id)
-		})
+		window.addEventListener('keydown', this.onKeydown)
+		window.addEventListener('contextmenu', this.onContextmenu)
 
 		wektor.on('openDialog', this.openDialog)
 		wektor.on('closeDialog', this.closeDialog)
+		wektor.on('showDialog', this.showDialog)
+		wektor.on('hideDialog', this.hideDialog)
 
 		wektor.on('addTool', ({ id, tool }) => {
 			this.$set(this.tools, id, {
@@ -122,10 +111,6 @@ export default {
 	},
 
 	methods: {
-		// toggleGlobalLock() {
-		// 	this.gl
-		// },
-
 		openDefaultDialogs() {
 			wektor.openDialog({
 				id: 'layers',
@@ -174,12 +159,6 @@ export default {
 			})
 		},
 
-		...mapMutations([
-			// 'openDialog',
-			'addTool',
-			'setActiveTool'
-		]),
-
 		onKeydown(event) {			
 			const exlcude = settings.shortcutTargetExlude
 			if (exlcude.includes(event.target.tagName.toLowerCase())) return
@@ -213,7 +192,6 @@ export default {
 
 		updateChildren() {
 			const countTypeOf = {}
-			const store = this.$store
 
 			function convertItems(items) {
 				const converted = []
@@ -236,18 +214,22 @@ export default {
 			this.layers = convertItems(wektor.project.layers)
 		},
 
-		updateSelection() {
-			const selectedItems = wektor.project.selectedItems
-			const ids = selectedItems.map(item => item.id)
-			this.$store.commit('updateSelection', ids)
-		},
-
 		openDialog(dialog) {
 			this.$set(this.dialogs, dialog.id, dialog)
 		},
 
 		closeDialog(dialog) {
 			this.$delete(this.dialogs, dialog.id)
+		},
+
+		showDialog({id}) {
+			const dialog = this.dialogs[id]
+			if (dialog) dialog.show = true
+		},
+
+		hideDialog({id}) {
+			const dialog = this.dialogs[id]
+			if (dialog) dialog.show = false
 		},
 
 		updateDialogStackingOrder(stack, updateType) {
@@ -359,10 +341,12 @@ export default {
 	height: 100%;
 	margin: $padding;
 	margin-right: 0;
+	pointer-events: none;
 
 	#wektor-search {
 		width: 100%;
 		input {
+			pointer-events: all;
 			width: 100%;
 			position: absolute;
 			transform: translate(0, -100%);			
@@ -371,6 +355,15 @@ export default {
 
 	#wektor-tool-bar {
 		margin-bottom: $padding;
+		.tool-select-option .label {
+			pointer-events: all;
+		}
+	}
+
+	#wektor-menu {
+		.label {
+			pointer-events: all;
+		}
 	}
 }
 

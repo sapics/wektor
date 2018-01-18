@@ -35,7 +35,6 @@
 </style>
 
 <script>
-import { mapMutations, mapGetters } from 'vuex'
 import baseComponent from './baseComponent'
 import { isObject, isString, round, mapValue, getContrast, alphaToWhite, getDeltaE } from '@/utils.js'
 import { valueToColor } from './colorpicker/utils'
@@ -52,8 +51,6 @@ export default {
 	},
 
 	computed: {
-		...mapGetters(['getDialog']),
-
 		gradientColor() {
 			return `linear-gradient(to top, black, transparent), linear-gradient(to right, white, ${this.value.toCSS()})`
 		},

@@ -60,7 +60,7 @@ export default {
 			'shortcut': {
 				key: 'i',
 				modifier: 'meta',
-				callback: ({wektor}) => wektor.toggleDialog('scripts'),
+				callback: ({wektor}) => wektor.toggleShowDialog('scripts'),
 			},
 		},		
 	],

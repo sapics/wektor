@@ -10,7 +10,7 @@
 		></pointer-line>		
 		<div
 			class="dialog draghandler"
-			:class="{ active, fitContent }"
+			:class="{ fitContent }"
 			ref="dialog"
 			:data-id="id"
 			:data-parent-id="parentId"
@@ -74,6 +74,9 @@
 		z-index: 1;
 		width: 0.8em;
 		height: 100%;
+		box-sizing: border-box;
+		padding: 0.2em;
+		padding-left: 0;		
 		position: absolute;
 		top: 0;
 		right: 0;
@@ -82,10 +85,6 @@
 
 	.dialog-lock {
 		@include bullet();
-		position: absolute;
-		margin: 0.2em;
-		right: 0;
-		top: 0;
 		border: 1px solid var(--wektor-dialog-border-color);
 		background: white;
 		cursor: pointer;
@@ -163,10 +162,6 @@ export default {
 		payload() { return this.spec.payload || {} },
 		reference() { return this.spec.reference || {} },
 
-		globalLocked() {
-			return this.$bus.globalLocked
-		},
-
 		values() {
 			return this.bridge.values || this.spec.values
 		},
@@ -189,22 +184,6 @@ export default {
 			}
 		},
 
-		active: {
-			set(value) {
-				if (value)
-					wektor.activateDialog(this.id)
-
-				if (value)
-					this.$store.commit('activateDialog', this.id)
-				else
-					this.$store.commit('deactivateDialog', this.id)
-			},
-			get() {
-				const activeDialogId = this.$store.state.active.dialog
-				return (this.id === activeDialogId)
-			}
-		},
-
 		showPointerLine() {
 			if (this.drag || this.hover || this.reference.hover) return true
 			return !this.locked 
@@ -217,7 +196,6 @@ export default {
 		zIndex() {
 			const stackingIndex = this.spec.stackingIndex
 			return this.spec.stackingIndex
-			// return (stackingIndex !== undefined) ? stackingIndex : 'auto'
 		},	
 
 		pointerCorner() {
@@ -248,7 +226,7 @@ export default {
 	},
 
 	created() {
-		this.active = true
+		this.activate()
 		this.referencePoint = this.reference.position
 		this.locked = this.payload.locked || this.locked
 
@@ -263,7 +241,8 @@ export default {
 			}
 		})
 
-		this.$on('end-resize', () => this.$bus.$emit('resize-dialog', this.id))	
+		this.$on('resize', () => wektor.emit('resizeDialog', { id: this.id }))	
+		this.$on('endResize', () => wektor.emit('resizeDialog', { id: this.id }))
 	},
 
 	mounted() {
@@ -278,6 +257,10 @@ export default {
 	},
 
 	methods: {
+		activate() {
+			wektor.activateDialog(this.id)
+		},
+
 		updateBridge() {
 			this.bridge.update && this.bridge.update()
 		},
@@ -411,8 +394,7 @@ export default {
 		},
 
 		onMouseDown(event) {
-			console.log(event)
-			this.active = true
+			this.activate()
 			if (this.isDragHandle(event.target))
 				this.startDrag(event)
 		},
@@ -423,7 +405,6 @@ export default {
 		},
 
 		onMouseDownOutside(event) {
-			this.active = false
 			if (!this.locked) this.close(event)
 		},	
 

@@ -202,6 +202,7 @@ class Wektor extends EventEmitter {
 		this.dialogs[dialog.id] = dialog
 		this.dialogsStackingOrder.add(dialog.id)
 		this.emit('addDialog', dialog)
+		this.emit('updateDialogs', this.dialogs, 'add')
 	}
 
 	openDialog(arg) {
@@ -217,18 +218,26 @@ class Wektor extends EventEmitter {
 		}
 
 		dialog.open = true
+		dialog.show = true
 
 		this.emit('openDialog', dialog)
+		this.emit('updateDialogs', this.dialogs, 'open')
 		this.dialogsStackingOrder.add(dialog.id)
 	}
 
-	toggleDialog(id) {
-		let dialog = this.dialogs[id]
-
+	getDialog(id) {
+		const dialog = this.dialogs[id]
 		if (!dialog) {
 			console.warn(`There is no dialog with id '${id}'`)
-			return
+			return false
+		} else {
+			return dialog
 		}
+	}
+
+	toggleDialog(id) {
+		let dialog = this.getDialog(id)
+		if (!dialog) return
 
 		if (dialog.open) 
 			this.closeDialog(id)
@@ -236,13 +245,19 @@ class Wektor extends EventEmitter {
 			this.openDialog(id)
 	}
 
-	openChildDialog(spec) {
-		const parentDialog = this.dialogs[spec.parentId]
+	toggleShowDialog(id) {
+		let dialog = this.dialogs[id]
+		if (!dialog) return
 
-		if (!parentDialog) {
-			console.warn(`Child-Dialog has to have a parent. None found with id '${spec.parentId}'`)
-			return
-		}
+		if (dialog.show)
+			this.hideDialog(id)
+		else
+			this.showDialog(id)
+	}
+
+	openChildDialog(spec) {
+		const parentDialog = this.getDialog(spec.parentId)
+		if (!parentDialog) return
 
 		if (parentDialog.bridge)
 			spec.bridge = parentDialog.bridge
@@ -252,12 +267,33 @@ class Wektor extends EventEmitter {
 		this.openDialog(spec)
 	}
 
+	showDialog(id) {
+		const dialog = this.dialogs[id]
+		if (!dialog) return
+
+		if (dialog.open !== true)
+			this.openDialog(id)
+
+		dialog.show = true
+		this.emit('showDialog', dialog)
+		this.emit('updateDialogs', this.dialogs, 'show')
+	}	
+
+	hideDialog(id) {
+		const dialog = this.dialogs[id]
+		if (!dialog) return
+		dialog.show = false
+		this.emit('hideDialog', dialog)
+		this.emit('updateDialogs', this.dialogs, 'hide')
+	}
+
 	closeDialog(id) {
 		const dialog = this.dialogs[id]
 		if (!dialog) return
 		dialog.open = false
 		this.dialogsStackingOrder.remove(id)
 		this.emit('closeDialog', dialog)
+		this.emit('updateDialogs', this.dialogs, 'close')
 	}
 
 	activateDialog(id) {

@@ -91,8 +91,8 @@ export default {
 
 	computed: {
 		active() {
-			const activeDialogId = this.$store.state.active.dialog
-			return (this.dialogId === activeDialogId)
+			// const activeDialogId = this.$store.state.active.dialog
+			// return (this.dialogId === activeDialogId)
 		},
 
 		mode() {

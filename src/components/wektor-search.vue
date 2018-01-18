@@ -1,5 +1,8 @@
 <template>
-	<div class="wektor-search">
+	<div 
+		class="wektor-search"
+		:class="{ searching }"
+	>
 		<input
 			v-visible="focused"
 			ref="input" 
@@ -13,12 +16,16 @@
 	</div>
 </template>
 
-<style lang="scss" scoped>
+<style lang="scss">
 	.wektor-search {
 		input {
 			outline: none;
 			border: none;
 			border-bottom: 1px solid var(--wektor-color);
+		}
+
+		&.searching .focused {
+			background-color: var(--wektor-highlight-color);
 		}
 	}
 </style>
@@ -101,9 +108,13 @@ export default {
 			set(value) {
 				this.$emit('input', value)
 
-				if (value === '') return
+				if (value === '') {
+					this.searching = false
+					return
+				}
 
 				this.$nextTick(() => {
+					this.searching = true
 					this.searchResult = new SearchResult(this.$children)
 					this.searchResult.focusEntry(0)
 				})
@@ -114,6 +125,7 @@ export default {
 	data() {
 		return {
 			focused: false,
+			searching: false,
 		}
 	},
 

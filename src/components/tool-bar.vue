@@ -1,5 +1,6 @@
 <template>
 	<tool-select
+		class="tool-bar"
 		ref="select"
 		:value="activeToolId"
 		:payload="{ options: toolSelectOptions }"

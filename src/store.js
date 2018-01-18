@@ -12,11 +12,13 @@ Vue.use(Vuex)
 // 			dialog: null,
 // 		},
 // 		dialogs: {},
-// 		hierarchy: [],
-// 		watchedItems: [],
 // 	},
 
 // 	mutations: {
+// 		addDialog(state, spec) {
+
+// 		},
+
 // 		openDialog(state, spec) {
 
 // 		},
@@ -25,21 +27,13 @@ Vue.use(Vuex)
 
 // 		},
 
-// 		modifyDialog(state, {}) {
+// 		modifyDialog(state) {
 
 // 		},
 
-// 		updateHierarchy() {
-
-// 		},
-
-// 		watchItem() {
-
-// 		},
-
-// 		unwatchItem() {
-
-// 		},
+// 		getDialog: state => id => {
+// 			return state.dialogs[id]
+// 		}
 // 	},
 // })
 

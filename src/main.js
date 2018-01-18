@@ -1,10 +1,6 @@
 import Vue from 'vue'
-import Vuex from 'vuex'
 
 import settings from './settings'
-
-import eventBus from './eventBus.js'
-import store from './store'
 
 import outside from './directives/outside.js'
 import visible from './directives/visible.js'
@@ -31,8 +27,6 @@ paper.project.currentStyle = {
 }
 
 Vue.config.productionTip = false
-Vue.use(Vuex)
-Vue.use(eventBus)
 Vue.use(Vddl)
 Vue.directive('outside', outside)
 Vue.directive('visible', visible)
@@ -81,6 +75,4 @@ new Vue({
 	components: { WektorUi },
 
 	template: '<wektor-ui/>',
-
-	store,
 })
