@@ -69,12 +69,12 @@ export default {
 	},
 
 	created() {
-		this.theme = new WektorUiTheme()
+		this.theme = new WektorUiTheme(settings.theme)
 		this.theme.activate()
 	},
 
 	mounted() {
-		window.addEventListener('keydown', this.onKeydown)
+		window.addEventListener('keydown', this.onKeyDown)
 		window.addEventListener('contextmenu', this.onContextmenu)
 
 		wektor.on('openDialog', this.openDialog)
@@ -145,21 +145,18 @@ export default {
 					resize: true,
 				} 
 			})
-			
-			const theme = this.theme
+
 			wektor.addDialog({
-				id: 'ui-theme',
-				payload: { 
-					locked: true,
-					applyCustomTheme: false,
+				id: 'preferences',
+				values: settings,
+				layout: settings.dialog.layouts.preferences,
+				changeHandler: (target, key, value) => {
+					key.startsWith('theme') && this.theme.update()
 				},
-				layout: settings.dialog.layouts.uiTheme,
-				values: theme,
-				changeHandler: () => theme.update()	
 			})
 		},
 
-		onKeydown(event) {			
+		onKeyDown(event) {
 			const exlcude = settings.shortcutTargetExlude
 			if (exlcude.includes(event.target.tagName.toLowerCase())) return
 				
@@ -175,13 +172,25 @@ export default {
 		},
 
 		shortcutMatches(shortcut, event) {
-			if (event.key !== shortcut.key) return false
+			// allow us to use shift-key as modifier also for lower case characters
+			const eventKey = event.code.slice(3).toLowerCase()
 
-			const modifiers = isArray(shortcut.modifier) ? shortcut.modifier : [shortcut.modifier]
+			const keyMatches = isArray(shortcut.key)
+				? shortcut.key.includes(eventKey)
+				: shortcut.key === eventKey
+
+			if (!keyMatches) return false
+
+			const shortcutModifiers = isArray(shortcut.modifier) ? shortcut.modifier : [shortcut.modifier]
+			for (let i = 0; i < shortcutModifiers.length; i++) {
+				const modifier = shortcutModifiers[i]
+				if (modifier === 'default')
+					shortcutModifiers[i] = settings.shortcutModifiers.default
+			}
 
 			for (const modifier of ['alt', 'ctrl', 'meta', 'shift']) {
 				const eventHasModifier = event[modifier + 'Key']
-				const shortcutHasModifier = modifiers.includes(modifier)
+				const shortcutHasModifier = shortcutModifiers.includes(modifier)
 
 				if (eventHasModifier && !shortcutHasModifier) return false
 				if (!eventHasModifier && shortcutHasModifier) return false

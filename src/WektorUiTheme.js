@@ -2,25 +2,25 @@ import { deepExtend } from '@/utils'
 
 // the fontStyle property isn't the same as css's font-style property! for simplicity we'll combine font-style
 // and font-weight (e.g. the fontStyle's options could be ['normal', 'italic', 'bold'])
-const specDefault = {
-	color: 'black',
-	fontSize: 14, // pt
-	highlightColor: 'yellow',
-	input: {
-		color: false,
-		fontStyle: 'normal', 
-	},
-	dialog: {
-		background: 'white',
-		borderColor: 'black',
-		color: false,
-		fontStyle: 'normal',
-	},
-}
+// const specDefault = {
+// 	color: 'black',
+// 	fontSize: 14, // pt
+// 	highlightColor: 'yellow',
+// 	input: {
+// 		color: false,
+// 		fontStyle: 'normal', 
+// 	},
+// 	dialog: {
+// 		background: 'white',
+// 		borderColor: 'black',
+// 		color: false,
+// 		fontStyle: 'normal',
+// 	},
+// }
 
 class WektorUiTheme {
 	constructor(spec) {
-		deepExtend(this, specDefault, spec)
+		this.spec = spec
 	}
 
 	activate() {
@@ -38,33 +38,35 @@ class WektorUiTheme {
 	}
 
 	update() {
+		const { color, fontSize, input, dialog, highlightColor } = this.spec
+
 		this.styleSheet.innerHTML = `
 			:root {
-				--wektor-color: ${this.color};
-				--wektor-input-color: ${this.input.color || this.color};
-				--wektor-dialog-color: ${this.dialog.color || this.color};
-				--wektor-dialog-background: ${this.dialog.background};
-				--wektor-dialog-border-color: ${this.dialog.borderColor};
-				--wektor-highlight-color: ${this.highlightColor};
+				--wektor-color: ${color};
+				--wektor-input-color: ${input.color || color};
+				--wektor-dialog-color: ${dialog.color || color};
+				--wektor-dialog-background: ${dialog.background};
+				--wektor-dialog-border-color: ${dialog.borderColor};
+				--wektor-highlight-color: ${highlightColor};
 			}
 
 			#wektor .highlight {
-				background-color: ${this.highlightColor};
+				background-color: ${highlightColor};
 			}
 			#wektor {
-				color: ${this.color};
-				font-size: ${this.fontSize}pt;
+				color: ${color};
+				font-size: ${fontSize}pt;
 			}
 			#wektor .dialog {
-				color: ${this.dialog.color || 'inherit'};
-				${this.fontStyleToCss(this.dialog.fontStyle)}
-				background: ${this.dialog.background};
-				border-color: ${this.dialog.borderColor};
+				color: ${dialog.color || 'inherit'};
+				${this.fontStyleToCss(dialog.fontStyle)}
+				background: ${dialog.background};
+				border-color: ${dialog.borderColor};
 			}
 			#wektor input, .input {
-				color: ${this.input.color || 'inherit'};
-				font-size: ${this.fontSize}pt;
-				${this.fontStyleToCss(this.input.fontStyle)}
+				color: ${input.color || 'inherit'};
+				font-size: ${fontSize}pt;
+				${this.fontStyleToCss(input.fontStyle)}
 			}
 		`	
 	}

@@ -2,6 +2,7 @@ import layouts from './dialogLayouts'
 
 export default {
 	shortcutModifiers: {
+		default: 'alt',
 		tool: false,
 		detailedChange: 'meta', 
 	},
@@ -14,56 +15,75 @@ export default {
 	shortcuts: [
 		{
 			key: 'ArrowDown',
-			modifier: 'meta',
+			modifier: 'default',
 			emit: 'toolSelectNext'
 		},
 		{
 			key: 'ArrowUp',
-			modifier: 'meta',
+			modifier: 'default',
 			emit: 'toolSelectPrev'
 		},
 		{
 			key: 'g',
-			modifier: 'meta',
+			modifier: 'default',
 			method: 'groupItems'
 		},
 		{
 			key: 'z',
-			modifier: 'meta',
+			modifier: 'default',
 			method: 'undo'
 		},
 		{
 			key: 'y',
-			modifier: 'meta',
+			modifier: 'default',
 			method: 'redo'
 		},
+		{
+			key: ['Backspace', 'Delete'],
+			method: 'deleteSelection',
+		},	
 	],
 	menu: [
 		{
 			'label': 'search',
 			'shortcut': {
 				key: 'h',
-				modifier: 'meta',
+				modifier: 'default',
 				callback: ({wektor}) => wektor.emit('search'),
 			},
 		},
 		{
-			'label': 'theme',
+			'label': 'preferences',
 			'shortcut': {
-				key: 'e',
-				modifier: 'meta',
-				callback: ({wektor}) => wektor.toggleDialog('ui-theme'),
+				key: 'p',
+				modifier: 'default',
+				callback: ({wektor}) => wektor.toggleDialog('preferences'),
 			},
 		},
 		{
 			'label': 'scripts',
 			'shortcut': {
 				key: 'i',
-				modifier: 'meta',
+				modifier: 'default',
 				callback: ({wektor}) => wektor.toggleShowDialog('scripts'),
 			},
 		},		
 	],
+	theme: {
+		color: 'black',
+		fontSize: 14, // pt
+		highlightColor: 'yellow',
+		input: {
+			color: false,
+			fontStyle: 'normal', 
+		},
+		dialog: {
+			background: 'white',
+			borderColor: 'black',
+			color: false,
+			fontStyle: 'normal',
+		},	
+	},
 	history: {
 		maxUndos: 80,
 	},

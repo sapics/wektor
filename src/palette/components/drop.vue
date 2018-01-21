@@ -2,9 +2,9 @@
 	<div 
 		class="palette-drop"
 		@dragover.prevent
-		@drop="onDrop"
+		@drop.prevent="onDrop"
 	>
-		<span class="label">{{label}}:</span><!--
+		<span class="label">{{label}}</span><!--
 	--><span class="input" :class="{'underline': !item.name}">{{item.name || '&#8203;'}}</span>
 	</div>
 </template>
@@ -38,6 +38,7 @@ export default {
 	methods: {
 		onDrop(event) {
 			const data = event.dataTransfer.getData('text')
+			if (!data) return
 			const item = JSON.parse(data)
 
 			if (this.validateDropItem(item))

@@ -178,6 +178,7 @@ class Transformbox extends paper.Path {
 		this.item.pivot = this.pivot
 		this.item.bounds = this.bounds
 		this.item.rotation = this.rotation
+		this.item.emit('change')
 	}
 }
 

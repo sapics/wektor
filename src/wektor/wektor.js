@@ -114,6 +114,12 @@ class Wektor extends EventEmitter {
 		})
 	}
 
+	deleteSelection() {
+		const selectedItems = this.project.selectedItems
+		for (const item of selectedItems)
+				item.remove()
+	}
+
 	initShortcuts() {
 		for (const shortcut of this.settings.shortcuts) {
 			this.addShortcut(shortcut)

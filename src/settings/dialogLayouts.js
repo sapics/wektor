@@ -1,3 +1,77 @@
+const uiTheme = {
+	'theme.font': {
+		align: 'columns',
+		label: 'font',
+		'theme.fontSize': {
+			type: 'number',
+			unit: 'pt',
+		},
+		'theme.color': {
+			type: 'color',
+			label: 'color',
+			return: 'css',
+		},
+	},
+	'theme.highlightColor': {
+		type: 'color',
+		label: 'highlight',
+		return: 'css',
+	}, 
+	'theme.input': {
+			align: 'columns',
+			label: 'input',
+			'theme.input.color': {
+				type: 'color',
+				label: 'color',
+				return: 'css',
+			},
+			'theme.input.fontStyle': {
+				type: 'select',
+				options: ['normal', 'italic', 'bold'],
+			},	
+	},						
+	'theme.dialog': {
+		label: 'dialog',
+		align: 'indent',
+		'theme.dialog.background': {
+			type: 'color',
+			label: 'background color',
+			return: 'css',
+		},
+		'theme.dialog.borderColor': {
+			type: 'color',
+			label: 'border color',
+			return: 'css',
+		},
+		'theme.dialog.font': {
+			align: 'columns',
+			label: 'font',
+			'theme.dialog.color': {
+				type: 'color',
+				label: 'color',
+				return: 'css',
+			},
+			'theme.dialog.fontStyle': {
+				type: 'select',
+				options: ['normal', 'italic', 'bold'],
+			},			
+		},
+	},				
+}
+
+const preferences = {
+	'shortcutModifiers.default': {
+		type: 'select',
+		label: 'modifier key',
+		options: ['meta', 'ctrl', 'alt', 'shift'],
+	},
+	'theme': {
+		label: 'theme',
+		popup: true,
+		...uiTheme
+	},
+}
+
 const item = {
 	name: {
 		label: 'name:',
@@ -49,65 +123,4 @@ const item = {
 	},				
 }
 
-const uiTheme = {
-	font: {
-		align: 'columns',
-		label: 'font',
-		fontSize: {
-			type: 'number',
-			unit: 'pt',
-		},
-		color: {
-			type: 'color',
-			label: 'color',
-			return: 'css',
-		},
-	},
-	highlightColor: {
-		type: 'color',
-		label: 'highlight',
-		return: 'css',
-	}, 
-	input: {
-			align: 'columns',
-			label: 'input',
-			'input.color': {
-				type: 'color',
-				label: 'color',
-				return: 'css',
-			},
-			'input.fontStyle': {
-				type: 'select',
-				options: ['normal', 'italic', 'bold'],
-			},	
-	},						
-	dialog: {
-		label: 'dialog',
-		align: 'indent',
-		'dialog.background': {
-			type: 'color',
-			label: 'background color',
-			return: 'css',
-		},
-		'dialog.borderColor': {
-			type: 'color',
-			label: 'border color',
-			return: 'css',
-		},
-		font: {
-			align: 'columns',
-			label: 'font',
-			'dialog.color': {
-				type: 'color',
-				label: 'color',
-				return: 'css',
-			},
-			'dialog.fontStyle': {
-				type: 'select',
-				options: ['normal', 'italic', 'bold'],
-			},			
-		},
-	},				
-}
-
-export default { item, uiTheme }
+export default { item, preferences }
