@@ -3,7 +3,6 @@
 		<pointer-line
 			v-if="referencePoint && pointerCorner"
 			v-visible="showPointerLine"
-			ref="pointerLine"
 			class="pointer-line"
 			:style="{zIndex}"
 			:from="pointerCorner"
@@ -67,6 +66,10 @@
 		}
 	}
 
+	// .active.dialog .dialog-sidebar {
+	// 	z-index: 1;
+	// }
+
 	.dialog-sidebar {
 		z-index: 1;
 		width: 0.8em;
@@ -100,6 +103,19 @@
 		height: 7px;
 		stroke: var(--wektor-dialog-border-color);
 	}
+
+	.wire-frame {
+		z-index: 3;
+		width: calc(100% + 2px);
+		height: calc(100% + 2px);
+		margin: -1px;
+		top: 0;
+		left: 0;
+		box-sizing: border-box;
+		pointer-events: none;
+		position: absolute;
+		border: 1px solid black;
+	}
 }
 </style>
 
@@ -109,7 +125,7 @@ import draggable from '@/mixins/draggable'
 import palette from './palette'
 import pointerLine from './components/pointer-line'
 import resizeable from '@/mixins/resizeable'
-import { isNumber, isFunction, isInViewport, getBounds, getDistance, toCssPercent, pointToCssPercent } from '@/utils'
+import { isFunction, isInViewport, getBounds, getDistance } from '@/utils'
 
 export default {
 	name: 'vdialog',
@@ -127,7 +143,7 @@ export default {
 
 	data() {
 		return {
-			position: null,
+			position: { x: 0, y: 0 },
 			referencePoint: null,
 			pointerCornerDelta: { x: 0, y: 0 },
 			locked: false,
@@ -139,71 +155,42 @@ export default {
 	},
 
 	computed: {
-		id () { 
-			return this.spec.id
-		},
-
-		parentId() {
-			return this.spec.parentId
-		},
-
-		bridge() {
-			return this.spec.bridge || {}
-		},
+		id () { return this.spec.id },
+		parentId() { return this.spec.parentId },
+		bridge() { return this.spec.bridge || {} },
+		layout() { return this.spec.layout || {} },
+		payload() { return this.spec.payload || {} },
+		reference() { return this.spec.reference || {} },
 
 		values() {
 			return this.bridge.values || this.spec.values
-		},		
-
-		layout() { 
-			return this.spec.layout || {}
-		},
-
-		payload() {
-			return this.spec.payload || {}
-		},
-
-		reference() {
-			return this.spec.reference || {}
-		},
-
-		fitContent() {
-			return this.payload.fitContent
 		},
 
 		customCss() {
 			return this.payload.css || {}
 		},
 
+		fitContent() {
+			return this.payload.fitContent
+		},
+
 		css() {
 			return {
 				zIndex: this.zIndex,
+				top: this.position.y + 'px',
+				left: this.position.x + 'px',
 				padding: '0.8em',
-				...this.customCss,	
-				...this.cssPosition,			
-			}
-		},
-
-		positionPercent() {
-			if (this.position) {
-				return pointToCssPercent(this.position)
-			}
-		},
-
-		cssPosition() {
-			if (this.positionPercent) {
-				return {
-					top: this.positionPercent.y + '%',
-					left: this.positionPercent.x + '%',
-					right: 'auto',
-					bottom: 'auto',
-				}
+				...this.customCss				
 			}
 		},
 
 		showPointerLine() {
 			if (this.drag || this.hover || this.reference.hover) return true
 			return !this.locked 
+		},
+
+		showWireFrame() {
+			return this.hover
 		},
 
 		zIndex() {
@@ -253,19 +240,6 @@ export default {
 				this.updateReference()
 			}
 		})
-		wektor.on('resize', () => {
-			this.updateReference()
-			this.updatePointerCorner()
-			
-			const bounds = this.$refs.dialog.getBoundingClientRect()
-			this.position = { x: bounds.x, y: bounds.y }
-
-			const pointerLine = this.$refs.pointerLine		
-			if (pointerLine) {
-				pointerLine.resize()
-				pointerLine.redraw()
-			}
-		})
 
 		this.$on('resize', () => wektor.emit('resizeDialog', { id: this.id }))	
 		this.$on('endResize', () => wektor.emit('resizeDialog', { id: this.id }))
@@ -273,9 +247,8 @@ export default {
 
 	mounted() {
 		this.resizeEl = this.$refs.dialog
-
+		this.setPosition()
 		this.$nextTick(() => {
-			this.setPosition()
 			const bounds = this.$refs.dialog.getBoundingClientRect()
 			this.width = bounds.width
 			this.height = bounds.height
@@ -295,7 +268,7 @@ export default {
 		updatePointerCorner(checkVisibility = false) {
 			const { position, width, height, reference } = this
 
-			if (!(position && reference && reference.position)) return
+			if (!(reference && reference.position)) return
 
 			const corners = [
 				{ x: position.x, y: position.y },
@@ -313,23 +286,67 @@ export default {
 			}					
 		},
 
+		updatePointerCornerOLD() {
+			const el = this.$refs.dialog
+			const referencePoint = this.reference.position
+			const position = this.position
+
+			if (!referencePoint) return
+
+			function checkCorner(vertical, horizontal, point, treshold = 0) {
+				// const topMostEl = document.elementFromPoint(point.x, point.y)
+				// if (topMostEl !== el) return
+
+				if (vertical === 'top' && point.y > referencePoint.y + treshold) return true
+				if (vertical === 'bottom' && point.y < referencePoint.y - treshold) return true
+
+				if (horizontal === 'left' && point.x > referencePoint.x + treshold) return true
+				if (horizontal === 'right' && point.x < referencePoint.x - treshold) return true
+
+				return false
+			}
+
+			const bounds = getBounds(el)
+			let corner
+
+			if (checkCorner('top', 'left', bounds.topLeft))
+				corner = bounds.topLeft
+			else if (checkCorner('top', 'right', bounds.topRight))
+				corner = bounds.topRight
+			else if (checkCorner('bottom', 'left', bounds.bottomLeft))
+				corner = bounds.bottomLeft
+			else if (checkCorner('bottom', 'right', bounds.bottomRight))
+				corner = bounds.bottomRight
+			
+			if (!corner) return { x: 0, y: 0 }
+
+			const delta = {
+				x: position.x - corner.x,
+				y: position.y - corner.y
+			}
+
+			this.pointerCornerDelta = delta
+		},
+
 		updateReference() {
 			const reference = this.reference
-			this.referencePoint = reference.position
 			if (reference && isFunction(reference.update)) 
 				this.$nextTick(() => reference.update())
 		},
 
 		setPosition() {
-			const reference = this.reference
-			const el = this.$refs.dialog
+			const { payload, reference } = this
 
-			if (!(reference && reference.bounds)) {
-				const bounds = el.getBoundingClientRect()
-				this.position = { x: bounds.x, y: bounds.y }
+			if (payload.position) {
+				this.position = payload.position
 				return
-			}
+			} 
+			if (!reference.bounds) {
+				this.position = { x: 0, y: 0 }
+				return
+			} 
 
+			const el = this.$refs.dialog
 			const { width, height } = el.getBoundingClientRect()
 			const { topRight, topCenter, topLeft, bottomLeft } = reference.bounds
 			const margin = this.$settings.dialog.margin
@@ -365,6 +382,7 @@ export default {
 					left: point.x,
 					bottom: point.y + height,
 					right: point.x + width,
+
 				}
 				if (isInViewport(bounds)) {
 					position = point
@@ -372,7 +390,7 @@ export default {
 				}
 			}
 
-			this.position = position		
+			this.position = position
 		},
 
 		onMouseDown(event) {
@@ -410,5 +428,5 @@ export default {
 		}			
 	}
 
-}
+}	
 </script>

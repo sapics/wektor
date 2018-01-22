@@ -41,9 +41,14 @@ export default {
 	methods: {
 		initCanvas() {
 			const canvas = this.$refs.canvas
-			canvas.width = canvas.offsetWidth
-			canvas.height = canvas.offsetHeight
+			this.resize()
 			this.ctx = canvas.getContext('2d')	
+		},
+
+		resize() {
+			const canvas = this.$refs.canvas
+			canvas.width = canvas.offsetWidth
+			canvas.height = canvas.offsetHeight			
 		},
 
 		draw() {

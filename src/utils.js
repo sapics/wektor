@@ -63,6 +63,14 @@ function isInt(value) {
 	return !isNaN(value) && parseInt(Number(value)) === value && !isNaN(parseInt(value, 10))
 }
 
+function isNumeric(val) {
+    return Number(parseFloat(val)) === val;
+}
+
+function isNumber(n) {
+  return !isNaN(parseFloat(n)) && isFinite(n);
+}
+
 function isString(value) {
 	return typeof value === 'string'
 }
@@ -304,8 +312,26 @@ function removeArrayElement(array, element) {
 	
 }
 
+function toCssPercent(arg, direction) {
+	if (isNumber(arg) || arg.test(/px$/)) {
+		const size = (direction === 'horizontal') ? window.innerWidth : window.innerHeight
+		return (parseFloat(arg) / size) * 100
+	} else if (arg.test(/%$/)) {
+		return parseFloat(arg)
+	}
+}
+
+function pointToCssPercent(point) {
+	return {
+		x: toCssPercent(point.x, 'horizontal'),
+		y: toCssPercent(point.y, 'vertical')
+	}
+}
+
 export { 
 	isInt, 
+	isNumeric,
+	isNumber,
 	isString, 
 	isObject, 
 	isArray, 
@@ -329,4 +355,6 @@ export {
 	deepExtend,
 	colorToLab,
 	getDeltaE,
+	toCssPercent,
+	pointToCssPercent,
 }

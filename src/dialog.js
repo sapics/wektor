@@ -15,7 +15,9 @@ function createPaperReference(item) {
 		get position() {
 			return getPosition(item)
 		},
-		bounds: getBounds(item)
+		get bounds() {
+			return getBounds(item)
+		}
 	}
 
 	return reference

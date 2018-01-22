@@ -1,3 +1,5 @@
+import { pointToCssPercent } from '@/utils'
+
 export default {
 	data() {
 		return {
@@ -21,9 +23,9 @@ export default {
 		onDrag(event) {
 			this.drag = true
 			event.preventDefault()
-			this.position = { 
+			this.position = {
 				x: event.x - this.dragDelta.x,
-				y: event.y - this.dragDelta.y 
+				y: event.y - this.dragDelta.y,
 			}
 		},		
 

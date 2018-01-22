@@ -75,7 +75,8 @@ export default {
 
 	mounted() {
 		window.addEventListener('keydown', this.onKeyDown)
-		window.addEventListener('contextmenu', this.onContextmenu)					
+		window.addEventListener('contextmenu', this.onContextmenu)
+		window.addEventListener('resize', () => wektor.emit('resize'))			
 
 		wektor.on('openDialog', this.openDialog)
 		wektor.on('closeDialog', this.closeDialog)
@@ -121,9 +122,10 @@ export default {
 				payload: {
 					locked: true, 
 					resize: true, 
-					position: { x: 700, y: 200 },
 					css: {
 						overflow: 'scroll',
+						top: '50%',
+						right: '20px',
 					},
 				},
 				convert: false,			
