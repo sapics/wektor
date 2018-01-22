@@ -11,30 +11,59 @@ class Mirror extends paper.Group {
 	constructor() {
 		super()
 		this.locked = true
+		this.data.open = false
 	}
 
 	mirrorItem(item) {
-		if (this.mirrorsItem(item)) return
+		if (this.mirrorsItem(item) && !item.children) return
 
-		if (item.hasChildren()) {
-			wektor.changeTracker.onItemChange(item.id, ChangeFlag.CHILDREN, () => {
-				this.mirrorItem(item)
-			})
-			for (const child of item.children) {
-				this.mirrorItem(child)
+		if (item.children) {
+			const childrenHandler = () => {
+				for (const child of item.children) {
+					this.mirrorItem(child)
+				}
 			}
+			wektor.changeTracker.on('children', item, childrenHandler)
+			childrenHandler()
+
+			const insertionHandler = () => {
+				if (!item.parent) {
+					wektor.changeTracker.off('children', item, childrenHandler)
+					wektor.changeTracker.off('insertion', item, insertionHandler)
+				}
+			}
+			wektor.changeTracker.on('insertion', item, insertionHandler)
 		} else {
 			const clone = item.clone()
 			clone.data.original = item
 			clone.data.iterable = true
 			clone.locked = true
 			this.addChild(clone)
+
 			if (item.data.iterable !== false)
 				this.update(clone, item)
-			wektor.changeTracker.onItemChange(item.id, ChangeFlag.GEOMETRY, () => {
-				if (item.data.iterable === false) return
-				this.update(clone, item)
-			})					
+
+			const insertionHandler = () => {
+				if (!item.parent) {
+					clone.remove()
+					wektor.changeTracker.off('insertion', item, insertionHandler)
+					wektor.changeTracker.off('geometry', item, geometryHandler)
+					wektor.changeTracker.off('style', item, styleHandler)
+				}
+			}
+
+			const geometryHandler = () => {
+				if (item.data.iterable !== false)
+					this.update(clone, item)				
+			}
+
+			const styleHandler = () => {
+				clone.style = item.style
+			}
+
+			wektor.changeTracker.on('insertion', item, insertionHandler)
+			wektor.changeTracker.on('geometry', item, geometryHandler)
+			wektor.changeTracker.on('style', item, styleHandler)		
 		}
 	}
 
@@ -107,7 +136,7 @@ class Snapper extends Mirror {
 	}
 
 	snapItem(item, original) {
-		if (!this.grid) return
+		if (!this.grid || !item || !original) return
 
 		original.opacity = 0	
 		item.removeSegments()

@@ -75,7 +75,7 @@ export default {
 
 	mounted() {
 		window.addEventListener('keydown', this.onKeyDown)
-		window.addEventListener('contextmenu', this.onContextmenu)
+		window.addEventListener('contextmenu', this.onContextmenu)					
 
 		wektor.on('openDialog', this.openDialog)
 		wektor.on('closeDialog', this.closeDialog)
@@ -173,7 +173,8 @@ export default {
 
 		shortcutMatches(shortcut, event) {
 			// allow us to use shift-key as modifier also for lower case characters
-			const eventKey = event.code.slice(3).toLowerCase()
+			let eventKey = event.code.replace(/^Key/g, '')
+			eventKey = eventKey.length === 1 ? eventKey.toLowerCase() : eventKey
 
 			const keyMatches = isArray(shortcut.key)
 				? shortcut.key.includes(eventKey)

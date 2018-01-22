@@ -8,71 +8,74 @@ class Grid extends Group {
 	constructor(spec = {}) {
 		super()
 
-		const specDefault = {
-			options: {
-				spacing: {
-					vertical: 5,
-					horizontal: 5
-				},
-				lines: {
-					style: {
-						strokeColor: new Color('black'),
-						strokeWidth: 1,
-					}
-				},
+		this.options = deepExtend({}, {
+			spacing: {
+				vertical: 15,
+				horizontal: 15
 			},
+			lines: {
+				style: {
+					strokeColor: new Color('black'),
+					strokeWidth: 1,
+				}
+			},			
+		}, spec.options)
 
-			dialog: {
-				layout: {
-					spacing: {
-						label: 'spacing',
-						align: 'comma-separated',
-						'spacing.vertical': {
-							type: 'number',
-							label: 'x:',
-							space: 'thin',
-							min: 1,
-						},							
-						'spacing.horizontal': {
-							type: 'number',
-							label: 'y:',
-							space: 'thin',
-							min: 1,
-						},				
-					},
-					'stroke': {
-						label: 'lines',
+		this.dialog = deepExtend({}, {
+			layout: {
+				spacing: {
+					label: 'spacing',
+					align: 'comma-separated',
+					'spacing.vertical': {
+						type: 'number',
+						label: 'x:',
+						space: 'thin',
+						min: 1,
+					},							
+					'spacing.horizontal': {
+						type: 'number',
+						label: 'y:',
+						space: 'thin',
+						min: 1,
+					},				
+				},
+				'stroke': {
+					label: 'lines',
+					align: 'columns',
+					'lines.style.strokeWidth': {
+						type: 'number'
+					},						
+					'lines.style.strokeColor': {
+						type: 'color',
+					},												
+				},
+				'background': {
+					align: 'comma-separated',
+					label: 'fill',
+					'background.fillColor': {
+						type: 'color',
+					},					
+					'background.stroke': {
 						align: 'columns',
-						'lines.style.strokeWidth': {
+						label: 'stroke',
+						'background.strokeWidth': {
 							type: 'number'
-						},						
-						'lines.style.strokeColor': {
-							type: 'color',
-						},												
-					},
-					'background': {
-						align: 'comma-separated',
-						label: 'fill',
-						'background.fillColor': {
-							type: 'color',
+						},								
+						'background.strokeColor': {
+							type: 'color'
 						},					
-						'background.stroke': {
-							align: 'columns',
-							label: 'stroke',
-							'background.strokeWidth': {
-								type: 'number'
-							},								
-							'background.strokeColor': {
-								type: 'color'
-							},					
-						},						
-					}
-				}		
+					},						
+				}
 			}			
+		}, spec.dialog)
+
+		this.backgroundBounds = spec.bounds || {
+			x: paper.view.size.width / 2,
+			y: paper.view.size.height / 2,
+			width: 200,
+			height: 200
 		}
 
-		spec = deepExtend({}, specDefault, spec)
-		Object.assign(this, spec)
 		this.cache = {}
 
 		this.name = 'Grid' + this.id
@@ -87,13 +90,10 @@ class Grid extends Group {
 	}
 
 	initBackground() {
-		this.background = new Path({
+		this.background = new Path.Rectangle({
 			name: 'background',
-			segments: [
-				[0, 0], [600, 0], [600, 600], [0, 600]
-			],
+			rectangle: this.backgroundBounds,
 			closed: true,
-			position: (window.view && window.view.center) || [0, 0],
 			style: {
 				strokeColor: 'black',
 				strokeWidth: 1
@@ -103,7 +103,6 @@ class Grid extends Group {
 		// when the background is hit (see wektorUi's onContextMenu) the Grid's dialog will be opened
 		// define this via an arrow function, otherwise 'this' in the getDialog function wont be Grid but the background Path 
 		// this.background.getDialog = () => this.getDialog()
-		
 		this.background.on('contextmenu', event => {
 			this.handleContextmenu(event)
 		})
@@ -113,8 +112,11 @@ class Grid extends Group {
 		})
 
 		const symbolDefinition = new SymbolDefinition(this.background)
-		this.background.position = window.view.center
 		this.clippingMask = new SymbolItem(symbolDefinition)
+
+		// making a symbol definition out of this.background somehow sets back the background's position
+		// so we have to set the bounds again
+		this.background.bounds = this.backgroundBounds
 
 		this.addChild(this.background)
 	}

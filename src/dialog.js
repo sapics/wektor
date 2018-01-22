@@ -101,6 +101,9 @@ class Dialog {
 			bridge = new DialogBridge(values, layout, changeHandler)
 		}
 
+		if (!bridge && convert === false)
+			this.values = values
+
 		Object.assign(this, {
 			id: id.toString(),
 			parentId: (parentId && parentId.toString()),
@@ -108,7 +111,6 @@ class Dialog {
 			layout,
 			reference,
 			payload,
-			values,
 		})		
 	}	
 }

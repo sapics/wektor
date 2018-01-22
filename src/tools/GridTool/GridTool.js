@@ -14,7 +14,41 @@ class GridTool extends BaseTool {
 		// mousedown will close our new dialog directly after we opend it so we have to stop the event
 		event.stopPropagation()
 
-		var group = new Grid()
+		this.mouseDownPoint = event.point
+
+		// var group = new Grid()
+	}
+
+	onMouseDrag(event) {
+		if (!this.newGridRect) {
+			this.newGridRect = new paper.Path.Rectangle({
+				from: this.mouseDownPoint,
+				to: event.point,
+				strokeWidth: 0,
+				fillColor: null,
+				selected: true,
+				data: { iterable: false },
+			})
+		} else {
+			const { topLeft, topRight, bottomLeft, bottomRight } = new paper.Rectangle(this.mouseDownPoint, event.point)
+			this.newGridRect.segments = [topLeft, topRight, bottomRight, bottomLeft]
+		}
+	}
+
+	onMouseUp(event) {
+		let spec = {}
+
+		if (this.newGridRect) {
+			const bounds = this.newGridRect.bounds
+
+			spec = {
+				bounds: this.newGridRect.bounds
+			}
+			this.newGridRect.remove()
+			this.newGridRect = null
+		}
+
+		new Grid(spec)
 	}
 }
 

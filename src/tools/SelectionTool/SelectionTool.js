@@ -136,8 +136,8 @@ class SelectionTool extends BaseTool {
 	drawSelection(startPoint, event) {
 		if (!this.selectionRect) {
 			this.selectionRect = new paper.Path.Rectangle({
-				from: { ...startPoint },
-				to: { ...event.point },
+				from: startPoint,
+				to: event.point,
 				style: {
 					strokeWidth: 1,
 					dashArray: [1, 1],

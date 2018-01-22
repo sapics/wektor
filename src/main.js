@@ -51,12 +51,12 @@ var p1 = new paper.Path.Circle({
 	fillColor: 'yellow'
 })
 
-var p2 = new paper.Path.Circle({
-	radius: 100,
-	position: [500, 400],
-	name: 'rot',
-	fillColor: 'red'
-})
+// var p2 = new paper.Path.Circle({
+// 	radius: 100,
+// 	position: [500, 400],
+// 	name: 'rot',
+// 	fillColor: 'red'
+// })
 
 // new Grid({
 // 	options: {
@@ -68,7 +68,7 @@ var p2 = new paper.Path.Circle({
 // })
 
 const subLayer = new paper.Layer()
-subLayer.addChildren([p1, p2])
+subLayer.addChildren([p1])
 
 wektor.project.layers[0].addChild(subLayer)
 

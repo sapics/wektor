@@ -65,8 +65,12 @@ class Wektor extends EventEmitter {
 
 	initChangeTracking() {
 		const changeTracker = this.changeTracker = new ChangeTracker(this.project)
-		changeTracker.on('change', change => this.handleChange(change))
-		changeTracker.on('changes', changes => this.handleChanges(changes))		
+		changeTracker.on(ChangeFlag.INSERTION, () => {
+			console.log('update')
+			this.state.update()
+		})
+		// changeTracker.on('change', change => this.handleChange(change))
+		// changeTracker.on('changes', changes => this.handleChanges(changes))		
 	}
 
 	handleChange(change) {
