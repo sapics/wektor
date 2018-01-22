@@ -62,6 +62,7 @@ function createDomReference(el) {
 		get position() {
 			return getPosition(el)
 		},
+		bounds: getBounds(el),
 	}
 
 	el.addEventListener('mouseenter', () => {

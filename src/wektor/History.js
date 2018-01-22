@@ -121,6 +121,8 @@ class WektorHistory extends BaseHistory {
 	}
 
 	updateAutoHistory({ item, flags }) {
+		console.log(item, flags)
+
 		if (item.data.iterable === false) return
 		// item.preventUndoRedo ist set when when we modify an item (in an undo/redo function) and we don't
 		// want it to cause a new history entry

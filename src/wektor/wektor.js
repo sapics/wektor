@@ -65,33 +65,11 @@ class Wektor extends EventEmitter {
 
 	initChangeTracking() {
 		const changeTracker = this.changeTracker = new ChangeTracker(this.project)
-		changeTracker.on(ChangeFlag.INSERTION, () => {
-			console.log('update')
+		changeTracker.on('attribute', change => this.state.update())	
+		changeTracker.on('insertion', change => {
+			this.history.updateAutoHistory(change)
 			this.state.update()
 		})
-		// changeTracker.on('change', change => this.handleChange(change))
-		// changeTracker.on('changes', changes => this.handleChanges(changes))		
-	}
-
-	handleChange(change) {
-		if (change.flags & ChangeFlag.INSERTION)
-			this.history.updateAutoHistory(change)	
-	}
-
-	handleChanges(changes) {
-		let updateFn
-
-		for (const change of changes) {
-			const { item, flags } = change
-
-			if (flags & ChangeFlag.ATTRIBUTE)
-				updateFn = () => this.state.update(/*item, { recursive: false }*/)
-			
-			if (flags & ChangeFlag.INSERTION)
-				updateFn = () => this.state.update()
-		}
-
-		updateFn && updateFn()
 	}
 
 	groupItems() {

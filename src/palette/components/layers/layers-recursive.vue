@@ -42,8 +42,9 @@
 				<vddl-placeholder style="height: 1px; background: black; width: 100%; margin-top: -1px;"></vddl-placeholder>
 			</vddl-list>
 		</div>
-		<div v-else 
-			:class="{ selected }"
+		<div v-else
+			class="label" 
+			:class="{ selected, highlight: selected }"
 			@contextmenu="handleContextMenu"
 		>
 			{{item.name}}

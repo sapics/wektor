@@ -31,8 +31,8 @@ class ChangeTracker {
 					for (const name in ChangeFlag) {
 						const flag = ChangeFlag[name]
 						if (flags & flag) {
-							this.emit(flag)
-							this.emit(flag, item)
+							this.emit(flag, { ...change, flag })
+							this.emit(flag, item, { ...change, flag })
 						}
 					}
 				}
@@ -42,20 +42,24 @@ class ChangeTracker {
 		}
 	}
 
-	emit(flag, item) {
+	emit(flag) {
 		flag = this.sanitizeFlag(flag)
-		let listeners
+		let listeners, payload
 
-		if (item)
+		if (arguments.length === 3) {
+			const item = arguments[1]
+			payload = arguments[2]
 			listeners = this.itemListeners[flag] && this.itemListeners[flag][item.id]
-		else
+		} else {
+			payload = arguments[1]
 			listeners = this.listeners[flag]
+		}
 
 		if (!listeners) return
 		
 		for (const listener of listeners) {
 			const callback = listener.callback
-			isFunction(callback) && callback()
+			isFunction(callback) && callback(payload)
 		}
 	}
 

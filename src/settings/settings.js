@@ -53,11 +53,19 @@ export default {
 			},
 		},
 		{
+			label: 'layers',
+			shortcut: {
+				key: 'l',
+				modifier: 'default',
+				callback: ({wektor}) => wektor.toggleShowDialog('layers')
+			},
+		},
+		{
 			'label': 'preferences',
 			'shortcut': {
 				key: 'p',
 				modifier: 'default',
-				callback: ({wektor}) => wektor.toggleDialog('preferences'),
+				callback: ({wektor}) => wektor.toggleShowDialog('preferences'),
 			},
 		},
 		{
