@@ -1,9 +1,9 @@
 <template>
-	<canvas ref="canvas"></canvas>
+	<canvas ref="canvas" class="pointer-line"></canvas>
 </template>
 
 <style lang="scss" scoped>
-canvas {
+.pointer-line {
 	mix-blend-mode: difference;
 	position: absolute;
 	pointer-events: none;
@@ -34,17 +34,13 @@ export default {
 	},
 
 	mounted() {
-		this.initCanvas()
+		const canvas = this.$refs.canvas
+		this.resize()
+		this.ctx = canvas.getContext('2d')
 		this.draw()
 	},
 
 	methods: {
-		initCanvas() {
-			const canvas = this.$refs.canvas
-			this.resize()
-			this.ctx = canvas.getContext('2d')	
-		},
-
 		resize() {
 			const canvas = this.$refs.canvas
 			canvas.width = canvas.offsetWidth

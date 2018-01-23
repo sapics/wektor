@@ -10,6 +10,7 @@
 			:to="referencePoint"
 		></pointer-line>		
 		<div
+			v-visible="rendered"
 			class="dialog draghandler"
 			:class="{ fitContent }"
 			ref="dialog"
@@ -60,6 +61,7 @@
 		background: white;
 		border: 1px solid black;
 		box-sizing: border-box;
+		white-space:nowrap;
 
 		&.fitContent .palette {
 			width: 100%;
@@ -109,7 +111,16 @@ import draggable from '@/mixins/draggable'
 import palette from './palette'
 import pointerLine from './components/pointer-line'
 import resizeable from '@/mixins/resizeable'
-import { isNumber, isFunction, isInViewport, getBounds, getDistance, toCssPercent, pointToCssPercent } from '@/utils'
+import { 
+	isNumber, 
+	isFunction, 
+	isInViewport, 
+	getBounds, 
+	getDistance, 
+	toCssPercent, 
+	pointToCssPercent, 
+	constrainElPosition,
+} from '@/utils'
 
 export default {
 	name: 'vdialog',
@@ -127,6 +138,7 @@ export default {
 
 	data() {
 		return {
+			rendered: false,
 			position: null,
 			referencePoint: null,
 			pointerCornerDelta: { x: 0, y: 0 },
@@ -230,7 +242,10 @@ export default {
 		},
 
 		hover(hover) {
-			if (hover) this.updateBridge()
+			if (hover) {
+				this.updateBridge()
+				this.updatePointerCorner(true)
+			}
 		},
 
 		position() {
@@ -258,7 +273,11 @@ export default {
 			this.updatePointerCorner()
 			
 			const bounds = this.$refs.dialog.getBoundingClientRect()
-			this.position = { x: bounds.x, y: bounds.y }
+			const windowSize = {
+				width: window.innerWidth || document.documentElement.clientWidth,
+				height: window.innerHeight || document.documentElement.clientHeight,
+			}			
+			this.position = constrainElPosition(windowSize, bounds, { x: bounds.x, y: bounds.y })
 
 			const pointerLine = this.$refs.pointerLine		
 			if (pointerLine) {
@@ -280,6 +299,7 @@ export default {
 			this.width = bounds.width
 			this.height = bounds.height
 			this.updatePointerCorner()
+			this.rendered = true
 		})
 	},
 
@@ -293,6 +313,90 @@ export default {
 		},
 
 		updatePointerCorner(checkVisibility = false) {
+			const { position, width, height, reference } = this
+			const el = this.$refs.dialog
+
+			if (!(position && reference && reference.position)) return
+
+			const bounds = {
+				top: position.y,
+				left: position.x,
+				bottom: position.y + height,
+				right: position.x + width,
+				topLeft: { x: position.x, y: position.y },
+				topRight: { x: position.x + width, y: position.y },
+				bottomLeft: { x: position.x, y: position.y + height },
+				bottomRight: { x: position.x + width, y: position.y + height },
+			}
+
+			let corner
+			let corners = []
+
+			// pointerLines from top-corners just look better so we'll bias them by defining the 
+			// dialogs vertical position as below even if it really is in between
+			const topBias = 20 // px
+			const isAbove = (bounds.bottom + topBias) < reference.position.y
+			const isBelow = (bounds.top - topBias) > reference.position.y
+			const isLeft = (bounds.right < reference.position.x)
+			const isRight = (bounds.left > reference.position.x)
+
+			if (isAbove) {
+				if (isRight) {
+					corner = bounds.bottomLeft
+					corners = [corner, bounds.topLeft, bounds.bottomRight]
+				} else if (isLeft) {
+					corner = bounds.bottomRight
+					corners = [corner, bounds.topRight, bounds.bottomLeft]
+				} else {
+					corners = [bounds.bottomLeft, bounds.bottomRight]
+				}
+			} else if (isBelow) {
+				if (isRight) {
+					corner = bounds.topLeft
+					corners = [corner, bounds.topRight, bounds.bottomLeft]
+				} else if (isLeft) {
+					corner = bounds.topRight
+					corners = [corner, bounds.topLeft, bounds.bottomRight]
+				} else {
+					corners = [bounds.topLeft, bounds.topRight]
+				}
+			} else {
+				if (isRight) {
+					corner = bounds.topLeft
+					corners = [corner, bounds.bottomLeft]
+				} else if (isLeft) {
+					corner = bounds.topRight
+					corners = [corner, bounds.bottomRight]
+				}
+				// else: dialog overlays reference, no pointerline possible			
+			}
+
+			if (checkVisibility) {
+				for (let i = 0; i < corners.length; i++) {
+					const point = corners[i]
+					const topMostEl = document.elementFromPoint(point.x, point.y)
+					if (el === topMostEl) {
+						corner = point
+						break
+					}
+				}
+			} 
+
+			if (!corner) {
+				const distances = corners.map(corner => getDistance(corner, reference.position))
+				const nearestCorner = corners[ distances.indexOf(Math.min(...distances)) ]
+				corner = nearestCorner
+			}
+
+			if (!corner) return
+
+			this.pointerCornerDelta = {
+				x: position.x - corner.x,
+				y: position.y - corner.y
+			}		
+		},
+
+		updatePointerCornerOLD(checkVisibility = false) {
 			const { position, width, height, reference } = this
 
 			if (!(position && reference && reference.position)) return
@@ -312,6 +416,48 @@ export default {
 				y: position.y - nearestCorner.y
 			}					
 		},
+
+		updatePointerCornerOLDOLD() {
+			const el = this.$refs.dialog
+			const referencePoint = this.reference.position
+			const position = this.position
+
+			if (!referencePoint) return
+
+			function checkCorner(vertical, horizontal, point, treshold = 0) {
+				// const topMostEl = document.elementFromPoint(point.x, point.y)
+				// if (topMostEl !== el) return
+
+				if (vertical === 'top' && point.y > referencePoint.y + treshold) return true
+				if (vertical === 'bottom' && point.y < referencePoint.y - treshold) return true
+
+				if (horizontal === 'left' && point.x > referencePoint.x + treshold) return true
+				if (horizontal === 'right' && point.x < referencePoint.x - treshold) return true
+
+				return false
+			}
+
+			const bounds = getBounds(el)
+			let corner
+
+			if (checkCorner('top', 'left', bounds.topLeft))
+				corner = bounds.topLeft
+			else if (checkCorner('top', 'right', bounds.topRight))
+				corner = bounds.topRight
+			else if (checkCorner('bottom', 'left', bounds.bottomLeft))
+				corner = bounds.bottomLeft
+			else if (checkCorner('bottom', 'right', bounds.bottomRight))
+				corner = bounds.bottomRight
+			
+			if (!corner) return { x: 0, y: 0 }
+
+			const delta = {
+				x: position.x - corner.x,
+				y: position.y - corner.y
+			}
+
+			this.pointerCornerDelta = delta
+		},		
 
 		updateReference() {
 			const reference = this.reference

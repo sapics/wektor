@@ -32,6 +32,91 @@
 	</div>
 </template>
 
+<style lang="scss">
+@import "./sass/fontface";
+@import "./sass/variables";
+
+@include font-face('HKGrotesk', '/static/fonts/HKGrotesk/HKGrotesk-Light', 300);
+@include font-face('HKGrotesk', '/static/fonts/HKGrotesk/HKGrotesk-LightItalic', 300, italic);
+@include font-face('HKGrotesk', '/static/fonts/HKGrotesk/HKGrotesk-Regular', 400);
+@include font-face('HKGrotesk', '/static/fonts/HKGrotesk/HKGrotesk-Medium', 500);
+
+#main-canvas {
+	background-color: white;
+}
+
+#wektor {
+	&, input, textarea, button {
+		font-family: HKGrotesk;
+		// font-size: 14pt;
+		// font-weight: 300;
+	}
+
+	input {
+		font-kerning: none;
+		padding: 0;
+	}
+
+	.underline {
+		position: relative;
+
+		&::after {
+			position: absolute;
+			margin: 0 auto;
+			color: inherit;
+			content: '';
+			left: 0;
+			right: 0;
+			width: 100%;
+			left: 0;
+			bottom: 3px;
+			height: 0;
+			background: none;
+			border-bottom: calc(1em * 0.08) solid;
+		}
+	}
+
+	.shortcut {
+		text-decoration: underline;
+	}
+}
+
+#wektor-sidebar {
+	position: absolute;
+	box-sizing: border-box;
+	top: 0;
+	left: 0;
+	width: 20%;
+	height: 100%;
+	margin: $padding;
+	margin-right: 0;
+	pointer-events: none;
+
+	#wektor-search {
+		width: 100%;
+		input {
+			pointer-events: all;
+			width: 100%;
+			position: absolute;
+			transform: translate(0, -100%);			
+		}
+	}
+
+	#wektor-tool-bar {
+		margin-bottom: $padding;
+		.tool-select-option .label {
+			pointer-events: all;
+		}
+	}
+
+	#wektor-menu {
+		.label {
+			pointer-events: all;
+		}
+	}
+}
+</style>
+
 <script>
 import Vue from 'vue' 
 import toolBar from './components/tool-bar.vue'
@@ -82,6 +167,7 @@ export default {
 		wektor.on('closeDialog', this.closeDialog)
 		wektor.on('showDialog', this.showDialog)
 		wektor.on('hideDialog', this.hideDialog)
+		wektor.on('updateInfoCanvas', this.updateInfoCanvas)
 
 		wektor.on('addTool', ({ id, tool }) => {
 			this.$set(this.tools, id, {
@@ -291,92 +377,17 @@ export default {
 		redo() {
 			wektor.history.redo()
 		},
+
+		updateInfoCanvas() {
+			for (const [id, dialog] of Object.entries(this.dialogs)) {
+				console.log(dialog.position)
+				// ctx.beginPath()
+				// ctx.moveTo(from.x, from.y)
+				// ctx.lineTo(to.x, to.y)
+				// ctx.strokeStyle = "#ffffff"
+				// ctx.stroke()
+			}
+		},
 	},
 }
 </script>
-
-<style lang="scss">
-@import "./sass/fontface";
-@import "./sass/variables";
-
-@include font-face('HKGrotesk', '/static/fonts/HKGrotesk/HKGrotesk-Light', 300);
-@include font-face('HKGrotesk', '/static/fonts/HKGrotesk/HKGrotesk-LightItalic', 300, italic);
-@include font-face('HKGrotesk', '/static/fonts/HKGrotesk/HKGrotesk-Regular', 400);
-@include font-face('HKGrotesk', '/static/fonts/HKGrotesk/HKGrotesk-Medium', 500);
-
-#main-canvas {
-	background-color: white;
-}
-
-#wektor {
-	&, input, textarea, button {
-		font-family: HKGrotesk;
-		// font-size: 14pt;
-		// font-weight: 300;
-	}
-
-	input {
-		font-kerning: none;
-		padding: 0;
-	}
-
-	.underline {
-		position: relative;
-
-		&::after {
-			position: absolute;
-			margin: 0 auto;
-			color: inherit;
-			content: '';
-			left: 0;
-			right: 0;
-			width: 100%;
-			left: 0;
-			bottom: 3px;
-			height: 0;
-			background: none;
-			border-bottom: calc(1em * 0.08) solid;
-		}
-	}
-
-	.shortcut {
-		text-decoration: underline;
-	}
-}
-
-#wektor-sidebar {
-	position: absolute;
-	box-sizing: border-box;
-	top: 0;
-	left: 0;
-	width: 20%;
-	height: 100%;
-	margin: $padding;
-	margin-right: 0;
-	pointer-events: none;
-
-	#wektor-search {
-		width: 100%;
-		input {
-			pointer-events: all;
-			width: 100%;
-			position: absolute;
-			transform: translate(0, -100%);			
-		}
-	}
-
-	#wektor-tool-bar {
-		margin-bottom: $padding;
-		.tool-select-option .label {
-			pointer-events: all;
-		}
-	}
-
-	#wektor-menu {
-		.label {
-			pointer-events: all;
-		}
-	}
-}
-
-</style>

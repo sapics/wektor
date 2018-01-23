@@ -208,9 +208,9 @@ class Wektor extends EventEmitter {
 		dialog.open = true
 		dialog.show = true
 
-		this.dialogsStackingOrder.add(dialog.id)
 		this.emit('openDialog', dialog)
 		this.emit('updateDialogs', this.dialogs, 'open')
+		this.dialogsStackingOrder.add(dialog.id)
 	}
 
 	getDialog(id) {

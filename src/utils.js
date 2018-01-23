@@ -294,6 +294,20 @@ function isInViewport(arg) {
 	)
 }
 
+function constrainElPosition(constraintBounds, elBounds, position) {
+		if (elBounds.left < 0)
+			position.x = 0
+		else if (elBounds.right > constraintBounds.width)
+			position.x = constraintBounds.width - elBounds.width
+
+		if (elBounds.top < 0)
+			position.y = 0
+		else if (elBounds.bottom > constraintBounds.height)
+			position.y = constraintBounds.height - elBounds.height	
+
+		return position
+}
+
 function getDistance(point1, point2) {
 	const a = point1.x - point2.x
 	const b = point1.y - point2.y
@@ -357,4 +371,5 @@ export {
 	getDeltaE,
 	toCssPercent,
 	pointToCssPercent,
+	constrainElPosition
 }
