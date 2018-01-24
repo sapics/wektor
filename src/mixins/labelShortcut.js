@@ -54,8 +54,11 @@ export default {
 		},
 
 		modifierKey() {
-			const { shortcut } = this
-			const modifier = shortcut.modifier === 'default' ? this.defaultModifier : shortcut.modifier
+			const shortcut = this.shortcut
+
+			if (!this.shortcut.modifier) return
+
+			const modifier = wektor.shortcuts.resolveModifierPlaceholder(this.shortcut.modifier)
 
 			if ( !modifierKeyMap[modifier] )
 				return modifier

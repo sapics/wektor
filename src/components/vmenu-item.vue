@@ -1,6 +1,10 @@
 <template>
 	<div class="menu-item">
-		<span v-html="labelHtml" class="label"></span>
+		<span
+			@click="$emit('click', $event)"
+			v-html="labelHtml" 
+			class="label"
+		></span>
 	</div>
 </template>
 

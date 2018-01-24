@@ -5,7 +5,6 @@
 			v-visible="showPointerLine"
 			ref="pointerLine"
 			class="pointer-line"
-			:style="{zIndex}"
 			:from="pointerCorner"
 			:to="referencePoint"
 		></pointer-line>		
@@ -16,14 +15,15 @@
 			ref="dialog"
 			:data-id="id"
 			:data-parent-id="parentId"
+			:data-root-id="rootId"
 			:style="css"
 			@mousedown="onMouseDown"
-			@mouseup="onMouseUp"
 			@mouseenter="hover = true"
 			@mouseleave="hover = false"		
 			v-outside:mousedown="onMouseDownOutside"
 		>
-			<div 
+			<!-- <div class="wire-frame"></div>
+ -->		<div 
 				class="dialog-sidebar draghandler"
 			>
 				<div 
@@ -55,6 +55,10 @@
 @import "../sass/variables";
 
 .dialog-wrap {
+	.pointer-line {
+		z-index: 999999;
+	}
+
 	.dialog {
 		position: absolute;
 		isolation: isolate;
@@ -102,6 +106,19 @@
 		height: 7px;
 		stroke: var(--wektor-dialog-border-color);
 	}
+
+	// .wire-frame {
+	// 	z-index: 999999;
+	// 	width: calc(100% + 2px);
+	// 	height: calc(100% + 2px);
+	// 	margin: -1px;
+	// 	top: 0;
+	// 	left: 0;
+	// 	box-sizing: border-box;
+	// 	pointer-events: none;
+	// 	position: absolute;
+	// 	border: 1px solid black;
+	// }	
 }
 </style>
 
@@ -159,6 +176,10 @@ export default {
 			return this.spec.parentId
 		},
 
+		rootId() {
+			return this.spec.rootId
+		},
+
 		bridge() {
 			return this.spec.bridge || {}
 		},
@@ -187,6 +208,15 @@ export default {
 			return this.payload.css || {}
 		},
 
+		hasCustomPosition() {
+			return (
+				this.customCss.top ||
+				this.customCss.left ||
+				this.customCss.bottom ||
+				this.customCss.right
+			)
+		},
+
 		css() {
 			return {
 				zIndex: this.zIndex,
@@ -209,6 +239,11 @@ export default {
 					left: this.positionPercent.x + '%',
 					right: 'auto',
 					bottom: 'auto',
+				}
+			} else if (!this.hasCustomPosition) {
+				return {
+					top: 0,
+					left: 0
 				}
 			}
 		},
@@ -542,17 +577,17 @@ export default {
 		},
 
 		close(event) {
-			if (this.targetIsChild(event.target)) return
-			wektor.closeDialog(this.id)
+			if (!this.targetIsDescendant(event.target))
+				wektor.closeDialog(this.id)
 		},
 
-		targetIsChild(target) {
+		targetIsDescendant(target) {
 			const dialog = target.closest('.dialog')
 
 			if (!dialog) return false
 
-			const parentId = dialog.dataset.parentId
-			return (parentId === this.id)
+			const rootId = dialog.dataset.rootId
+			return (rootId === this.rootId || rootId === this.id)
 		}			
 	}
 

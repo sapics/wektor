@@ -41,6 +41,7 @@
 @include font-face('HKGrotesk', '/static/fonts/HKGrotesk/HKGrotesk-Regular', 400);
 @include font-face('HKGrotesk', '/static/fonts/HKGrotesk/HKGrotesk-Medium', 500);
 
+
 #main-canvas {
 	background-color: white;
 }
@@ -245,72 +246,36 @@ export default {
 		},
 
 		onKeyDown(event) {
-			const exlcude = settings.shortcutTargetExlude
-			if (exlcude.includes(event.target.tagName.toLowerCase())) return
-				
-			let shortcutMatched = false
-			for (const shortcut of wektor.shortcuts) {
-				if (this.shortcutMatches(shortcut, event)) {
-					if (shortcutMatched) console.warn('multiple shortcuts matched event')
-					shortcutMatched = true
-					if (isFunction(shortcut.callback)) shortcut.callback({ event, wektor })
-					event.preventDefault()		
-				}
+			const matchedShortcut = wektor.shortcuts.match(event)
+			if (matchedShortcut) {
+				event.preventDefault()
+				isFunction(matchedShortcut.callback) && matchedShortcut.callback(wektor, event)
 			}
 		},
 
-		shortcutMatches(shortcut, event) {
-			// allow us to use shift-key as modifier also for lower case characters
-			let eventKey = event.code.replace(/^Key/g, '')
-			eventKey = eventKey.length === 1 ? eventKey.toLowerCase() : eventKey
+		// updateChildren() {
+		// 	const countTypeOf = {}
 
-			const keyMatches = isArray(shortcut.key)
-				? shortcut.key.includes(eventKey)
-				: shortcut.key === eventKey
+		// 	function convertItems(items) {
+		// 		const converted = []
+		// 		for (let i = items.length - 1; i >= 0; i--) {
+		// 			const item = items[i]
+		// 			if (item.data.iterable === false) continue
+		// 			converted.push({
+		// 				id: item.id,
+		// 				name: item.name || `${item.className} ${item.id}`,
+		// 				paperName: item.name,
+		// 				type: item.className,
+		// 				open: item.data.open,
+		// 				children: item.children ? convertItems(item.children) : undefined,
+		// 				_wektorPastePaperItem: true, // this lets the built-in code editor in wektor know, that when we paste the item into the editor, it'll resolve it to a reference to the item        
+		// 			})					
+		// 		}
+		// 		return converted
+		// 	}
 
-			if (!keyMatches) return false
-
-			const shortcutModifiers = isArray(shortcut.modifier) ? shortcut.modifier : [shortcut.modifier]
-			for (let i = 0; i < shortcutModifiers.length; i++) {
-				const modifier = shortcutModifiers[i]
-				if (modifier === 'default')
-					shortcutModifiers[i] = settings.shortcutModifiers.default
-			}
-
-			for (const modifier of ['alt', 'ctrl', 'meta', 'shift']) {
-				const eventHasModifier = event[modifier + 'Key']
-				const shortcutHasModifier = shortcutModifiers.includes(modifier)
-
-				if (eventHasModifier && !shortcutHasModifier) return false
-				if (!eventHasModifier && shortcutHasModifier) return false
-			}
-
-			return true
-		},
-
-		updateChildren() {
-			const countTypeOf = {}
-
-			function convertItems(items) {
-				const converted = []
-				for (let i = items.length - 1; i >= 0; i--) {
-					const item = items[i]
-					if (item.data.iterable === false) continue
-					converted.push({
-						id: item.id,
-						name: item.name || `${item.className} ${item.id}`,
-						paperName: item.name,
-						type: item.className,
-						open: item.data.open,
-						children: item.children ? convertItems(item.children) : undefined,
-						_wektorPastePaperItem: true, // this lets the built-in code editor in wektor know, that when we paste the item into the editor, it'll resolve it to a reference to the item        
-					})					
-				}
-				return converted
-			}
-
-			this.layers = convertItems(wektor.project.layers)
-		},
+		// 	this.layers = convertItems(wektor.project.layers)
+		// },
 
 		openDialog(dialog) {
 			this.$set(this.dialogs, dialog.id, dialog)

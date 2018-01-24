@@ -18,11 +18,15 @@ export default {
 				x: event.x - left,
 				y: event.y - top
 			}
-			document.addEventListener('mousemove', this.onDrag)		
+			window.addEventListener('mousemove', this.onDrag)
+			window.addEventListener('mouseup', this.endDrag)		
 		},
 
 		onDrag(event) {
-			this.drag = true
+			if (!this.drag) {
+				this.drag = true
+				document.body.style['pointer-events'] = 'none'
+			}
 			event.preventDefault()
 
 			const position = {
@@ -49,7 +53,9 @@ export default {
 
 		endDrag(event) {
 			this.drag = false
-			document.removeEventListener('mousemove', this.onDrag)	
+			document.body.style['pointer-events'] = 'auto'
+			window.removeEventListener('mousemove', this.onDrag)
+			window.removeEventListener('mouseup', this.endDrag)
 		},	
 	}
 }

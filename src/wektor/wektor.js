@@ -9,6 +9,7 @@ import ChangeFlag from './ChangeFlag'
 import State from './State'
 import StackingOrder from './StackingOrder'
 import Vue from 'vue'
+import Shortcuts from './Shortcuts'
 
 class Wektor extends EventEmitter {
 	constructor(settings) {
@@ -18,7 +19,7 @@ class Wektor extends EventEmitter {
 			project: null,
 			view: null,
 			tools: {},
-			shortcuts: [],
+			shortcuts: null,
 			active: {
 				tool: null,
 				toolId: null,
@@ -48,6 +49,7 @@ class Wektor extends EventEmitter {
 
 		this.history = new History(this)
 		this.state = new State(this.project)
+		this.shortcuts = new Shortcuts(this)
 		this.initShortcuts()
 		this.initChangeTracking()
 		this.initMenu()
@@ -58,8 +60,8 @@ class Wektor extends EventEmitter {
 	initMenu() {
 		this.menu = this.settings.menu
 
-		for (const entry of this.settings.menu) {
-			this.addShortcut(entry.shortcut)
+		for (const entry of this.menu) {
+			this.shortcuts.add(entry.shortcut)
 		}
 	}
 
@@ -104,7 +106,8 @@ class Wektor extends EventEmitter {
 
 	initShortcuts() {
 		for (const shortcut of this.settings.shortcuts) {
-			this.addShortcut(shortcut)
+			this.shortcuts.add(shortcut)
+			// this.addShortcut(shortcut)
 		}
 	}
 
@@ -163,7 +166,7 @@ class Wektor extends EventEmitter {
 		})
 
 		this.tools[id] = tool
-		this.addShortcut({
+		this.shortcuts.add({
 			modifier: this.settings.shortcutModifiers.tool,
 			key: tool.shortcut,
 			callback: () => tool.activate(),			
@@ -251,6 +254,8 @@ class Wektor extends EventEmitter {
 			spec.bridge = parentDialog.bridge
 		else
 			spec.values = parentDialog.values
+
+		spec.rootId = parentDialog.rootId || parentDialog.id
 
 		this.openDialog(spec)
 	}
