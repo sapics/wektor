@@ -168,7 +168,6 @@ export default {
 		wektor.on('closeDialog', this.closeDialog)
 		wektor.on('showDialog', this.showDialog)
 		wektor.on('hideDialog', this.hideDialog)
-		wektor.on('updateInfoCanvas', this.updateInfoCanvas)
 
 		wektor.on('addTool', ({ id, tool }) => {
 			this.$set(this.tools, id, {
@@ -253,30 +252,6 @@ export default {
 			}
 		},
 
-		// updateChildren() {
-		// 	const countTypeOf = {}
-
-		// 	function convertItems(items) {
-		// 		const converted = []
-		// 		for (let i = items.length - 1; i >= 0; i--) {
-		// 			const item = items[i]
-		// 			if (item.data.iterable === false) continue
-		// 			converted.push({
-		// 				id: item.id,
-		// 				name: item.name || `${item.className} ${item.id}`,
-		// 				paperName: item.name,
-		// 				type: item.className,
-		// 				open: item.data.open,
-		// 				children: item.children ? convertItems(item.children) : undefined,
-		// 				_wektorPastePaperItem: true, // this lets the built-in code editor in wektor know, that when we paste the item into the editor, it'll resolve it to a reference to the item        
-		// 			})					
-		// 		}
-		// 		return converted
-		// 	}
-
-		// 	this.layers = convertItems(wektor.project.layers)
-		// },
-
 		openDialog(dialog) {
 			this.$set(this.dialogs, dialog.id, dialog)
 		},
@@ -341,17 +316,6 @@ export default {
 
 		redo() {
 			wektor.history.redo()
-		},
-
-		updateInfoCanvas() {
-			for (const [id, dialog] of Object.entries(this.dialogs)) {
-				console.log(dialog.position)
-				// ctx.beginPath()
-				// ctx.moveTo(from.x, from.y)
-				// ctx.lineTo(to.x, to.y)
-				// ctx.strokeStyle = "#ffffff"
-				// ctx.stroke()
-			}
 		},
 	},
 }

@@ -61,7 +61,7 @@ class DrawingTool extends BaseTool {
 	onMouseDown(event) {
 		this.path = new Path()
 		this.path.add(event.point)
-		this.path.data.iterable = false
+		// this.path.data.iterable = false
 	}
 	
 	onMouseDrag(event) {
@@ -89,8 +89,8 @@ class DrawingTool extends BaseTool {
 			options.simplify && path.simplify(options.simplify)
 			options.smooth && path.smooth()
 			options.flatten && path.flatten(options.flatten)
-			path.data.iterable = true
-			wektor.state.update()
+			// path.data.iterable = true
+			// wektor.state.update()
 		} else {
 			path.remove()
 		}

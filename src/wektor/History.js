@@ -120,53 +120,91 @@ class WektorHistory extends BaseHistory {
 		this.wektor = wektor
 	}
 
-	updateAutoHistory({ item, flags }) {
+	undo() {
+		super.undo()
+		this.wektor.emit('undo')
+	}
+
+	redo() {
+		super.redo()
+		this.wektor.emit('redo')
+	}
+
+	updateAutoHistory({item, flags}) {
 		if (item.data.iterable === false) return
-		// item.preventUndoRedo ist set when when we modify an item (in an undo/redo function) and we don't
+
+		// item.preventHistoryOnce ist set when when we modify an item in an undo/redo function and we don't
 		// want it to cause a new history entry
-		if (item.data.preventUndoRedo === true) {
-			delete item.data.preventUndoRedo
+		if (item.data.preventHistoryOnce === true) {
+			delete item.data.preventHistoryOnce
 			return
 		}
 
-		const { project, state } = this.wektor
-
 		if (flags & ChangeFlag.INSERTION) {
-			// insertion can also be removal, to distinguish the two we check if the item has a parent
-			// a removed item doesn't have a parent anymore
-			if (item.parent) {
-				const parentId = item.parent.id
-				this.add({
-					redo: () => {
-						const parent = project.getItem({ id: parentId })
-						item.data.preventUndoRedo = true
-						parent.addChild(item)
-					},
-					undo: () => {
-						item.data.preventUndoRedo = true
-						item.remove()
-					}
-				})
-			} else {
-				// state is not updated yet, so in it we can look for the former parent of item 
-				const itemState = state.flat[item.id]
-				const parentId = (itemState && itemState.parentId)
-				this.add({
-					redo: () => {
-						item.data.preventUndoRedo = true
-						item.remove()
-					},
-					undo: () => {
-						item.data.preventUndoRedo = true
-						const parent = project.getItem({ id: parentId })
-						if (!parent)
-							console.warn(`can't retrieve former parent item`)
-						else
-							parent.addChild(item)
-					}
-				})
+			// insertion can also be removal, to distinguish the two we check if the item has an index.
+			if (item.index === undefined)
+				this.handleRemoval(item)
+			else
+				this.handleInsertion(item)
+		}
+	}
+
+	handleInsertion(item) {
+		const parentId = item.parent && item.parent.id
+		const projectIndex = item.project.index
+
+		// layers that are direct children of a project don't have a parent so their project will 
+		// be treated as their parent. For now only one project is supported. Later on we'll have
+		// to fetch the right project for the given projectIndex.
+		const project = this.wektor.project
+		const parent = parentId && project.getItem({ id: parentId })
+
+		this.add({
+			redo: () => {
+				item.data.preventHistoryOnce = true
+
+				if (parent)
+					parent.addChild(item)
+				else
+					project.addLayer(item)
+			},
+			undo: () => {
+				item.data.preventHistoryOnce = true
+				item.remove()
 			}
-		}		
+		})
+	}
+
+	handleRemoval(item) {
+		// the state is not updated yet, so we can look for the former parent
+		const itemState = this.wektor.state.flat[item.id]
+		if (!itemState) {
+			console.warn(`No state information for item with id '${item.id}'`)
+			return
+		}
+
+		const parentId = itemState.parentId
+		const projectIndex = itemState.projectIndex
+
+		// layers that are direct children of a project don't have a parent so their project will 
+		// be treated as their parent. For now only one project is supported. Later on we'll have
+		// to fetch the right project for the given projectIndex.
+		const project = this.wektor.project
+		const parent = parentId && project.getItem({ id: parentId })
+
+		this.add({
+			redo: () => {
+				item.data.preventHistoryOnce = true
+				item.remove()
+			},
+			undo: () => {
+				item.data.preventHistoryOnce = true
+				if (parent)
+					parent.addChild(item)
+				else
+					project.addLayer(item)
+			}
+		}) 		
 	}
 }
 

@@ -10,6 +10,14 @@ class BezierTool extends SelectionTool {
 	constructor(target, spec) {
 		spec = Object.assign({}, specDefault, spec)
 		super(target, spec)
+
+		// undoing wektors history will eventually remove the path so we have to clean up
+		// (a path having an undefined index means it has been removed)
+		wektor.on('undo', () => {
+			if (this.path && this.path.index === undefined) {
+				this.releasePath()
+			}
+		})
 	}
 
 	onDeactivate() {
@@ -48,9 +56,10 @@ class BezierTool extends SelectionTool {
 
 		if (this.path.firstSegment && this.path.firstSegment.point.equals(event.point)) {
 			this.path.closed = true
+			const path = this.path
 			wektor.history.add({
-				redo: () => { this.path.closed = true },
-				undo: () => { this.path.closed = false }
+				redo: () => { path.closed = true },
+				undo: () => { path.closed = false }
 			})			
 			this.segment = this.path.firstSegment
 			this.onlySelect(this.segment)
@@ -68,44 +77,33 @@ class BezierTool extends SelectionTool {
 
 	onMouseUp(event) {
 		switch (this.action) {
-			case 'createPath':
-				// we set x and y explicit, because if we use event.point.x in the undo/redo functions
-				// event will reference to a new event
-				const { x, y } = event.point
-				let id = this.path.id
-				wektor.history.add({
-					redo: () => {
-						this.path = this.createPath()
-						// wer setting the id directly because we need the path.id to stay the same (see releasePath())
-						// even if we remove and create the path while undo/redo. For us this is undo/redoing the
-						// same path, for paper.js they are different und so have different id's by default
-						this.path._id = id
-						this.path.add([x, y])
-						this.path.selected = true
-						if (this.isActive) {
-							this.pathPreview = new PathPreview(this.path)
-							this.pathPreview.update(event)
-						}
-					},
-					undo: () => { 
-						this.path.remove()
-						this.path = null
-						this.releasePathPreview()
-					}
-				})
-				break
 			case 'addSegment':
+				// storing the path in a new variable is important, because using this.path 
+				// in the undo/redo functions will point to the current path of this tool
+				const path = this.path
 				const segment = this.path.lastSegment
 				wektor.history.add({
 					redo: () => {
-						this.path.addSegments([segment])
-						this.onlySelect(this.path.lastSegment)
-						this.pathPreview && this.pathPreview.update(event)
+						if (path) {
+							path.addSegments([segment])
+							if (path === this.path) {
+								this.onlySelect(this.path.lastSegment)
+								this.pathPreview && this.pathPreview.update(event)
+							}
+						} else {
+							console.warn(`Unable to find path.`)
+						}
 					},
 					undo: () => {
-						this.path.removeSegments(this.path.segments.length - 1)
-						this.onlySelect(this.path.lastSegment)
-						this.pathPreview && this.pathPreview.update(event)
+						if (path) {
+							path.removeSegments(path.segments.length - 1)
+							if (path === this.path) {
+								this.onlySelect(this.path.lastSegment)
+								this.pathPreview && this.pathPreview.update(event)								
+							}
+						} else {
+							console.warn(`Unable to find path.`)
+						}
 					}
 				})
 				break
@@ -139,24 +137,9 @@ class BezierTool extends SelectionTool {
 	}
 
 	releasePath(unselect = true) {
-		const pathId = this.path.id
-
-		const command = wektor.history.add({
-			redo: () => {
-				this.releasePathPreview()
-				if (unselect) this.path.selected = false
-				this.path = null
-			},
-			undo: () => {
-				this.path = wektor.project.getItem({ id: pathId })
-				this.path.selected = true
-				if (this.isActive)
-					this.pathPreview = new PathPreview(this.path)
-			}
-		})
-
-		// trigger the command
-		command.redo()
+		this.releasePathPreview()
+		if (unselect) this.path.selected = false
+		this.path = null
 	}
 
 	releasePathPreview() {

@@ -44,12 +44,12 @@ wektor.addTools({ BezierTool, GridTool, SelectionTool, SnapperTool, DrawingTool 
 wektor.tools['BaseTool'] = BaseTool
 wektor.tools.SelectionTool.activate()
 
-var p1 = new paper.Path.Circle({
-	radius: 100,
-	position: [400, 400],
-	name: 'gelb',
-	fillColor: 'yellow'
-})
+// var p1 = new paper.Path.Circle({
+// 	radius: 100,
+// 	position: [400, 400],
+// 	name: 'gelb',
+// 	fillColor: 'yellow'
+// })
 
 // var p2 = new paper.Path.Circle({
 // 	radius: 100,
@@ -66,11 +66,20 @@ var p1 = new paper.Path.Circle({
 // 		}
 // 	}
 // })
+// 
+// var p1 = new paper.Path.Circle({
+// 	radius: 100,
+// 	position: [400, 400],
+// 	name: 'gelb',
+// 	fillColor: 'yellow'
+// })
 
 const subLayer = new paper.Layer()
-subLayer.addChildren([p1])
 
-wektor.project.layers[0].addChild(subLayer)
+// wektor.project.layers[0].addChild(subLayer)
+// subLayer.addChildren([p1])
+
+// console.log(subLayer)
 
 new Vue({
 	el: '#wektor',

@@ -20,6 +20,7 @@ class WektorState extends EventEmitter {
 				const convertedItem = {
 					id: item.id,
 					parentId: (item.parent || item.project || {}).id,
+					projectIndex: item.project.index,
 					name: item.name || `${item.className} ${item.id}`,
 					paperName: item.name,
 					type: item.constructor.name,
