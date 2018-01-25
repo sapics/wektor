@@ -19,6 +19,7 @@ class Wektor extends EventEmitter {
 			project: null,
 			view: null,
 			tools: {},
+			effects: {},
 			shortcuts: null,
 			active: {
 				tool: null,
@@ -131,13 +132,6 @@ class Wektor extends EventEmitter {
 		this.shortcuts.push(shortcut)
 	}
 
-	removeTool(id) {
-		const tool = this.tools[id]
-		tool && tool.remove()
-		delete this.tools[id]
-		this.emit('removeTool', { id })
-	}
-
 	addTool(id, arg) {
 		let tool
 
@@ -181,6 +175,30 @@ class Wektor extends EventEmitter {
 		for (const [id, item] of Object.entries(object)) {
 			this.addTool(id, item)
 		}
+	}
+
+	removeTool(id) {
+		const tool = this.tools[id]
+		tool && tool.remove()
+		delete this.tools[id]
+		this.emit('removeTool', { id })
+	}
+
+	addEffect(id, constructor) {
+		if (this.effects[id])
+			console.warn(`Effect with id '${id}' already exists! It will be overwritten.`)
+
+		this.effects[id] = constructor
+	}
+
+	addEffects(object) {
+		for (const [id, effect] of Object.entries(object)) {
+			this.addEffect(id, effect)
+		}		
+	}
+
+	removeEffect(id) {
+		delete this.effects[id]
 	}
 
 	addDialog(spec) {

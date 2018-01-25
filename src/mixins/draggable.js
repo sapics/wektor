@@ -12,16 +12,12 @@ export default {
 
 	methods: {
 		startDrag(event) {
-			console.log('start drag')
 			const el = this.$refs.dialog
 			const {top, left} = el.getBoundingClientRect()
 			this.dragDelta = {
 				x: event.x - left,
 				y: event.y - top
 			}
-			window.addEventListener('mousemove', () => {
-				console.log('fuu')
-			}, true)
 			window.addEventListener('mousemove', this.onDrag)
 			window.addEventListener('mouseup', this.endDrag)		
 		},

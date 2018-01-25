@@ -1,11 +1,19 @@
 import BaseEffect from './BaseEffect'
 
 class TestEffect extends BaseEffect {
-	apply() {
-		if (!(this.inputItem && this.outputItem)) return
-		this.outputItem.fillColor = this.inputItem.fillColor
-		this.outputItem.fillColor.hue += 100
+	constructor(input) {
+		super(input, {
+			applyOnChanges: ['style'],
+			mirrorChanges: ['segments'],
+		})
 	}
+
+	apply(input, output) {
+		if (input.fillColor) {
+			output.fillColor = input.fillColor
+			output.fillColor.hue += 100
+		}
+	}	
 }
 
 export default TestEffect

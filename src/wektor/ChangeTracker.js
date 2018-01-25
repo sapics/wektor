@@ -1,6 +1,7 @@
 import EventEmitter from 'event-emitter-es6'
 import ChangeFlag from './ChangeFlag'
-import { isFunction, isInt, isString } from '@/utils'
+import { isFunction, isObject, isPaperItem, isInt, isString, isNumber } from '@/utils'
+import paper from 'paper'
 
 class ChangeTracker {
 	constructor(project) {
@@ -43,7 +44,7 @@ class ChangeTracker {
 	}
 
 	emit(flag) {
-		flag = this.sanitizeFlag(flag)
+		flag = this.resolveFlag(flag)
 		let listeners, payload
 
 		if (arguments.length === 3) {
@@ -63,47 +64,84 @@ class ChangeTracker {
 		}
 	}
 
-	responds(flag, arg1, arg2) {
-		flag = this.sanitizeFlag(flag)
-		let item, callback
-
-		if (isFunction(arg1)) {
-			callback = arg1
-			return this.getListener(flag, callback) !== undefined
-		} else {
-			item = arg1
-			callback = arg2
-			return this.getItemListener(flag, item, callback) !== undefined
-		}
-	}	
-
-	on(flag, arg1, arg2) {
-		flag = this.sanitizeFlag(flag)
-
-		if (isFunction(arg1)) {
-			const callback = arg1
-			this.addListener(flag, callback)
-		} else {
+	responds(arg1, arg2, arg3) {
+		if (isPaperItem(arg1)) {
 			const item = arg1
+			const flag = this.resolveFlag(arg2)
+			const callback = arg3
+			return this.getItemListener(item, flag, callback) !== undefined
+		} else {
+			const flag = this.resolveFlag(arg1)
 			const callback = arg2
-			this.addItemListener(flag, item, callback)
+			return this.getListener(flag, callback) !== undefined
 		}
 	}
 
-	off(flag, arg1, arg2) {
-		flag = this.sanitizeFlag(flag)
+	on(...args) {
+		this.onOff(true, ...args)
+	}
 
-		if (isFunction(arg1)) {
-			const callback = arg1
-			this.removeListener(flag, callback)
-		} else {
+	off(...args) {
+		this.onOff(false, ...args)
+	}
+
+	onOff(on, arg1, arg2, arg3) {
+		if (isPaperItem(arg1)) {
+			const method = on ? this.addItemListener.bind(this) : this.removeItemListener.bind(this)
 			const item = arg1
+
+			if (isObject(arg2)) {
+				const listeners = arg2
+				for (const [flag, callback] of Object.entries(listeners)) {
+					method(item, flag, callback)
+				}
+			} else {
+				const flag = arg2
+				const callback = arg3
+				method(item, flag, callback)
+			}
+		} else if (isObject(arg1)) {
+			const method = on ? this.addListener.bind(this) : this.removeListener.bind(this)
+			const listeners = arg1
+			for (const [flag, callback] of Object.entries(listeners))
+				method(flag, callback)
+		} else {
+			const method = on ? this.addListener.bind(this) : this.removeListener.bind(this)
+			const flag = arg1
 			const callback = arg2
-			this.removeItemListener(flag, item, callback)
+			method(flag, callback)
 		}
-	}	
+	}
+
+	// on(flag, arg1, arg2) {
+	// 	flag = this.sanitizeFlag(flag)
+
+	// 	if (isFunction(arg1)) {
+	// 		const callback = arg1
+	// 		this.addListener(flag, callback)
+	// 	} else {
+	// 		const item = arg1
+	// 		const callback = arg2
+	// 		this.addItemListener(flag, item, callback)
+	// 	}
+	// }
+
+	// off(flag, arg1, arg2) {
+	// 	flag = this.sanitizeFlag(flag)
+
+	// 	if (isFunction(arg1)) {
+	// 		const callback = arg1
+	// 		this.removeListener(flag, callback)
+	// 	} else {
+	// 		const item = arg1
+	// 		const callback = arg2
+	// 		this.removeItemListener(flag, item, callback)
+	// 	}
+	// }	
 
 	addListener(flag, callback) {
+		flag = this.resolveFlag(flag)
+
 		if (!this.listeners[flag])
 			this.listeners[flag] = []
 
@@ -116,6 +154,8 @@ class ChangeTracker {
 	}
 
 	removeListener(flag, callback) {
+		flag = this.resolveFlag(flag)
+
 		const listenerIndex = this.getListenerIndex(flag, callback)
 		if (listenerIndex === -1) return
 
@@ -124,25 +164,31 @@ class ChangeTracker {
 	}
 
 	getListener(flag, callback) {
+		flag = this.resolveFlag(flag)
+
 		const listeners = this.listeners[flag]
 		if (!listeners) return
 		return listeners.find(listener => listener.callback === callback )	
 	}
 
 	getListenerIndex(flag, callback) {
+		flag = this.resolveFlag(flag)
+
 		const listeners = this.listeners[flag]
 		if (!listeners) return -1
 		return listeners.findIndex(listener => listener.callback === callback )	
 	}		
 
-	addItemListener(flag, item, callback) {
+	addItemListener(item, flag, callback) {
+		flag = this.resolveFlag(flag)
+
 		if (!this.itemListeners[flag])
 			this.itemListeners[flag] = {}
 
 		if (!this.itemListeners[flag][item.id])
 			this.itemListeners[flag][item.id] = []
 
-		if (this.responds(flag, item, callback))
+		if (this.responds(item, flag, callback))
 			return
 
 		this.itemListeners[flag][item.id].push({
@@ -151,7 +197,9 @@ class ChangeTracker {
 		})
 	}
 
-	removeItemListener(flag, item, callback) {
+	removeItemListener(item, flag, callback) {
+		flag = this.resolveFlag(flag)
+
 		const listenerIndex = this.getItemListenerIndex(flag, item, callback)
 		if (listenerIndex === -1) return
 
@@ -159,24 +207,31 @@ class ChangeTracker {
 		this.cleanUpListeners(flag, item)
 	}
 
-	getItemListener(flag, item, callback) {
+	getItemListener(item, flag, callback) {
+		flag = this.resolveFlag(flag)
+
 		const listeners = this.itemListeners[flag] && this.itemListeners[flag][item.id]
 		if (!listeners) return
 		return listeners.find(listener => listener.callback === callback)
 	}
 
-	getItemListenerIndex(flag, item, callback) {
+	getItemListenerIndex(item, flag, callback) {
+		flag = this.resolveFlag(flag)
+
 		const listeners = this.itemListeners[flag] && this.itemListeners[flag][item.id]
 		if (!listeners) return -1
 		return listeners.findIndex(listener => listener.callback === callback)
 	}	
 
-	cleanUpListeners(flag, item) {
-		if (item) {
+	cleanUpListeners(arg1, arg2) {
+		if (isObject(arg1)) {
+			const item = arg1
+			const flag = this.resolveFlag(arg2)
 			const listeners = this.itemListeners[flag] && this.itemListeners[flag][item.id]
 			if (!listeners.length) delete this.itemListeners[flag][item.id]
 			if (!Object.keys(this.itemListeners[flag]).length) delete this.itemListeners[flag]
 		} else {
+			const flag = this.resolveFlag(arg1)
 			const listeners = this.listeners[flag]
 			if (!listeners.length) delete this.listeners[flag]
 		}
@@ -191,9 +246,13 @@ class ChangeTracker {
 	// offItemChange(id, flag, callback) {
 	// 	// delete this.listeners.itemChange[id]
 	// }
+	// 
+	// 
 
-	sanitizeFlag(flag) {
-		return isString(flag) ? ChangeFlag[ flag.toUpperCase() ] : flag
+	resolveFlag(flag) {
+		if (isInt(flag)) return flag
+		if (isNumber(flag)) return parseInt(flag)
+		if (isString(flag)) return ChangeFlag[ flag.toUpperCase() ] 
 	}
 }
 

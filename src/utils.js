@@ -80,6 +80,10 @@ function isObject(value) {
 	return (typeof value === 'function' || typeof value === 'object')
 }
 
+function isPaperItem(value) {
+	return value instanceof paper.Item
+}
+
 function isArray(value) {
 	if (!value) return false
 	return value.constructor === Array
@@ -347,7 +351,8 @@ export {
 	isNumeric,
 	isNumber,
 	isString, 
-	isObject, 
+	isObject,
+	isPaperItem,
 	isArray, 
 	isFunction, 
 	isHtml, 

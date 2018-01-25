@@ -124,6 +124,7 @@ import popup from './components/popup'
 import vcode from './components/vcode'
 import drop from './components/drop'
 import boolean from './components/boolean'
+import effects from './components/effects'
 
 import Vue from 'vue'
 import VueInputAutowidth from 'vue-input-autowidth'
@@ -167,6 +168,7 @@ export default {
 		vcode,
 		drop,
 		boolean,
+		effects,
 	},
 
 	computed: {
