@@ -7,25 +7,41 @@ class WektorState extends EventEmitter {
 		this.project = project
 		this.nested = null
 		this.flat = null
+		this.indexes = {}
+	}
+
+	createItemName(item) {
+		const type = item.constructor.name
+
+		// note: for human readability we'll start the index with 1
+		this.indexes[type] = (this.indexes[type] !== undefined)
+			? this.indexes[type] + 1
+			: 1 
+
+		console.log(type + ' ' + this.indexes[type])
+
+		return type + ' ' + this.indexes[type]
 	}
 
 	// todo:
 	// single item, replace only attributes and not the children
 	update(items) {
-		function convertItems(items) {
+		const convertItems = items => {
 			const converted = []
 			for (let i = items.length - 1; i >= 0; i--) {
 				const item = items[i]
 				if (item.data.iterable === false) continue
+				item.name = item.name || this.createItemName(item)
 				const convertedItem = {
 					id: item.id,
 					parentId: (item.parent || item.project || {}).id,
 					projectIndex: item.project.index,
-					name: item.name || `${item.className} ${item.id}`,
+					name: item.name,
 					paperName: item.name,
 					type: item.constructor.name,
 					open: item.data.open,
 					selected: item.selected,
+					finished: item.data.finished,
 					children: (item.children && (item.data.iterableChildren !== false)) ? convertItems(item.children) : undefined,
 					_wektorPastePaperItem: true, // this lets the built-in code editor in wektor know, that when we paste the item into the editor, it'll resolve it to a reference to the item        
 				}

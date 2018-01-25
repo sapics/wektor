@@ -23,12 +23,11 @@ class BezierTool extends SelectionTool {
 	onDeactivate() {
 		this.segment && (this.segment.selected = false)
 		this.path && this.releasePath(false)
-		this.releasePathPreview()
 	}
 
 	onKeyDown(event) {
 		if (event.key === this.options.keys.release) {
-			this.releasePath()
+			this.releasePath(false)
 			event.preventDefault()
 		}
 	}
@@ -113,8 +112,7 @@ class BezierTool extends SelectionTool {
 	}
 
 	onMouseMove(event) {
-		if (!this.path)
-			return false
+		if (!this.path) return
 
 		if (this.options.snapToClose)
 			event = this.snap(this.path, event)
@@ -137,6 +135,7 @@ class BezierTool extends SelectionTool {
 	}
 
 	releasePath(unselect = true) {
+		console.log('release')
 		this.releasePathPreview()
 		if (unselect) this.path.selected = false
 		this.path = null

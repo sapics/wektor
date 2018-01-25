@@ -256,6 +256,7 @@ class Wektor extends EventEmitter {
 			spec.values = parentDialog.values
 
 		spec.rootId = parentDialog.rootId || parentDialog.id
+		spec.nestedIndex = parentDialog.nestedIndex + 1
 
 		this.openDialog(spec)
 	}

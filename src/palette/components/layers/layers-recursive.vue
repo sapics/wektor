@@ -1,5 +1,6 @@
 <template>
 	<vddl-draggable
+		v-if="finished"
 		class="palette-layers-recursive"
 		:class="{ hasChildren }"
 		:draggable="item"
@@ -22,8 +23,7 @@
 				<vddl-handle>
 					<span 
 						class="label"
-						:class="{ selected, highlight: selected }"
-						@click="handleClickLabel"
+						:class="{ selected, highlight }"
 					>{{ item.name }}</span>
 				</vddl-handle>
 			</vddl-nodrag>
@@ -44,7 +44,7 @@
 		</div>
 		<div v-else
 			class="label" 
-			:class="{ selected, highlight: selected }"
+			:class="{ selected, highlight }"
 			@contextmenu="handleContextMenu"
 		>
 			{{item.name}}
@@ -112,6 +112,10 @@ export default {
 	},
 
 	computed: {
+		finished() {
+			return (this.item.finished !== false)
+		},
+
 		hasChildren() {
 			const children = this.item.children
 			return (children && children.length)
@@ -120,14 +124,17 @@ export default {
 		selected() {
 			return this.item.selected
 		},
+
+		highlight() {
+			if (this.item.type === 'Layer') {
+				return (wektor.project.activeLayer.id === this.item.id)
+			} else {
+				return this.selected
+			}
+		}
 	},
 
 	methods: {
-		handleClickLabel() {
-			const paperItem = wektor.project.getItem({ id: this.item.id })
-			paperItem && isFunction(paperItem.activate) && paperItem.activate()
-		},
-
 		handleInserted({ index, item: insertedItem, list }) {
 			// in paper.js, items with a lower index are lower in the hierarchy
 			// for the layers panel however we need to show them in inverted hierarchy
@@ -140,8 +147,14 @@ export default {
 
 		handleSelected() {
 			const paperItem = wektor.project.getItem({ id: this.item.id })
-			wektor.project.deselectAll()
-			paperItem.selected = true	
+			if (this.item.type === 'Layer') {
+				paperItem.activate()
+				wektor.state.update()
+			} else {
+				paperItem.layer.activate()
+				wektor.project.deselectAll()
+				paperItem.selected = true				
+			}	
 		},	
 
 		handleContextMenu(event) {

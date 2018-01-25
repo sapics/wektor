@@ -36,19 +36,22 @@ class GridTool extends BaseTool {
 	}
 
 	onMouseUp(event) {
-		let spec = {}
-
+		let bounds 
 		if (this.newGridRect) {
-			const bounds = this.newGridRect.bounds
-
-			spec = {
-				bounds: this.newGridRect.bounds
-			}
+			bounds = this.newGridRect.bounds
+			console.log(bounds)
 			this.newGridRect.remove()
 			this.newGridRect = null
+		} else {
+			bounds = {
+				x: event.point.x,
+				y: event.point.y,
+				width: 500,
+				height: 500,
+			}
 		}
 
-		new Grid(spec)
+		new Grid({ bounds })
 	}
 }
 

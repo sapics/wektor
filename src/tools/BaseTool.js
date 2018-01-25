@@ -70,7 +70,7 @@ class BaseTool extends paper.Tool {
 	// }
 
 	onlySelect(value) {
-		this.target && (this.target.deselectAll())
+		this.target && this.target.deselectAll()
 
 		if (isArray(value)) {
 			for (const item of value)

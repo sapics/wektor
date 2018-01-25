@@ -16,6 +16,7 @@
 			:data-id="id"
 			:data-parent-id="parentId"
 			:data-root-id="rootId"
+			:data-nested-index="nestedIndex"
 			:style="css"
 			@mousedown="onMouseDown"
 			@mouseenter="hover = true"
@@ -27,10 +28,10 @@
 				class="dialog-sidebar draghandler"
 			>
 				<div 
-					ref="lock"
-					class="dialog-lock draghandler"
+					ref="lockClose"
+					class="dialog-lock-close draghandler"
 					:class="{ locked }"
-					@mouseup="!drag && (locked = !locked)"
+					@mouseup="!drag && handleLockClose()"
 				></div>	
 				<svg 
 					class="resize-corner" viewBox="0 0 7 7"
@@ -86,14 +87,14 @@
 		cursor: grab;
 	}
 
-	.dialog-lock {
+	.dialog-lock-close {
 		@include bullet();
 		border: 1px solid var(--wektor-dialog-border-color);
 		background: white;
 		cursor: pointer;
 	}
 
-	.dialog-lock.locked {
+	.dialog-lock-close.locked {
 		background: var(--wektor-dialog-border-color);
 	}
 
@@ -179,6 +180,10 @@ export default {
 		rootId() {
 			return this.spec.rootId
 		},
+
+		nestedIndex() {
+			return this.spec.nestedIndex
+		},		
 
 		bridge() {
 			return this.spec.bridge || {}
@@ -556,6 +561,13 @@ export default {
 			this.position = position		
 		},
 
+		handleLockClose() {
+			if (this.locked)
+				this.close()
+			else
+				this.locked = true
+		},
+
 		onMouseDown(event) {
 			this.activate()
 			if (this.isDragHandle(event.target))
@@ -577,8 +589,8 @@ export default {
 		},
 
 		close(event) {
-			if (!this.targetIsDescendant(event.target))
-				wektor.closeDialog(this.id)
+			if (event && this.targetIsDescendant(event.target)) return
+			wektor.closeDialog(this.id)
 		},
 
 		targetIsDescendant(target) {
@@ -587,7 +599,14 @@ export default {
 			if (!dialog) return false
 
 			const rootId = dialog.dataset.rootId
-			return (rootId === this.rootId || rootId === this.id)
+			const nestedIndex = dialog.dataset.nestedIndex
+
+			if (rootId !== this.rootId) {
+				console.log('no same root', rootId, this.rootId, this.id)
+				return
+			}
+
+			return (nestedIndex > this.nestedIndex)
 		}			
 	}
 

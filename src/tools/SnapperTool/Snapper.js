@@ -40,7 +40,7 @@ class Mirror extends paper.Group {
 			clone.locked = true
 			this.addChild(clone)
 
-			if (item.data.iterable !== false)
+			if (item.data.finished !== false)
 				this.update(clone, item)
 
 			const insertionHandler = () => {
@@ -53,7 +53,7 @@ class Mirror extends paper.Group {
 			}
 
 			const geometryHandler = () => {
-				if (item.data.iterable !== false)
+				if (item.data.finished !== false)
 					this.update(clone, item)				
 			}
 
@@ -121,7 +121,6 @@ class Snapper extends Mirror {
 		}		
 
 		Object.assign(this, specDefault, spec)
-		this.name = `Snapper ${this.id}`
 	}
 
 	snap(items) {

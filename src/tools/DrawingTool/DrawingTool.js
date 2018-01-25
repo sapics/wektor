@@ -51,8 +51,8 @@ const specDefault = {
 }
 
 class DrawingTool extends BaseTool {
-	constructor(spec) {
-		super()
+	constructor(target, spec) {
+		super(target)
 		Object.assign(this, specDefault, spec)
 		this.label = 'draw'
 		this.shortcut = 'd'
@@ -61,7 +61,7 @@ class DrawingTool extends BaseTool {
 	onMouseDown(event) {
 		this.path = new Path()
 		this.path.add(event.point)
-		// this.path.data.iterable = false
+		this.path.data.finished = false
 	}
 	
 	onMouseDrag(event) {
@@ -89,8 +89,8 @@ class DrawingTool extends BaseTool {
 			options.simplify && path.simplify(options.simplify)
 			options.smooth && path.smooth()
 			options.flatten && path.flatten(options.flatten)
-			// path.data.iterable = true
-			// wektor.state.update()
+			path.data.finished = true
+			this.onlySelect(path)
 		} else {
 			path.remove()
 		}

@@ -76,7 +76,7 @@ wektor.tools.SelectionTool.activate()
 
 const subLayer = new paper.Layer()
 
-// wektor.project.layers[0].addChild(subLayer)
+wektor.project.layers[0].addChild(subLayer)
 // subLayer.addChildren([p1])
 
 // console.log(subLayer)

@@ -91,7 +91,7 @@ function isComponentDescription(layout) {
 }
 
 class Dialog {
-	constructor({ id, parentId, rootId, bridge, values, layout, reference, payload, convert, changeHandler }) {
+	constructor({ id, parentId, rootId, nestedIndex, bridge, values, layout, reference, payload, convert, changeHandler }) {
 		if (!layout) {
 			layout = {}
 			console.warn(`No layout specified for Dialog '${id}'`)
@@ -108,13 +108,14 @@ class Dialog {
 			this.values = values
 
 		Object.assign(this, {
-			id: id.toString(),
+			id,
 			parentId: (parentId && parentId.toString()),
+			rootId: rootId || id,
+			nestedIndex: nestedIndex || 0,
 			bridge,
 			layout,
 			reference,
 			payload,
-			rootId,
 		})		
 	}	
 }

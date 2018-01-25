@@ -77,8 +77,6 @@ class Grid extends Group {
 		}
 
 		this.cache = {}
-
-		this.name = 'Grid' + this.id
 		this.data.open = false
 
 		this.initBackground()
@@ -149,7 +147,11 @@ class Grid extends Group {
 				iterable: false,
 			}
 		})
-		this.lineHorizontal.pivot = this.lineHorizontal.bounds.topLeft	
+		this.lineHorizontal.pivot = this.lineHorizontal.bounds.topLeft
+
+		// they will be removed from the stage but still be there to be cloned
+		this.lineHorizontal.remove()
+		this.lineVertical.remove()
 	}
 
 	handleDialogChange(target, key, value) {

@@ -31,15 +31,6 @@ const os = bowser.mac
 		? 'windows' : null
 
 export default {
-	watch: {
-		'settings': {
-			handler() {
-				console.log('gibts doch nich')
-			},
-			deep: true,
-		}
-	},
-
 	computed: {
 		settings() {
 			return wektor.settings

@@ -143,7 +143,9 @@ class SelectionTool extends BaseTool {
 					dashArray: [1, 1],
 					strokeColor: 'gray',
 				},
-				data: { iterable: false },
+				data: { 
+					iterable: false,
+				},
 			})
 		} else {
 			const { topLeft, topRight, bottomLeft, bottomRight } = new paper.Rectangle(startPoint, event.point)
