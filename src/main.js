@@ -17,6 +17,7 @@ import SnapperTool from './tools/SnapperTool'
 import DrawingTool from './tools/DrawingTool'
 import BaseTool from './tools/BaseTool'
 import MatterJsTool from './tools/MatterJsTool'
+import TestEffect from './effects/TestEffect'
 
 import Vddl from 'vddl'
 
@@ -51,6 +52,8 @@ wektor.tools.SelectionTool.activate()
 // 	fillColor: 'yellow'
 // })
 
+// var effect = new TestEffect(p1)
+
 // var p2 = new paper.Path.Circle({
 // 	radius: 100,
 // 	position: [500, 400],
@@ -74,9 +77,9 @@ wektor.tools.SelectionTool.activate()
 // 	fillColor: 'yellow'
 // })
 
-const subLayer = new paper.Layer()
+// const subLayer = new paper.Layer()
 
-wektor.project.layers[0].addChild(subLayer)
+// wektor.project.layers[0].addChild(subLayer)
 // subLayer.addChildren([p1])
 
 // console.log(subLayer)

@@ -55,7 +55,7 @@ class SelectionTool extends BaseTool {
 		}
 
 		const hitResultSelected = this.getHit(this.target, event, { 
-			match: result => result.item.selected,
+			match: ({item}) => item.selected && item.data.iterable !== false,
 			segments: true,
 			handles: true,
 		})
