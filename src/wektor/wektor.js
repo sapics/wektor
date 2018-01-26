@@ -237,6 +237,19 @@ class Wektor extends EventEmitter {
 		delete this.effects[id]
 	}
 
+	// addDialog(spec) {
+	// 	if (this.dialogs[spec.id]) {
+	// 		console.warn(`Dialog with id '${spec.id}' already exists`)
+	// 		return
+	// 	}
+
+	// 	const dialog = new Dialog(spec)
+	// 	this.dialogs[dialog.id] = dialog
+	// 	this.dialogsStackingOrder.add(dialog.id)
+	// 	this.emit('addDialog', dialog)
+	// 	this.emit('updateDialogs', this.dialogs, 'add')
+	// }
+	
 	addDialog(spec) {
 		if (this.dialogs[spec.id]) {
 			console.warn(`Dialog with id '${spec.id}' already exists`)
@@ -245,9 +258,9 @@ class Wektor extends EventEmitter {
 
 		const dialog = new Dialog(spec)
 		this.dialogs[dialog.id] = dialog
-		this.dialogsStackingOrder.add(dialog.id)
 		this.emit('addDialog', dialog)
 		this.emit('updateDialogs', this.dialogs, 'add')
+		return dialog
 	}
 
 	openDialog(arg) {
@@ -256,8 +269,7 @@ class Wektor extends EventEmitter {
 		let dialog = this.dialogs[spec.id]
 
 		if (!dialog) {
-			dialog = new Dialog(spec)
-			this.dialogs[dialog.id] = dialog
+			dialog = this.addDialog(spec)
 		} else {
 			dialog.bridge && dialog.bridge.update()
 		}
@@ -267,8 +279,8 @@ class Wektor extends EventEmitter {
 
 		this.emit('openDialog', dialog)
 		this.emit('updateDialogs', this.dialogs, 'open')
-		this.dialogsStackingOrder.add(dialog.id)
-	}
+		this.dialogsStackingOrder.add(dialog.id)			
+	}	
 
 	getDialog(id) {
 		const dialog = this.dialogs[id]
@@ -298,21 +310,6 @@ class Wektor extends EventEmitter {
 			this.hideDialog(id)
 		else
 			this.showDialog(id)
-	}
-
-	openChildDialog(spec) {
-		const parentDialog = this.getDialog(spec.parentId)
-		if (!parentDialog) return
-
-		if (parentDialog.bridge)
-			spec.bridge = parentDialog.bridge
-		else
-			spec.values = parentDialog.values
-
-		spec.rootId = parentDialog.rootId || parentDialog.id
-		spec.nestedIndex = parentDialog.nestedIndex + 1
-
-		this.openDialog(spec)
 	}
 
 	showDialog(id) {

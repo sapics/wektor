@@ -115,7 +115,7 @@ export default {
 				}
 			}
 
-			wektor.openChildDialog({
+			wektor.openDialog({
 				id,
 				parentId: this.dialogId,
 				reference: this.$refs.colorLabel.id,

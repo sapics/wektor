@@ -37,7 +37,7 @@ export default {
 
 	methods: {
 		openDialog() {
-			wektor.openChildDialog({
+			wektor.openDialog({
 				id: this.id,
 				parentId: this.dialogId,
 				reference: this.$refs.label.id,

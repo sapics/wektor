@@ -1,5 +1,5 @@
 import paper from 'paper'
-import { isString, isArray, isObject, isFunction, getBounds, resolveObjectPath } from '@/utils'
+import { isString, isArray, isObject, isFunction, getBounds, resolveObjectPath, makeUniqueId } from '@/utils'
 import { isEqual } from 'underscore'
 import wektor from '@/wektor'
 import Vue from 'vue'
@@ -91,7 +91,63 @@ function isComponentDescription(layout) {
 }
 
 class Dialog {
-	constructor({ id, parentId, rootId, nestedIndex, bridge, values, layout, reference, payload, convert, changeHandler }) {
+	constructor(spec) {
+		let id, values, bridge, layout, reference, parent, parentId, nestedIndex, rootId
+
+		if (!spec.id) {
+			id = makeUniqueId()
+			console.warn(`No id specified for Dialog`)
+		} else {
+			id = spec.id
+		}
+
+		if (!spec.layout) {
+			layout = {}
+			console.warn(`No layout specified for Dialog '${id}'`)
+		} else {
+			layout = spec.layout
+		}
+
+		if (spec.reference) 
+			reference = createReference(spec.reference)
+
+		if (spec.parentId)
+			parent = wektor.getDialog(spec.parentId)
+
+		if (spec.parent)
+			parent = spec.parent
+
+		if (parent) {
+			parentId = parent.id
+			rootId = parent.rootId
+			nestedIndex = parent.nestedIndex + 1
+			if (!spec.values) {
+				bridge = parent.bridge
+				if (!bridge)
+					values = parent.values
+			}
+		} else {
+			nestedIndex = 0
+			if (spec.convert !== false)
+				bridge = new DialogBridge(spec.values, layout, spec.changeHandler)
+			else
+				values = spec.values
+		}
+
+		Object.assign(this, {
+			id,
+			rootId,
+			parentId: spec.parentId,
+			nestedIndex,
+			values,
+			bridge,
+			layout,
+			reference,
+			payload: spec.payload,
+		})
+	}
+
+	constructorOLD({ id, parentId, rootId, nestedIndex, bridge, values, layout, reference, payload, convert, changeHandler }) {
 		if (!layout) {
 			layout = {}
 			console.warn(`No layout specified for Dialog '${id}'`)
