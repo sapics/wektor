@@ -1,13 +1,44 @@
 import { wektor, ChangeFlag } from '@/wektor'
+import EventEmitter from 'event-emitter-es6'
 
-class BaseEffect {
-	constructor(input, spec) {	
+class BaseEffect extends EventEmitter {
+	constructor(input, spec) {
+		super()	
 		this.applyOnChanges = ['segments']
 		this.mirrorChanges = ['style']
 
 		Object.assign(this, spec)
 
 		this.input = input
+		this.id = this.constructor.name
+		this.on('click', event => this.openDialog(event))
+	}
+
+	openDialog(event, spec) {
+		if (!this.options || !this.dialog) return
+
+		wektor.openDialog({
+			id: this.constructor.name + this.key,
+			values: this.options,
+			...this.dialog,
+			reference: event && event.target,
+			// we can't pass the handler directly because we need the right this-context
+			changeHandler: (...args) => this.onDialogChange(...args),
+			...spec,
+		})		
+	}
+
+	onDialogChange(target, key, value) {
+
+	}
+
+	toJSON() {
+		return {
+			label: this.label,
+			key: this.key,
+			id: this.id,
+			paperItemId: this.original.id,
+		}
 	}
 
 	set input(item) {
@@ -15,10 +46,7 @@ class BaseEffect {
 		if (this.output) this.output.remove()
 
 		this._input = item
-		// this.output = item.clone()
-
 		this.output = this.updateOutput(item)
-		// this.initOutput(this.output, item)
 		item.opacity = 0
 	}
 
@@ -59,11 +87,11 @@ class BaseEffect {
 			wektor.changeTracker.on(input, listeners)
 			this.apply(input, output)	
 		}
-		output.data.init = true
 		output.data.iterable = false
+		output.data.changeTracking = true
 	}
 
-	updateOutput(input, output, outputParent) {
+	updateOutput(input, output, outputParent, newOutput = false) {
 		if (!input) {
 			output && output.remove()
 			return
@@ -74,19 +102,20 @@ class BaseEffect {
 			output.closed = input.closed
 			if (outputParent)
 				outputParent.addChild(output)
+			newOutput = true
 		}
 
 		if (input.children) {
-			if (!output.data.init === true)
+			if (newOutput)
 				this.initOutput(output, input)
 
 			for (let i = 0; i < Math.max(input.children.length, output.children.length); i++) {
 				const inputChild = input.children[i]
 				const outputChild = output.children[i]
-				this.updateOutput(inputChild, outputChild, output)
+				this.updateOutput(inputChild, outputChild, output, newOutput)
 			}
 		} else {
-			if (!output.data.init === true)
+			if (newOutput)
 				this.initOutput(output, input)
 		}
 

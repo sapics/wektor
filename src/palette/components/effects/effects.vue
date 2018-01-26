@@ -8,17 +8,20 @@
 				options: effectsOptions,
 			}"
 		></vselect>
-		<vddl-list
+		<vddl-list class="panel__body--list"
 			:list="appliedEffects"
+			:horizontal="false"
 		>
-			<effect v-for="(effect, index) of appliedEffects"
-				:key="effect.id"
+			<effect v-for="(item, index) in appliedEffects"
+				:key="item.key"
+				:draggable="item"
 				:index="index"
-				:item="effect"
 				:wrapper="appliedEffects"
-				:dialogId="dialogId"
-				:id="id"
-			>{{id}}</effect>
+				effect-allowed="move"
+				:moved="handleMoved"
+				:spec="item"
+			>{{item.label}}</effect>
+			<vddl-placeholder style="height: 1px; background: black; width: 100%; margin-top: -1px;"></vddl-placeholder>
 		</vddl-list>
 	</div>
 </template>
@@ -28,6 +31,7 @@ import baseComponent from '../baseComponent'
 import vselect from '../vselect'
 import effect from './effect'
 import wektor from '@/wektor'
+import { makeUniqueId } from '@/utils'
 
 export default {
 	extends: baseComponent,
@@ -36,7 +40,7 @@ export default {
 
 	data() {
 		return {
-			appliedEffects: [],			
+			appliedEffects: this.value,
 		}
 	},
 
@@ -50,13 +54,26 @@ export default {
 			}
 
 			return options
-		}
+		},
 	},
 
 	methods: {
+		handleMoved(item) {
+			const { index, list } = item
+			list.splice(index, 1)
+		},
+
 		addEffect(id) {
 			if (id === 'add') return
-			this.appliedEffects.push(this.effectsOptions[id])
+
+			const effect = this.effectsOptions.find(effect => effect.id === id)
+			if (!effect) return
+
+			const key = makeUniqueId()
+			this.appliedEffects.push({label: effect.id, key, id: effect.id})
+			// const appliedEffects = [...this.appliedEffects, { label: effect.id, key }]
+
+			// this.$emit('input', appliedEffects)
 		}
 	},
 }	

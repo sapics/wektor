@@ -19,6 +19,7 @@ import BaseTool from './tools/BaseTool'
 import MatterJsTool from './tools/MatterJsTool'
 import SnapperEffect from './effects/SnapperEffect'
 import TestEffect from './effects/TestEffect'
+import ShakeEffect from './effects/ShakeEffect'
 
 import Vddl from 'vddl'
 
@@ -43,7 +44,7 @@ Vue.prototype.$settings = settings
 window.wektor = wektor
 wektor.setup(paper.project)
 wektor.addTools({ BezierTool, GridTool, SelectionTool, SnapperTool, DrawingTool })
-wektor.addEffects({ SnapperEffect, TestEffect })
+wektor.addEffects({ SnapperEffect, TestEffect, ShakeEffect })
 wektor.tools['BaseTool'] = BaseTool
 wektor.tools.SelectionTool.activate()
 
@@ -54,48 +55,26 @@ var p1 = new paper.Path.Circle({
 	fillColor: 'yellow'
 })
 
-// function test() {
-// 	console.log('test')
-// }
-
-// wektor.changeTracker.on(p1, 'style', test)
-
-// console.log( wektor.changeTracker.responds(p1, 'style', test) )
-
-var p2 = new paper.Path.Circle({
-	radius: 100,
-	position: [500, 400],
-	name: 'rot',
-	fillColor: 'red'
-})
-
-var grid = new Grid({
-	options: {
-		spacing: {
-			vertical: 20,
-			horizontal: 20,
-		}
-	}
-})
-
-p2.on('click', () => {
-	var effect = new SnapperEffect(p2, { grid })
-})
-
-// 
-// var p1 = new paper.Path.Circle({
+// var p2 = new paper.Path.Circle({
 // 	radius: 100,
-// 	position: [400, 400],
-// 	name: 'gelb',
-// 	fillColor: 'yellow'
+// 	position: [500, 400],
+// 	name: 'rot',
+// 	fillColor: 'red'
 // })
 
-// const subLayer = new paper.Layer()
+// var group = new paper.Group([p1, p2])
 
-// wektor.project.layers[0].addChild(subLayer)
-// subLayer.addChildren([p1])
+// var effect = new TestEffect()
+// effect.input = p1
+// console.log(effect.output)
 
-// console.log(subLayer)
+// var grid = new Grid({
+// 	bounds: paper.view.bounds,
+// })
+
+p1.addWektorEffects([TestEffect, ShakeEffect])
+// p1.addWektorEffect(SnapperEffect, { grid })
+p1.applyWektorEffects()
 
 new Vue({
 	el: '#wektor',

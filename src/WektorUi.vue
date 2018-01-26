@@ -289,18 +289,23 @@ export default {
 
 			if (!(hit && hit.item)) return
 
-			if (wektor.project.selectedItems.length > 1) {
-				wektor.openDialog({
-					id: 'multiple',
-					values: wektor.project.selectedItems,
-					layout: settings.dialog.layouts.item,
-				})
-				return
-			} 
+			// if (wektor.project.selectedItems.length > 1) {
+			// 	wektor.openDialog({
+			// 		id: 'multiple',
+			// 		values: wektor.project.selectedItems,
+			// 		layout: settings.dialog.layouts.item,
+			// 	})
+			// 	return
+			// } 
 
 			if (hit.item.responds('contextmenu')) {
 				hit.item.emit('contextmenu')
 			} else {
+				if (!hit.item.data.wektorEffects)
+					hit.item.data.wektorEffects = []
+
+				console.log(hit.item.data)
+
 				wektor.openDialog({
 					id: hit.item.name || (hit.item.className + hit.item.id), 
 					values: hit.item, 

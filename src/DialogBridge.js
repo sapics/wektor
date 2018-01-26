@@ -23,17 +23,21 @@ class DialogBridge {
 
 	convertValues(values, layout) {
 		const converted = {}
+
+		function convert(value) {
+			if (isFunction(value.toJSON)) {
+				return value.toJSON()
+			} else if (isArray(value)) {
+				return value.map(element => convert(element))
+			} else {
+				return value
+			}			
+		}
 		
 		for (const [key, layoutProp] of Object.entries(layout)) {
 			if (isComponentDescription(layoutProp)) {
 				let { value } = resolveObjectPath(values, key)
-
-				if (value instanceof paper.Color) {
-					converted[key] = value.toJSON()
-				} else {
-					converted[key] = value
-				}
-
+				converted[key] = convert(value)
 			} else if (isObject(layoutProp)) {
 				// recursively convert nested values
 				Object.assign(converted, this.convertValues(values, layoutProp))

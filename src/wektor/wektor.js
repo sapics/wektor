@@ -1,7 +1,7 @@
 import paper from 'paper'
 import EventEmitter from 'event-emitter-es6'
 import settings from '@/settings'
-import { isArray, isFunction, isString, moveArrayElementToEnd } from '@/utils'
+import { isArray, isFunction, isString, moveArrayElementToEnd, makeUniqueId } from '@/utils'
 import Dialog from '@/dialog'
 import History from './History'
 import ChangeTracker from './ChangeTracker'
@@ -14,6 +14,42 @@ import Shortcuts from './Shortcuts'
 class Wektor extends EventEmitter {
 	constructor(settings) {
 		super()
+
+		paper.Item.inject({
+			wektorEffects: [],
+			applyWektorEffects() {
+				for (let i = 0; i < this.wektorEffects.length; i++) {
+					const effect = this.wektorEffects[i]
+					const prevEffect = this.wektorEffects[i - 1]
+					const input = prevEffect
+						? prevEffect.output
+						: this
+					effect.input = input
+				} 
+			},
+			addWektorEffect(arg1, arg2) {
+				let effect
+				if (isFunction(arg1)) {
+					// class constructors are also functions
+					const Constructor = arg1
+					const spec = arg2
+					effect = new Constructor(null, spec)
+					effect.label = effect.label || effect.constructor.name
+				} else {
+					effect = arg1
+					effect.label = effect.label || 'unnamed effect'
+				}
+
+				const index = this.wektorEffects.length
+				effect.key = makeUniqueId()
+				effect.original = this
+				this.wektorEffects[index] = effect
+			},
+			addWektorEffects(array) {
+				for (let i = 0; i < array.length; i++)
+					this.addWektorEffect(array[i])
+			}
+		})		
 
 		Object.assign(this, {
 			project: null,

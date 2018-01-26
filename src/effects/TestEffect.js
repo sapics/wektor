@@ -1,11 +1,24 @@
 import BaseEffect from './BaseEffect'
 
 class TestEffect extends BaseEffect {
-	constructor(input) {
-		super(input, {
+	constructor(input, spec) {
+		spec = Object.assign({
+			options: {
+				hueIncrement: 100,
+			},
+			dialog: {
+				layout: {
+					hueIncrement: {
+						type: 'number',
+						label: 'hue += '
+					}
+				},
+			},
 			applyOnChanges: ['style'],
-			mirrorChanges: ['segments'],
-		})
+			mirrorChanges: ['geometry'],			
+		}, spec)
+
+		super(input, spec)
 	}
 
 	apply(input, output) {

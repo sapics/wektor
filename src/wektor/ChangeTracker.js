@@ -26,7 +26,7 @@ class ChangeTracker {
 				for (const change of project._changes) {
 					const { item, flags } = change
 
-					if (item.data.iterable === false)
+					if (item.data.iterable === false && item.data.changeTracking !== true)
 						continue
 
 					for (const name in ChangeFlag) {
