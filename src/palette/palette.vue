@@ -1,9 +1,12 @@
 <template>
 	<div class="palette-wrap" :class="['palette', align ? `align-${align}` : null]">
 		<div 
-			v-if="label && align === 'indent'"
+			v-if="label && (align === 'indent' || payload.folder)"
 			class="label"
-		>{{label}}</div>
+		>
+			<span class="palette-chevron">&#9656;</span>
+			<span>{{label}}</span>
+		</div>
 		<div class="palette">
 			<div 
 				v-if="label && align !== 'indent'"
@@ -125,6 +128,7 @@ import vcode from './components/vcode'
 import drop from './components/drop'
 import boolean from './components/boolean'
 import effects from './components/effects'
+import vbutton from './components/vbutton'
 
 import Vue from 'vue'
 import VueInputAutowidth from 'vue-input-autowidth'
@@ -169,6 +173,7 @@ export default {
 		drop,
 		boolean,
 		effects,
+		vbutton,
 	},
 
 	computed: {

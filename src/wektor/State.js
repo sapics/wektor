@@ -13,12 +13,10 @@ class WektorState extends EventEmitter {
 	createItemName(item) {
 		const type = item.constructor.name
 
-		// note: for human readability we'll start the index with 1
+		// for human readability we'll start the index with 1
 		this.indexes[type] = (this.indexes[type] !== undefined)
 			? this.indexes[type] + 1
 			: 1 
-
-		console.log(type + ' ' + this.indexes[type])
 
 		return type + ' ' + this.indexes[type]
 	}

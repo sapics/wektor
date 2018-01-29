@@ -1,7 +1,7 @@
 import paper from 'paper'
 import EventEmitter from 'event-emitter-es6'
 import settings from '@/settings'
-import { isArray, isFunction, isString, moveArrayElementToEnd, makeUniqueId } from '@/utils'
+import { isArray, isObject, isFunction, isString, moveArrayElementToEnd, makeUniqueId } from '@/utils'
 import Dialog from '@/dialog'
 import History from './History'
 import ChangeTracker from './ChangeTracker'
@@ -10,44 +10,77 @@ import State from './State'
 import StackingOrder from './StackingOrder'
 import Vue from 'vue'
 import Shortcuts from './Shortcuts'
+import BaseEffect from '@/effects/BaseEffect'
+
+class WektorEffects {
+	constructor(item) {
+		this.item = item
+		this.list = []
+	}
+
+	apply() {
+		for (let i = 0; i < this.list.length; i++) {
+			const effect = this.list[i]
+			const prevEffect = this.list[i - 1]
+			const input = prevEffect
+				? prevEffect.output
+				: this.item
+			effect.input = input
+		} 
+	}
+
+	add(arg1, arg2) {
+		let effect
+
+		if (isArray(arg1)) {
+			const array = arg1
+			for (let i = 0; i < array.length; i++) {
+				this.add(array[i])	
+			}
+			return
+		}
+
+		if (isFunction(arg1)) {
+			// class constructors are also functions
+			const Constructor = arg1
+			const spec = arg2
+			effect = new Constructor(null, spec)
+			effect.label = Constructor.label
+		} else if (isObject(arg1)) {
+			const spec = arg1
+			effect = new BaseEffect(null, spec)
+			effect.label = spec.label
+		}
+
+		const index = this.list.length
+		effect.key = makeUniqueId()
+		effect.original = this.item
+		this.list[index] = effect
+		this.apply()
+	}
+
+	toJSON() {
+		const effectsJSON = this.list.map(effect => effect.toJSON())
+		return [
+			'WektorEffects',
+			{
+				list: effectsJSON,
+				ownerId: this.item.id
+			}
+		]
+	}	
+}
 
 class Wektor extends EventEmitter {
 	constructor(settings) {
 		super()
 
-		paper.Item.inject({
-			wektorEffects: [],
-			applyWektorEffects() {
-				for (let i = 0; i < this.wektorEffects.length; i++) {
-					const effect = this.wektorEffects[i]
-					const prevEffect = this.wektorEffects[i - 1]
-					const input = prevEffect
-						? prevEffect.output
-						: this
-					effect.input = input
-				} 
-			},
-			addWektorEffect(arg1, arg2) {
-				let effect
-				if (isFunction(arg1)) {
-					// class constructors are also functions
-					const Constructor = arg1
-					const spec = arg2
-					effect = new Constructor(null, spec)
-					effect.label = effect.label || effect.constructor.name
-				} else {
-					effect = arg1
-					effect.label = effect.label || 'unnamed effect'
-				}
+		paper.Item.inject({		
+			get wektorEffects() {
+				if (!this._wektorEffects)
+					this._wektorEffects = new WektorEffects(this)
 
-				const index = this.wektorEffects.length
-				effect.key = makeUniqueId()
-				effect.original = this
-				this.wektorEffects[index] = effect
-			},
-			addWektorEffects(array) {
-				for (let i = 0; i < array.length; i++)
-					this.addWektorEffect(array[i])
+				return this._wektorEffects
 			}
 		})		
 
@@ -220,11 +253,12 @@ class Wektor extends EventEmitter {
 		this.emit('removeTool', { id })
 	}
 
-	addEffect(id, constructor) {
+	addEffect(id, Constructor) {
 		if (this.effects[id])
 			console.warn(`Effect with id '${id}' already exists! It will be overwritten.`)
 
-		this.effects[id] = constructor
+		Constructor.label = Constructor.label || id
+		this.effects[id] = Constructor
 	}
 
 	addEffects(object) {

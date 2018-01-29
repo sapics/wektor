@@ -24,7 +24,15 @@ class TestEffect extends BaseEffect {
 	apply(input, output) {
 		if (input.fillColor) {
 			output.fillColor = input.fillColor
-			output.fillColor.hue += 100
+			output.fillColor.hue += this.options.hueIncrement
+		}
+	}
+
+	onDialogChange(target, key, value) {
+		switch (key) {
+			case 'hueIncrement':
+				this.applyAll()
+				break
 		}
 	}	
 }

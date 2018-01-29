@@ -4,8 +4,8 @@ import EventEmitter from 'event-emitter-es6'
 class BaseEffect extends EventEmitter {
 	constructor(input, spec) {
 		super()	
-		this.applyOnChanges = ['segments']
-		this.mirrorChanges = ['style']
+		this.applyOnChanges = []
+		this.mirrorChanges = []
 
 		Object.assign(this, spec)
 
@@ -16,6 +16,8 @@ class BaseEffect extends EventEmitter {
 
 	openDialog(event, spec) {
 		if (!this.options || !this.dialog) return
+
+		// console.log('opt', this.options)
 
 		wektor.openDialog({
 			id: this.constructor.name + this.key,
@@ -29,7 +31,7 @@ class BaseEffect extends EventEmitter {
 	}
 
 	onDialogChange(target, key, value) {
-
+		console.log('dialog change')
 	}
 
 	toJSON() {
@@ -37,7 +39,7 @@ class BaseEffect extends EventEmitter {
 			label: this.label,
 			key: this.key,
 			id: this.id,
-			paperItemId: this.original.id,
+			ownerId: this.original.id,
 		}
 	}
 
@@ -47,7 +49,11 @@ class BaseEffect extends EventEmitter {
 
 		this._input = item
 		this.output = this.updateOutput(item)
-		item.opacity = 0
+
+		if (item === this.original)
+			item.opacity = 0
+		else
+			item.visible = false
 	}
 
 	get input() {
@@ -83,10 +89,11 @@ class BaseEffect extends EventEmitter {
 		if (output.children) {
 			wektor.changeTracker.on(input, 'children', () => this.updateOutput(input, output))
 		} else {
-			const listeners = this.createInputListeners(input, output)
-			wektor.changeTracker.on(input, listeners)
+			this.addInputListeners(input, output)
 			this.apply(input, output)	
 		}
+		output.opacity = 1
+		output.visible = true
 		output.data.iterable = false
 		output.data.changeTracking = true
 	}
@@ -122,30 +129,30 @@ class BaseEffect extends EventEmitter {
 		return output
 	}
 
-	createInputListeners(input, output) {
-		const listeners = {}
+	addInputListeners(input, output) {
+		const changeTracker = wektor.changeTracker
 
 		for (const change of this.applyOnChanges) {
-			const flag = wektor.changeTracker.resolveFlag(change)
-			listeners[flag] = () => this.apply(input, output)
+			const flag = changeTracker.resolveFlag(change)
+			changeTracker.on(input, flag, () => this.apply(input, output))
 		}
 
 		for (const change of this.mirrorChanges) {
-			const flag = wektor.changeTracker.resolveFlag(change)
+			let flag = changeTracker.resolveFlag(change)
+			flag = (flag === undefined) ? change : flag
+
 			switch (flag) {
 				case ChangeFlag.STYLE:
-					listeners[flag] = () => (output.style = input.style)
+					changeTracker.on(input, flag, () => (output.style = input.style))
 					break
 				case ChangeFlag.SEGMENTS:
 				case ChangeFlag.GEOMETRY:
-					listeners[flag] = () => (output.segments = input.segments)
+					changeTracker.on(input, flag, () => (output.segments = input.segments))
 					break
 				default:
 					console.warn(`mirroring '${change}' changes is not supported yet. `)
 			}
-		}
-
-		return listeners
+		}			
 	}	
 }
 

@@ -4,11 +4,30 @@ import paper from 'paper'
 class SnapperEffect extends BaseEffect {
 	constructor(input, spec) {
 		spec = Object.assign({
+			options: {
+				grid: null,
+			},
+			dialog: {
+				layout: {
+					grid: {
+						type: 'drop',
+						label: 'drop grid'
+					},
+				},
+			},
 			applyOnChanges: ['geometry'],
-			mirrorChanges: ['style'],			
+			// mirrorChanges: ['style'],			
 		}, spec)
 
-		super(input, spec)		
+		super(input, spec)	
+	}
+
+	onDialogChange(target, key, value) {
+		switch (key) {
+			case 'grid':
+				this.grid = value
+				break
+		}
 	}
 
 	set grid(grid) {
@@ -27,10 +46,12 @@ class SnapperEffect extends BaseEffect {
 	}
 
 	apply(input, output) {
-		if (!this.grid) return
-		console.log('apply')
-		output.removeSegments()
-		output.segments = input.segments.map(segment => this.snapSegment(segment))
+		if (this.grid) {
+			output.removeSegments()
+			output.segments = input.segments.map(segment => this.snapSegment(segment))
+		} else {
+			output.segments = input.segments
+		}
 	}
 
 	snapSegment(segment) {

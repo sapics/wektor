@@ -115,6 +115,9 @@ const item = {
 		label: 'fill'
 	},
 	advanced: {
+		label: 'advanced',
+		folder: true,
+		open: false,
 		blendMode: {
 			type: 'select',
 			'label': 'blend',

@@ -78,10 +78,12 @@ function createDomReference(el) {
 }
 
 function createReference(arg) {
-	if (arg instanceof paper.Item)
+	if (arg instanceof paper.Item) 
 		return createPaperReference(arg)
 	else if (isString(arg))
 		return createDomIdReference(arg)
+	else if (arg.id)
+		return createDomIdReference(arg.id)
 	else
 		return createDomReference(arg)
 }
@@ -117,21 +119,20 @@ class Dialog {
 		if (spec.parent)
 			parent = spec.parent
 
+		if (spec.values && spec.convert !== false)
+			bridge = new DialogBridge(spec.values, layout, spec.changeHandler)
+		else
+			values = spec.values
+
 		if (parent) {
 			parentId = parent.id
 			rootId = parent.rootId
 			nestedIndex = parent.nestedIndex + 1
-			if (!spec.values) {
-				bridge = parent.bridge
-				if (!bridge)
-					values = parent.values
-			}
+			if (!spec.values)
+				bridge = parent.bridge			
 		} else {
+			rootId = id
 			nestedIndex = 0
-			if (spec.convert !== false)
-				bridge = new DialogBridge(spec.values, layout, spec.changeHandler)
-			else
-				values = spec.values
 		}
 
 		Object.assign(this, {
@@ -146,34 +147,6 @@ class Dialog {
 			payload: spec.payload,
 		})
 	}
-
-	constructorOLD({ id, parentId, rootId, nestedIndex, bridge, values, layout, reference, payload, convert, changeHandler }) {
-		if (!layout) {
-			layout = {}
-			console.warn(`No layout specified for Dialog '${id}'`)
-		}
-
-		if (reference)
-			reference = createReference(reference)
-
-		if (!bridge && convert !== false) {
-			bridge = new DialogBridge(values, layout, changeHandler)
-		}
-
-		if (!bridge && convert === false)
-			this.values = values
-
-		Object.assign(this, {
-			id,
-			parentId: (parentId && parentId.toString()),
-			rootId: rootId || id,
-			nestedIndex: nestedIndex || 0,
-			bridge,
-			layout,
-			reference,
-			payload,
-		})		
-	}	
 }
 
 export default Dialog

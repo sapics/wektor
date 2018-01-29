@@ -1,5 +1,6 @@
 import { isArray, isFunction, isString, isObject, resolveObjectPath } from '@/utils'
 import paper from 'paper'
+import wektor from '@/wektor'
 
 function isComponentDescription(layout) {
 	return (layout.type && isString(layout.type))
@@ -25,6 +26,8 @@ class DialogBridge {
 		const converted = {}
 
 		function convert(value) {
+			if (!value)
+				return value
 			if (isFunction(value.toJSON)) {
 				return value.toJSON()
 			} else if (isArray(value)) {
@@ -67,18 +70,29 @@ class DialogBridge {
 				const { target: rawTarget, key: rawKey } = resolveObjectPath(rawValues, key)
 
 				let type
-				if (value && isArray(value) && value[0] === 'Color') type = 'color'
+				if (value && isArray(value)) {
+					const types = ['Color', 'WektorEffects']
+					if (types.includes(value[0]))
+						type = value[0]
+				} else if (value && value._wektorPastePaperItem) {
+					type = 'paperItem'
+				}
 				
 				switch (type) {
-					case 'color': 
+					case 'Color': 
 						rawTarget[rawKey] = paper.Color.importJSON(value)
-						break;
+						break
+					case 'WektorEffects':
+						break
+					case 'paperItem':
+						rawTarget[rawKey] = wektor.project.getItem({ id: value.id })
+						break
 					default:
 						rawTarget[rawKey] = value       
 				}
 
 				if (isFunction(changeHandler)) 
-					changeHandler(target, key, value)
+					changeHandler(target, key, rawTarget[rawKey])
 
 				target[key] = value
 				return true

@@ -113,32 +113,6 @@ class ChangeTracker {
 		}
 	}
 
-	// on(flag, arg1, arg2) {
-	// 	flag = this.sanitizeFlag(flag)
-
-	// 	if (isFunction(arg1)) {
-	// 		const callback = arg1
-	// 		this.addListener(flag, callback)
-	// 	} else {
-	// 		const item = arg1
-	// 		const callback = arg2
-	// 		this.addItemListener(flag, item, callback)
-	// 	}
-	// }
-
-	// off(flag, arg1, arg2) {
-	// 	flag = this.sanitizeFlag(flag)
-
-	// 	if (isFunction(arg1)) {
-	// 		const callback = arg1
-	// 		this.removeListener(flag, callback)
-	// 	} else {
-	// 		const item = arg1
-	// 		const callback = arg2
-	// 		this.removeItemListener(flag, item, callback)
-	// 	}
-	// }	
-
 	addListener(flag, callback) {
 		flag = this.resolveFlag(flag)
 
@@ -236,18 +210,6 @@ class ChangeTracker {
 			if (!listeners.length) delete this.listeners[flag]
 		}
 	}	
-
-	// onItemChange(id, flag, callback) {
-	// 	if (!this.listeners.itemChange[id])
-	// 		this.listeners.itemChange[id] = []
-	// 	this.listeners.itemChange[id].push({ flag, callback })
-	// }
-
-	// offItemChange(id, flag, callback) {
-	// 	// delete this.listeners.itemChange[id]
-	// }
-	// 
-	// 
 
 	resolveFlag(flag) {
 		if (isInt(flag)) return flag

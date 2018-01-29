@@ -44,11 +44,15 @@ Vue.prototype.$settings = settings
 window.wektor = wektor
 wektor.setup(paper.project)
 wektor.addTools({ BezierTool, GridTool, SelectionTool, SnapperTool, DrawingTool })
-wektor.addEffects({ SnapperEffect, TestEffect, ShakeEffect })
+wektor.addEffects({ 
+	Snapper: SnapperEffect,
+	Test: TestEffect,
+	Shaker: ShakeEffect, 
+})
 wektor.tools['BaseTool'] = BaseTool
 wektor.tools.SelectionTool.activate()
 
-var p1 = new paper.Path.Circle({
+const gelb = window.gelb = new paper.Path.Circle({
 	radius: 100,
 	position: [400, 400],
 	name: 'gelb',
@@ -72,9 +76,7 @@ var p1 = new paper.Path.Circle({
 // 	bounds: paper.view.bounds,
 // })
 
-p1.addWektorEffects([TestEffect, ShakeEffect])
-// p1.addWektorEffect(SnapperEffect, { grid })
-p1.applyWektorEffects()
+gelb.wektorEffects.add(wektor.effects.Test)
 
 new Vue({
 	el: '#wektor',

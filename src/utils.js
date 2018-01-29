@@ -107,6 +107,24 @@ function makeUniqueId() {
 	return '_' + Math.random().toString(36).substr(2, 9)
 }
 
+// taken from http://indiegamr.com/generate-repeatable-random-numbers-in-js/
+function seededRandom(max, min) {
+	max = max || 1;
+	min = min || 0;
+
+	if (Math.seed === undefined)
+		Math.seed = 7
+
+	Math.seed = (Math.seed * 9301 + 49297) % 233280;
+	var rnd = Math.seed / 233280;
+
+	return min + rnd * (max - min);
+}
+
+function getRandomInt(min, max) {
+	return Math.floor(Math.random() * (max - min + 1)) + min
+}
+
 function trimZeros(value) {
 	return value.replace(/^0+(\d)|(\d)0+$/gm, '$1$2')
 }
@@ -326,6 +344,12 @@ function moveArrayElementToEnd(array, element) {
 	return array
 }
 
+function moveArrayElement(array, element, to) {
+	const from = array.indexOf(element)
+	array.splice(to, 0, array.splice(from, 1)[0])
+	return array
+}
+
 function removeArrayElement(array, element) {
 	
 }
@@ -376,5 +400,8 @@ export {
 	getDeltaE,
 	toCssPercent,
 	pointToCssPercent,
-	constrainElPosition
+	constrainElPosition,
+	seededRandom,
+	getRandomInt,
+	moveArrayElement,
 }

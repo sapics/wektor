@@ -1,9 +1,11 @@
 <template>
 	<vddl-draggable
+		:id="`effect${key}`"
 		:wrapper="wrapper"
 		:index="index"
 		:draggable="spec"
 		:selected="handleSelected"
+		:moved="moved"
 	>{{label}}</vddl-draggable>
 </template>
 
@@ -20,6 +22,8 @@ export default {
 		},
 		wrapper: Array,
 		index: Number,
+		dialogId: String,
+		moved: null,
 	},
 
 	computed: {
@@ -31,8 +35,8 @@ export default {
 			return this.spec.key
 		},
 
-		paperItemId() {
-			return this.spec.paperItemId
+		ownerId() {
+			return this.spec.ownerId
 		},
 
 		label() {
@@ -42,11 +46,14 @@ export default {
 
 	methods: {
 		handleSelected(item, target) {
-			const paperItem = wektor.project.getItem({ id: this.paperItemId })
-			const effect = paperItem.wektorEffects.find(effect => effect.key === this.key)
-			// effect.openDialog({target}, {
-			// 	rootId: 
-			// })
+			const paperItem = wektor.project.getItem({ id: this.ownerId })
+			if (!paperItem) {
+				console.warn(`No item found with id '${this.ownerId}'`)
+				return
+			}
+
+			const effect = paperItem.wektorEffects.list.find(effect => effect.key === this.key)
+			effect.openDialog({target}, { parentId: this.dialogId })
 		},
 	},
 }	
