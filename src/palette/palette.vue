@@ -1,12 +1,5 @@
 <template>
 	<div class="palette-wrap" :class="['palette', align ? `align-${align}` : null]">
-		<div 
-			v-if="label && (align === 'indent' || payload.folder)"
-			class="label"
-		>
-			<span class="palette-chevron">&#9656;</span>
-			<span>{{label}}</span>
-		</div>
 		<div class="palette">
 			<div 
 				v-if="label && align !== 'indent'"

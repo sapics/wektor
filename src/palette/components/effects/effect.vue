@@ -6,7 +6,9 @@
 		:draggable="spec"
 		:selected="handleSelected"
 		:moved="moved"
-	>{{label}}</vddl-draggable>
+	>
+		<span style="text-decoration: underline">{{label}}</span>
+	</vddl-draggable>
 </template>
 
 <script>

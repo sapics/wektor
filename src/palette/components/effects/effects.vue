@@ -9,7 +9,7 @@
 				options: effectsOptions,
 			}"
 		></vselect>&nbsp;<span>effect</span>
-		<vddl-list class="panel__body--list"
+		<vddl-list class="applied-effects"
 			:list="appliedEffects"
 			:horizontal="false"
 		>
@@ -32,6 +32,10 @@
 .palette-effects {
 	.palette-effects-select {
 		float: left
+	}
+
+	.applied-effects {
+		margin-left: 0.8em;
 	}
 }	
 </style>
