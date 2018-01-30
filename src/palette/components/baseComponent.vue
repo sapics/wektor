@@ -8,13 +8,13 @@ export default {
 			default: () => Object(),
 		},
 		value: null,
+		payload: {
+			type: Object,
+			default: () => Object(),
+		}
 	},
 
 	computed: {
-		payload() {
-			return this.spec.payload || {}
-		},
-
 		label() {
 			return this.payload.label
 		},

@@ -54,7 +54,7 @@ export default {
 
 	data() {
 		return {
-			unit: this.spec.payload.unit,
+			unit: this.payload.unit,
 			unitValue: null,
 			inputFieldValue: null,
 			resolution: 72,

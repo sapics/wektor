@@ -108,7 +108,7 @@ export default {
 			const id = this.id
 			const returnType = this.payload.return
 			const layout = {
-				[this.propKey]: {
+				[this.spec.key]: {
 					type: 'colorpicker',
 					label: this.label,
 					return: returnType,
@@ -123,14 +123,14 @@ export default {
 				payload: {
 					resize: true,
 					fitContent: true,
-					css: {
-						'padding': 'none', // reset the default padding
-						'padding-right': '1em',
-						'width': '150px',
-						'height': '100px',
-						'min-height': '4em',
-						'min-width': '4em',
-					}
+					// css: {
+					// 	'padding': 'none', // reset the default padding
+					// 	'padding-right': '1em',
+					// 	'width': '150px',
+					// 	'height': '100px',
+					// 	'min-height': '4em',
+					// 	'min-width': '4em',
+					// }
 				},				
 			})
 
