@@ -11,9 +11,9 @@ export default {
 	},
 
 	methods: {
-		startDrag(event) {
-			const el = this.$refs.dialog
-			const {top, left} = el.getBoundingClientRect()
+		startDrag(event, el) {
+			el = el || this.$el
+			const { top, left } = el.getBoundingClientRect()
 			this.dragDelta = {
 				x: event.x - left,
 				y: event.y - top

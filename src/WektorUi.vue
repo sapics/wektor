@@ -200,48 +200,36 @@ export default {
 	methods: {
 		openDefaultDialogs() {
 			wektor.openDialog({
-				id: 'layers',
-				values: this.layers,
+				id: 'test',
+				values: {
+					test: 20,
+				},
 				layout: {
-					type: 'layers',			
+					folder: {
+						label: 'advanced',
+						test: {
+							type: 'number',
+							label: 'aha',
+						},					
+					}
 				},
-				payload: {
-					locked: true, 
-					resize: true, 
-					css: {
-						overflow: 'scroll',
-						top: '50%',
-						right: '20px',
-					},
+				changeHandler() {
+					console.log('change')
 				},
-				convert: false,			
-			})	
-
-			wektor.addDialog({
-				id: 'scripts',
-				layout: {
-					type: 'code',
-				},
-				payload: {
-					locked: true,
-					css: { 
-						width: '50%',
-						height: '30%',
-						padding: '0',
-					},
-					fitContent: true,
-					resize: true,
-				} 
 			})
 
-			wektor.addDialog({
-				id: 'preferences',
-				values: settings,
-				layout: settings.dialog.layouts.preferences,
-				changeHandler: (target, key, value) => {
-					key.startsWith('theme') && this.theme.update()
-				},
-			})
+			// wektor.openDialog({
+			// 	...settings.dialogs.layers,
+			// 	values: this.layers,
+			// })
+
+			// wektor.addDialog({
+			// 	...settings.dialogs.preferences,
+			// 	values: settings,
+			// 	changeHandler: (target, key, value) => {
+			// 		key.startsWith('theme') && this.theme.update()
+			// 	},
+			// })
 		},
 
 		onKeyDown(event) {
@@ -304,12 +292,10 @@ export default {
 				if (!hit.item.data.wektorEffects)
 					hit.item.data.wektorEffects = []
 
-				console.log(hit.item.data)
-
 				wektor.openDialog({
+					...settings.dialogs.item,
 					id: hit.item.name || (hit.item.className + hit.item.id), 
-					values: hit.item, 
-					layout: settings.dialog.layouts.item,
+					values: hit.item,
 					reference: hit.item,
 				})
 			}

@@ -9,10 +9,11 @@ export default {
 	},
 
 	methods: {
-		startResize(event) {
-			const el = this.resizeEl || this.$el
+		startResize(event, el) {
+			this.resizeEl = el || this.$el
+
 			const { x, y } = event
-			const { right, bottom } =  el.getBoundingClientRect()
+			const { right, bottom } =  this.resizeEl.getBoundingClientRect()
 
 			this.resizeDelta = {
 				x: x - right,
@@ -26,16 +27,15 @@ export default {
 
 		resize(event) {
 			event.stopPropagation()
-			const el = this.resizeEl || this.$el
 
 			const { x, y } = event
-			const { top, left } = el.getBoundingClientRect()
+			const { top, left } = this.resizeEl.getBoundingClientRect()
 
 			const newWidth = (x - this.resizeDelta.x) - left
 			const newHeight = (y - this.resizeDelta.y) - top
 
-			el.style.width = newWidth + 'px'
-			el.style.height = newHeight + 'px'
+			this.resizeEl.style.width = newWidth + 'px'
+			this.resizeEl.style.height = newHeight + 'px'
 			this.width = newWidth
 			this.height = newHeight
 			this.$emit('resize')

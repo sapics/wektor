@@ -1,4 +1,4 @@
-import layouts from './dialogLayouts'
+import dialogs from './dialogs'
 
 export default {
 	shortcutModifiers: {
@@ -111,8 +111,8 @@ export default {
 		},
 		margin: 20,
 		keepAlive: true,
-		layouts,
 	},
+	dialogs,
 	units: {
 		whitelist: ['px'],
 		allowedUnits: ['px', 'cm', 'mm'],

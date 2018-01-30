@@ -17,12 +17,13 @@
 </template>
 
 <script>
+import baseComponent from '@/palette/components/baseComponent'
 import layersRecursive from './layers-recursive'
 
 export default {
-	components: { layersRecursive },
+	extends: baseComponent,
 
-	props: ['value'],
+	components: { layersRecursive },
 
 	computed: {
 		list() {

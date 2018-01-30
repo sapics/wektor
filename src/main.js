@@ -76,7 +76,7 @@ const gelb = window.gelb = new paper.Path.Circle({
 // 	bounds: paper.view.bounds,
 // })
 
-gelb.wektorEffects.add(wektor.effects.Test)
+// gelb.wektorEffects.add(wektor.effects.Test)
 
 new Vue({
 	el: '#wektor',

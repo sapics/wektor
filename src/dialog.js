@@ -144,7 +144,9 @@ class Dialog {
 			bridge,
 			layout,
 			reference,
-			payload: spec.payload,
+			css: spec.css,
+			locked: spec.locked,
+			resize: spec.resize,
 		})
 	}
 }

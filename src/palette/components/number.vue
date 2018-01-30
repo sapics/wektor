@@ -54,7 +54,7 @@ export default {
 
 	data() {
 		return {
-			unit: this.payload.unit,
+			unit: this.spec.payload.unit,
 			unitValue: null,
 			inputFieldValue: null,
 			resolution: 72,
@@ -79,7 +79,7 @@ export default {
 		}
 	},
 
-	computed: {
+	computed: { 
 		space() {
 			return this.payload.space
 		},
