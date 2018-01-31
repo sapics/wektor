@@ -18,7 +18,7 @@
 			@mouseleave="hover = false"				
 			v-outside:mousedown="onMouseDownOutside"
 		>
-			<resize-observer @notify="onResizeObserved" />
+			<!-- <resize-observer @notify="onResizeObserved" /> -->
 			<palette
 				class="dialog-content"
 				:id="`${spec.id}-palette`"
@@ -172,20 +172,13 @@ export default {
 			let cssPosition
 
 			if (this.position) {
+				const positionPercent = pointToCssPercent(this.position)
 				cssPosition = {
-					top: this.position.y + 'px',
-					left: this.position.x + 'px',
+					top: positionPercent.y + '%',
+					left: positionPercent.x + '%',
 					right: 'auto',
 					bottom: 'auto',
 				}
-
-				// const positionPercent = pointToCssPercent(this.position)
-				// cssPosition = {
-				// 	top: positionPercent.y + '%',
-				// 	left: positionPercent.x + '%',
-				// 	right: 'auto',
-				// 	bottom: 'auto',
-				// }
 			} else if (!this.hasCustomPosition) {
 				cssPosition = {
 					top: 0,
@@ -220,7 +213,7 @@ export default {
 			if (hover) {
 				this.updatePointerCorner(true)
 			}
-		},		
+		},
 	},
 
 	created() {
@@ -246,6 +239,7 @@ export default {
 		const bounds = this.$refs.dialog.getBoundingClientRect()
 		this.width = bounds.width
 		this.height = bounds.height
+		this.updatePointerCorner()
 	},
 
 	methods: {
@@ -258,7 +252,7 @@ export default {
 			const bounds = this.$refs.dialog.getBoundingClientRect()
 			// this.width = bounds.width
 			// this.height = bounds.height
-			this.updatePointerCorner()
+			// this.updatePointerCorner()
 		},	
 
 		onMouseDown(event) {

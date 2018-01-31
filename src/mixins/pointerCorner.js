@@ -29,7 +29,8 @@ export default {
 
 	methods: {
 		updatePointerCorner(checkVisibility = false) {
-			const { position, width, height, reference } = this
+			// const { position, width, height, reference } = this
+			const {position, reference} = this
 			const el = this.$refs.dialog
 
 			if (!(position && reference && reference.position)) return
@@ -38,10 +39,12 @@ export default {
 			// const left = position.x + 1
 			// const bottom = position.y + height - 1
 			// const right = position.x + width - 1
-			const top = position.y
-			const left = position.x
-			const bottom = position.y + height
-			const right = position.x + width			
+			// const top = position.y
+			// const left = position.x
+			// const bottom = position.y + height
+			// const right = position.x + width
+			
+			const { top, left, bottom, right, width, height } = el.getBoundingClientRect()	
 
 			const bounds = {
 				// top: position.y,
@@ -101,18 +104,18 @@ export default {
 			}
 
 			if (checkVisibility) {
-				console.log(corners.length)
+				const oldLength = corners.length
 				const visibleCorners = []
 				for (let i = 0; i < corners.length; i++) {
 					const point = corners[i]
 					const topMostEl = document.elementFromPoint(point.x, point.y)
-					console.log(topMostEl)
 					if (el === topMostEl)
 						visibleCorners.push(point)
 				}
 				corners = visibleCorners
-				console.log(corners.length)
-				console.log('---')
+				if (oldLength !== corners.length) {
+					console.log('visible changed', oldLength, corners.length)
+				}
 				corner = null
 			} 
 
