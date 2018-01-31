@@ -49,6 +49,7 @@ export default {
 
 		draw() {
 			const { ctx, from, to } = this
+			if (!from || !to) return
 
 			ctx.beginPath()
 			ctx.moveTo(from.x, from.y)

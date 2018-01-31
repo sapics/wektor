@@ -1,5 +1,5 @@
 <template>
-	<div class="palette" :class="[ alignClass, typeClass ]">
+	<div class="palette" :class="[ alignClass, typeClass, spec.stretchContent ? 'stretch-content' : null]">
 		<div class="palette-label-wrap" v-if="label">
 			<span class="palette-chevron"
 				:class="{ open }"
@@ -40,6 +40,12 @@
 
 	.label {
 		user-select: none;
+	}
+}
+
+.palette.stretch-content {
+	&, .palette-content {
+		height: 100%;
 	}
 }
 
@@ -123,7 +129,7 @@ export default {
 
 	data() {
 		return {
-			open: this.spec.open === undefined ? true : this.spec.open,
+			open: this.spec.layout.open === undefined ? true : this.spec.layout.open,
 		}
 	},
 

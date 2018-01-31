@@ -204,6 +204,7 @@ export default {
 				values: {
 					test: 20,
 				},
+				padding: false,
 				layout: {
 					folder: {
 						label: 'advanced',

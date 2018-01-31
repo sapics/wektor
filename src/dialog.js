@@ -145,8 +145,10 @@ class Dialog {
 			layout,
 			reference,
 			css: spec.css,
+			padding: spec.padding,
 			locked: spec.locked,
 			resize: spec.resize,
+			stretchContent: spec.stretchContent,
 		})
 	}
 }

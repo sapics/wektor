@@ -42,9 +42,9 @@ const item = {
 			label: 'fill'
 		},
 		advanced: {
-			label: 'advanced',
-			folder: true,
+			type: 'folder',
 			open: false,
+			label: 'advanced',
 			blendMode: {
 				type: 'select',
 				'label': 'blend',
