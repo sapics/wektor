@@ -20,7 +20,7 @@
 		>
 			<resize-observer @notify="onResizeObserved" />
 			<palette
-				class="dialog-content"
+				class="dialog-content draghandle"
 				:id="`${spec.id}-palette`"
 				:dialogId="spec.id"
 				:spec="{ values, layout, stretchContent: spec.stretchContent }"

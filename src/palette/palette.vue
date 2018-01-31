@@ -51,11 +51,11 @@
 
 .palette.align-comma-separated {
 	& > .palette {
-		display: table;
+		// display: table;
 	}
 
 	& > .palette-content > * {
-		display: table-cell;
+		// display: table-cell;
 		padding-right: 0.27em;
 		&:after {
 			content: ',';
@@ -70,18 +70,18 @@
 	}
 
 	& > .palette-label-wrap, .palette-content {
-		display: table-cell;
+		// display: table-cell;
 		padding-right: 0.27em;
 	}	
 }
 
 .palette.align-columns {
 	& > .palette-content {
-		display: table;
+		// display: table;
 	}
 
 	& > .palette-content > * {
-		display: table-cell;
+		// display: table-cell;
 		padding-right: 0.27em;
 	}
 
