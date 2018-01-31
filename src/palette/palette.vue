@@ -1,35 +1,4 @@
 <template>
-<<<<<<< HEAD
-	<div class="palette-wrap" :class="['palette', align ? `align-${align}` : null]">
-		<div class="palette">
-			<div 
-				v-if="label && align !== 'indent'"
-				class="label"
-			>{{label}}</div>
-			<template v-for="(child, index) in children">
-				<palette
-					v-if="child.type === 'palette'"
-					:key="child.key"
-					:id="`${id}-${child.key}`"
-					:data-id="child.key"
-					:dialogId="dialogId"
-					:payload="child.payload"
-					:values="child.values"
-					:layout="child.layout"				
-				></palette>			
-				<component
-					v-else
-					:is="child.component"
-					:key="child.key"
-					:propKey="child.key"
-					:id="`${id}-${child.key}`"
-					:data-id="child.key"
-					:dialogId="dialogId"
-					:payload="child.payload"
-					v-model="child.value"
-				></component>			
-			</template>
-=======
 	<div class="palette" :class="[ alignClass, typeClass, spec.stretchContent ? 'stretch-content' : null]">
 		<div class="palette-label-wrap" v-if="label">
 			<span class="palette-chevron"
@@ -55,7 +24,6 @@
 				:value="child.value"
 				v-model="child.value"
 			></component>
->>>>>>> cleanup-palette
 		</div>
 	</div>
 </template>
