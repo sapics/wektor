@@ -1,4 +1,5 @@
 <template>
+<<<<<<< HEAD
 	<div class="palette-wrap" :class="['palette', align ? `align-${align}` : null]">
 		<div class="palette">
 			<div 
@@ -28,58 +29,64 @@
 					v-model="child.value"
 				></component>			
 			</template>
+=======
+	<div class="palette" :class="[ alignClass, typeClass, spec.stretchContent ? 'stretch-content' : null]">
+		<div class="palette-label-wrap" v-if="label">
+			<span class="palette-chevron"
+				:class="{ open }"
+				@click="onChevronClick"
+			>&#9656;</span>
+			<span class="palette-label"
+				ref="label"
+				:id="`${spec.id}-label`"
+				@click="onLabelClick"
+			>{{label}}</span>
+		</div>
+		<div v-if="children && open"
+			class="palette-content"
+		>
+			<component v-for="(child, index) in children"
+				:is="child.component"
+				:key="child.key"
+				:id="`${id}-${child.key}`"
+				:dialogId="dialogId"
+				:spec="child"
+				:payload="child.payload"
+				:value="child.value"
+				v-model="child.value"
+			></component>
+>>>>>>> cleanup-palette
 		</div>
 	</div>
 </template>
 
-<style lang="scss">
-@import "src/sass/variables";
-
-.palette-wrap {
-	.label {
-		cursor: default;
-		display: inline-block;
-		padding-right: $space;
-	}
-
+<style lang="scss" scoped>
+.palette {
 	input {
 		background: transparent!important;
 	}
+
+	.palette-chevron {
+		display: none;
+	}
+
+	.label {
+		user-select: none;
+	}
 }
 
-.align-columns {
+.palette.stretch-content {
+	&, .palette-content {
+		height: 100%;
+	}
+}
+
+.palette.align-comma-separated {
 	& > .palette {
 		display: table;
 	}
 
-	& > .palette > * {
-		display: table-cell;
-		padding-right: 0.27em;
-	}
-
-	& > .palette > :last-child {
-		padding-right: 0
-	}
-}
-
-.align-indent {
-	display: table;
-	& > * {
-		display: table-cell;
-		padding-right: 0.27em;
-	}
-
-	& > :last-child {
-		padding-right: 0;
-	}
-}
-
-.align-comma-separated {
-	& > .palette {
-		display: table;
-	}
-
-	& > .palette > * {
+	& > .palette-content > * {
 		display: table-cell;
 		padding-right: 0.27em;
 		&:after {
@@ -87,90 +94,103 @@
 		}
 	}
 
-	& > .palette > :last-child {
+	& > .palette-content > :last-child {
 		padding-right: 0;
 		&:after {
 			content: ''
 		}
 	}
 
-	& > .palette > .label:after {
-		content: '';
+	& > .palette-label-wrap, .palette-content {
+		display: table-cell;
+		padding-right: 0.27em;
+	}	
+}
+
+.palette.align-columns {
+	& > .palette-content {
+		display: table;
 	}
-}	
+
+	& > .palette-content > * {
+		display: table-cell;
+		padding-right: 0.27em;
+	}
+
+	& > .palette-content > :last-child {
+		padding-right: 0
+	}
+}
+
+.palette.type-folder {
+	.palette-chevron {
+		display: inline-block;
+		cursor:pointer;
+		user-select: none;
+		&.open {
+			transform: rotate(90deg);
+		}
+	}
+
+	.palette-content {
+		margin-left: 0.8em;
+	}
+}
 </style>
 
-<script type="text/javascript">
-import { isString, isObject, resolvePropertyPath } from '@/utils'
-
-import paper from 'paper'
-import number from './components/number'
-import checkbox from './components/checkbox'
-import coordinate from './components/coordinate'
-import bezier from './components/bezier'
-import color from './components/color'
-import colorpicker from './components/colorpicker'
-import stroke from './components/stroke'
-import tree from './components/tree'
-import layers from './components/layers'
-import strokeDetails from './components/stroke-details'
-import vselect from './components/vselect'
-import vtext from './components/vtext'
-import popup from './components/popup'
-import vcode from './components/vcode'
-import drop from './components/drop'
-import boolean from './components/boolean'
-import effects from './components/effects'
-import vbutton from './components/vbutton'
-
-import Vue from 'vue'
-import VueInputAutowidth from 'vue-input-autowidth'
-Vue.use(VueInputAutowidth)
+<script>
+import { isString, isObject } from '@/utils'
+import components from './components'
+import wektor from '@/wektor'
 
 export default {
 	name: 'palette',
 
+	components,
+
 	props: {
-		values: null,
-		layout: Object,
 		id: String,
 		dialogId: String,
-		payload: {
+		spec: {
+			type: Object,
 			default() {
 				return {}
-			}
-		}
+			},
+		},
 	},
 
 	data() {
 		return {
-			reservedKeys: ['type', 'label'],
+			open: this.spec.layout.open === undefined ? true : this.spec.layout.open,
 		}
 	},
 
-	components: { 
-		number, 
-		coordinate, 
-		bezier, 
-		checkbox, 
-		color, 
-		colorpicker, 
-		stroke, 
-		strokeDetails, 
-		tree, 
-		layers, 
-		vselect,
-		vtext,
-		popup,
-		vcode,
-		drop,
-		boolean,
-		effects,
-		vbutton,
-	},
-
 	computed: {
+		values() {
+			return this.spec.values || {}
+		},
+
+		layout() {
+			return this.spec.layout || {}
+		},
+
+		label() {
+			return this.layout.label
+		},
+
+		alignClass() {
+			const align = this.layout.align
+			return align ? `align-${align}` : null
+		},
+
+		typeClass() {
+			const type = this.layout.type
+			return type ? `type-${type}` : null
+		},	
+
 		children() {
+			if (this.layout.type === 'popup') return
+
 			const components = this.$options.components
 			const { values, layout } = this
 			const children = []
@@ -187,47 +207,43 @@ export default {
 
 			return children		
 		},
-
-		align() {
-			return this.payload.align
-		},
-
-		label() {
-			return this.payload.label
-		}
 	},
 
 	methods: {
-		isComponentDescription(layoutProperty) {
-			const type = layoutProperty.type
-			return (type && isString(type))
+		onLabelClick(event) {
+			if (this.layout.type !== 'popup') return
+
+			wektor.openDialog({
+				id: this.id,
+				parentId: this.dialogId,
+				reference: this.$refs.label.id,
+				layout: { ...this.layout, label: false, type: 'palette' }
+			})					
 		},
 
-		getComponent(type) {
-			// components that have the same name as native html elements are prefixed by 'v' (e.g. 'vselect')
-			const components = this.$options.components
-			const component = components[type] || components['v' + type]
-			return component
+		onChevronClick(event) {
+			this.open = !this.open
 		},
 
-		createChild(layout, values, key = false) {
+		isComponentDescription(layout) {
+			const type = layout.type
+			return type && isString(layout.type) && !['palette', 'folder', 'popup'].includes(type)
+		},
+
+		createChild(layout, values, key) {
 			let child
 
 			if (this.isComponentDescription(layout)) {
 				const type = layout.type
 				const component = this.getComponent(type)
 
-				if (!component)
-					console.warn(`there is no component '${type}'`)				
-
-				if (key && this.reservedKeys.includes(key))
-					console.warn(`'${key}' is a reserved key and shouldn't be used as a values key`)
+				if (!component) 
+					console.warn(`there is no component '${type}'`)
 
 				child = {
-					key,
-					type,
-					component,
 					payload: layout,
+					key,
+					component,
 					get value() {
 						return key ? values[key] : values
 					},
@@ -236,32 +252,22 @@ export default {
 							values[key] = value
 						else
 							values = value
-					},	
-				}			
+					},					
+				}
 			} else if (isObject(layout)) {
-				if (layout.popup) {
-					child = {
-						key,
-						component: this.getComponent('popup'),
-						payload: {
-							label: layout.label,
-							layout,
-							values,
-						},
-					}
-				} else {
-					child = {
-						key,
-						type: 'palette',
-						values,
-						layout,
-						payload: layout, // the layout also contains the payload (eg. { type: 'number', max: 3 })
-					}					
-				}			
+				const component = this.getComponent('palette')
+				child = { component, values, layout, key }					
 			}
 
 			return child
 		},
+
+		getComponent(type) {
+			// components that have the same name as native html elements are prefixed by 'v' (e.g. 'vselect')
+			const components = this.$options.components
+			const component = components[type] || components['v' + type]
+			return component
+		},						
 	},
 }
 </script>

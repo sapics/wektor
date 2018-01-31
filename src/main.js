@@ -21,7 +21,10 @@ import SnapperEffect from './effects/SnapperEffect'
 import TestEffect from './effects/TestEffect'
 import ShakeEffect from './effects/ShakeEffect'
 
+import VueResize from 'vue-resize'
 import Vddl from 'vddl'
+
+import 'vue-resize/dist/vue-resize.css'
 
 window.Vue = Vue
 
@@ -33,6 +36,7 @@ paper.project.currentStyle = {
 }
 
 Vue.config.productionTip = false
+Vue.use(VueResize)
 Vue.use(Vddl)
 Vue.directive('outside', outside)
 Vue.directive('visible', visible)
@@ -76,7 +80,7 @@ const gelb = window.gelb = new paper.Path.Circle({
 // 	bounds: paper.view.bounds,
 // })
 
-gelb.wektorEffects.add(wektor.effects.Test)
+// gelb.wektorEffects.add(wektor.effects.Test)
 
 new Vue({
 	el: '#wektor',

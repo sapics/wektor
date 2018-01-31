@@ -31,7 +31,7 @@ const specDefault = {
 				},
 			},
 			distance: {
-				label: 'distance:',
+				label: 'distance',
 				align: 'comma-separated',
 				'minDistance': {
 					type: 'number',

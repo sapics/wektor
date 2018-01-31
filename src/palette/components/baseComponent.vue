@@ -1,22 +1,23 @@
 <script>
 export default {
 	props: {
-		value: null,
 		id: String,
 		dialogId: String,
-		propKey: null,
+		spec: {
+			type: Object,
+			default: () => Object(),
+		},
+		value: null,
 		payload: {
 			type: Object,
-			default() {
-				return {}
-			}
-		},
+			default: () => Object(),
+		}
 	},
 
 	computed: {
 		label() {
 			return this.payload.label
-		}
-	}
+		},
+	},
 }	
 </script>

@@ -79,7 +79,7 @@ export default {
 		}
 	},
 
-	computed: {
+	computed: { 
 		space() {
 			return this.payload.space
 		},

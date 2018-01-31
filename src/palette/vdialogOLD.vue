@@ -3,32 +3,35 @@
 		<pointer-line
 			v-if="referencePoint && pointerCorner"
 			v-visible="showPointerLine"
+			ref="pointerLine"
 			class="pointer-line"
-			:style="{zIndex}"
 			:from="pointerCorner"
 			:to="referencePoint"
 		></pointer-line>		
 		<div
+			v-visible="rendered"
 			class="dialog draghandler"
 			:class="{ fitContent }"
 			ref="dialog"
 			:data-id="id"
 			:data-parent-id="parentId"
+			:data-root-id="rootId"
+			:data-nested-index="nestedIndex"
 			:style="css"
 			@mousedown="onMouseDown"
-			@mouseup="onMouseUp"
 			@mouseenter="hover = true"
 			@mouseleave="hover = false"		
 			v-outside:mousedown="onMouseDownOutside"
 		>
-			<div 
+			<!-- <div class="wire-frame"></div>
+ -->		<div 
 				class="dialog-sidebar draghandler"
 			>
 				<div 
-					ref="lock"
-					class="dialog-lock draghandler"
+					ref="lockClose"
+					class="dialog-lock-close draghandler"
 					:class="{ locked }"
-					@mouseup="!drag && (locked = !locked)"
+					@mouseup="!drag && handleLockClose()"
 				></div>	
 				<svg 
 					class="resize-corner" viewBox="0 0 7 7"
@@ -53,22 +56,23 @@
 @import "../sass/variables";
 
 .dialog-wrap {
+	.pointer-line {
+		z-index: 999999;
+	}
+
 	.dialog {
 		position: absolute;
 		isolation: isolate;
 		background: white;
 		border: 1px solid black;
 		box-sizing: border-box;
+		white-space:nowrap;
 
 		&.fitContent .palette {
 			width: 100%;
 			height: 100%;
 		}
 	}
-
-	// .active.dialog .dialog-sidebar {
-	// 	z-index: 1;
-	// }
 
 	.dialog-sidebar {
 		z-index: 1;
@@ -83,14 +87,14 @@
 		cursor: grab;
 	}
 
-	.dialog-lock {
+	.dialog-lock-close {
 		@include bullet();
 		border: 1px solid var(--wektor-dialog-border-color);
 		background: white;
 		cursor: pointer;
 	}
 
-	.dialog-lock.locked {
+	.dialog-lock-close.locked {
 		background: var(--wektor-dialog-border-color);
 	}
 
@@ -104,18 +108,18 @@
 		stroke: var(--wektor-dialog-border-color);
 	}
 
-	.wire-frame {
-		z-index: 3;
-		width: calc(100% + 2px);
-		height: calc(100% + 2px);
-		margin: -1px;
-		top: 0;
-		left: 0;
-		box-sizing: border-box;
-		pointer-events: none;
-		position: absolute;
-		border: 1px solid black;
-	}
+	// .wire-frame {
+	// 	z-index: 999999;
+	// 	width: calc(100% + 2px);
+	// 	height: calc(100% + 2px);
+	// 	margin: -1px;
+	// 	top: 0;
+	// 	left: 0;
+	// 	box-sizing: border-box;
+	// 	pointer-events: none;
+	// 	position: absolute;
+	// 	border: 1px solid black;
+	// }	
 }
 </style>
 
@@ -125,7 +129,16 @@ import draggable from '@/mixins/draggable'
 import palette from './palette'
 import pointerLine from './components/pointer-line'
 import resizeable from '@/mixins/resizeable'
-import { isFunction, isInViewport, getBounds, getDistance } from '@/utils'
+import { 
+	isNumber, 
+	isFunction, 
+	isInViewport, 
+	getBounds, 
+	getDistance, 
+	toCssPercent, 
+	pointToCssPercent, 
+	constrainElPosition,
+} from '@/utils'
 
 export default {
 	name: 'vdialog',
@@ -143,7 +156,8 @@ export default {
 
 	data() {
 		return {
-			position: { x: 0, y: 0 },
+			rendered: false,
+			position: null,
 			referencePoint: null,
 			pointerCornerDelta: { x: 0, y: 0 },
 			locked: false,
@@ -155,42 +169,93 @@ export default {
 	},
 
 	computed: {
-		id () { return this.spec.id },
-		parentId() { return this.spec.parentId },
-		bridge() { return this.spec.bridge || {} },
-		layout() { return this.spec.layout || {} },
-		payload() { return this.spec.payload || {} },
-		reference() { return this.spec.reference || {} },
+		id () { 
+			return this.spec.id
+		},
+
+		parentId() {
+			return this.spec.parentId
+		},
+
+		rootId() {
+			return this.spec.rootId
+		},
+
+		nestedIndex() {
+			return this.spec.nestedIndex
+		},		
+
+		bridge() {
+			return this.spec.bridge || {}
+		},
 
 		values() {
 			return this.bridge.values || this.spec.values
+		},		
+
+		layout() { 
+			return this.spec.layout || {}
 		},
 
-		customCss() {
-			return this.payload.css || {}
+		payload() {
+			return this.spec.payload || {}
+		},
+
+		reference() {
+			return this.spec.reference || {}
 		},
 
 		fitContent() {
 			return this.payload.fitContent
 		},
 
+		customCss() {
+			return this.payload.css || {}
+		},
+
+		hasCustomPosition() {
+			return (
+				this.customCss.top ||
+				this.customCss.left ||
+				this.customCss.bottom ||
+				this.customCss.right
+			)
+		},
+
 		css() {
 			return {
 				zIndex: this.zIndex,
-				top: this.position.y + 'px',
-				left: this.position.x + 'px',
 				padding: '0.8em',
-				...this.customCss				
+				...this.customCss,	
+				...this.cssPosition,			
+			}
+		},
+
+		positionPercent() {
+			if (this.position) {
+				return pointToCssPercent(this.position)
+			}
+		},
+
+		cssPosition() {
+			if (this.positionPercent) {
+				return {
+					top: this.positionPercent.y + '%',
+					left: this.positionPercent.x + '%',
+					right: 'auto',
+					bottom: 'auto',
+				}
+			} else if (!this.hasCustomPosition) {
+				return {
+					top: 0,
+					left: 0
+				}
 			}
 		},
 
 		showPointerLine() {
 			if (this.drag || this.hover || this.reference.hover) return true
 			return !this.locked 
-		},
-
-		showWireFrame() {
-			return this.hover
 		},
 
 		zIndex() {
@@ -217,7 +282,10 @@ export default {
 		},
 
 		hover(hover) {
-			if (hover) this.updateBridge()
+			if (hover) {
+				this.updateBridge()
+				this.updatePointerCorner(true)
+			}
 		},
 
 		position() {
@@ -240,6 +308,23 @@ export default {
 				this.updateReference()
 			}
 		})
+		wektor.on('resize', () => {
+			this.updateReference()
+			this.updatePointerCorner()
+			
+			const bounds = this.$refs.dialog.getBoundingClientRect()
+			const windowSize = {
+				width: window.innerWidth || document.documentElement.clientWidth,
+				height: window.innerHeight || document.documentElement.clientHeight,
+			}			
+			this.position = constrainElPosition(windowSize, bounds, { x: bounds.x, y: bounds.y })
+
+			const pointerLine = this.$refs.pointerLine		
+			if (pointerLine) {
+				pointerLine.resize()
+				pointerLine.redraw()
+			}
+		})
 
 		this.$on('resize', () => wektor.emit('resizeDialog', { id: this.id }))	
 		this.$on('endResize', () => wektor.emit('resizeDialog', { id: this.id }))
@@ -247,12 +332,14 @@ export default {
 
 	mounted() {
 		this.resizeEl = this.$refs.dialog
-		this.setPosition()
+
 		this.$nextTick(() => {
+			this.setPosition()
 			const bounds = this.$refs.dialog.getBoundingClientRect()
 			this.width = bounds.width
 			this.height = bounds.height
 			this.updatePointerCorner()
+			this.rendered = true
 		})
 	},
 
@@ -267,8 +354,92 @@ export default {
 
 		updatePointerCorner(checkVisibility = false) {
 			const { position, width, height, reference } = this
+			const el = this.$refs.dialog
 
-			if (!(reference && reference.position)) return
+			if (!(position && reference && reference.position)) return
+
+			const bounds = {
+				top: position.y,
+				left: position.x,
+				bottom: position.y + height,
+				right: position.x + width,
+				topLeft: { x: position.x, y: position.y },
+				topRight: { x: position.x + width, y: position.y },
+				bottomLeft: { x: position.x, y: position.y + height },
+				bottomRight: { x: position.x + width, y: position.y + height },
+			}
+
+			let corner
+			let corners = []
+
+			// pointerLines from top-corners just look better so we'll bias them by defining the 
+			// dialogs vertical position as below even if it really is in between
+			const topBias = 20 // px
+			const isAbove = (bounds.bottom + topBias) < reference.position.y
+			const isBelow = (bounds.top - topBias) > reference.position.y
+			const isLeft = (bounds.right < reference.position.x)
+			const isRight = (bounds.left > reference.position.x)
+
+			if (isAbove) {
+				if (isRight) {
+					corner = bounds.bottomLeft
+					corners = [corner, bounds.topLeft, bounds.bottomRight]
+				} else if (isLeft) {
+					corner = bounds.bottomRight
+					corners = [corner, bounds.topRight, bounds.bottomLeft]
+				} else {
+					corners = [bounds.bottomLeft, bounds.bottomRight]
+				}
+			} else if (isBelow) {
+				if (isRight) {
+					corner = bounds.topLeft
+					corners = [corner, bounds.topRight, bounds.bottomLeft]
+				} else if (isLeft) {
+					corner = bounds.topRight
+					corners = [corner, bounds.topLeft, bounds.bottomRight]
+				} else {
+					corners = [bounds.topLeft, bounds.topRight]
+				}
+			} else {
+				if (isRight) {
+					corner = bounds.topLeft
+					corners = [corner, bounds.bottomLeft]
+				} else if (isLeft) {
+					corner = bounds.topRight
+					corners = [corner, bounds.bottomRight]
+				}
+				// else: dialog overlays reference, no pointerline possible			
+			}
+
+			if (checkVisibility) {
+				for (let i = 0; i < corners.length; i++) {
+					const point = corners[i]
+					const topMostEl = document.elementFromPoint(point.x, point.y)
+					if (el === topMostEl) {
+						corner = point
+						break
+					}
+				}
+			} 
+
+			if (!corner) {
+				const distances = corners.map(corner => getDistance(corner, reference.position))
+				const nearestCorner = corners[ distances.indexOf(Math.min(...distances)) ]
+				corner = nearestCorner
+			}
+
+			if (!corner) return
+
+			this.pointerCornerDelta = {
+				x: position.x - corner.x,
+				y: position.y - corner.y
+			}		
+		},
+
+		updatePointerCornerOLD(checkVisibility = false) {
+			const { position, width, height, reference } = this
+
+			if (!(position && reference && reference.position)) return
 
 			const corners = [
 				{ x: position.x, y: position.y },
@@ -286,7 +457,7 @@ export default {
 			}					
 		},
 
-		updatePointerCornerOLD() {
+		updatePointerCornerOLDOLD() {
 			const el = this.$refs.dialog
 			const referencePoint = this.reference.position
 			const position = this.position
@@ -326,27 +497,25 @@ export default {
 			}
 
 			this.pointerCornerDelta = delta
-		},
+		},		
 
 		updateReference() {
 			const reference = this.reference
+			this.referencePoint = reference.position
 			if (reference && isFunction(reference.update)) 
 				this.$nextTick(() => reference.update())
 		},
 
 		setPosition() {
-			const { payload, reference } = this
-
-			if (payload.position) {
-				this.position = payload.position
-				return
-			} 
-			if (!reference.bounds) {
-				this.position = { x: 0, y: 0 }
-				return
-			} 
-
+			const reference = this.reference
 			const el = this.$refs.dialog
+
+			if (!(reference && reference.bounds)) {
+				const bounds = el.getBoundingClientRect()
+				this.position = { x: bounds.x, y: bounds.y }
+				return
+			}
+
 			const { width, height } = el.getBoundingClientRect()
 			const { topRight, topCenter, topLeft, bottomLeft } = reference.bounds
 			const margin = this.$settings.dialog.margin
@@ -382,7 +551,6 @@ export default {
 					left: point.x,
 					bottom: point.y + height,
 					right: point.x + width,
-
 				}
 				if (isInViewport(bounds)) {
 					position = point
@@ -390,7 +558,14 @@ export default {
 				}
 			}
 
-			this.position = position
+			this.position = position		
+		},
+
+		handleLockClose() {
+			if (this.locked)
+				this.close()
+			else
+				this.locked = true
 		},
 
 		onMouseDown(event) {
@@ -414,19 +589,26 @@ export default {
 		},
 
 		close(event) {
-			if (this.targetIsChild(event.target)) return
+			if (event && this.targetIsDescendant(event.target)) return
 			wektor.closeDialog(this.id)
 		},
 
-		targetIsChild(target) {
+		targetIsDescendant(target) {
 			const dialog = target.closest('.dialog')
 
 			if (!dialog) return false
 
-			const parentId = dialog.dataset.parentId
-			return (parentId === this.id)
+			const rootId = dialog.dataset.rootId
+			const nestedIndex = dialog.dataset.nestedIndex
+
+			if (rootId !== this.rootId) {
+				console.log('no same root', rootId, this.rootId, this.id)
+				return
+			}
+
+			return (nestedIndex > this.nestedIndex)
 		}			
 	}
 
-}	
+}
 </script>

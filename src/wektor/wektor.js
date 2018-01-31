@@ -71,7 +71,20 @@ class WektorEffects {
 	}	
 }
 
-class Wektor extends EventEmitter {
+class ImprovedEventEmitter extends EventEmitter {
+	on(...args) {
+		const arg = args[0]
+		if (isObject(arg)) {
+			for (const [type, listener] of Object.entries(arg)) {
+				super.on(type, listener)
+			}
+		} else {
+			super.on(...args)
+		}
+	}	
+}
+
+class Wektor extends ImprovedEventEmitter {
 	constructor(settings) {
 		super()
 

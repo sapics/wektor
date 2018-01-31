@@ -3,7 +3,8 @@ import paper from 'paper'
 import wektor from '@/wektor'
 
 function isComponentDescription(layout) {
-	return (layout.type && isString(layout.type))
+	const type = layout.type
+	return type && isString(type) && !['palette', 'folder', 'popup'].includes(type)
 }
 
 class DialogBridge {

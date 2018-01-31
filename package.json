@@ -26,6 +26,7 @@
     "vue": "^2.5.11",
     "vue-color": "^2.4.3",
     "vue-input-autowidth": "^1.0.2",
+    "vue-resize": "^0.4.3",
     "vuex": "^3.0.1"
   },
   "devDependencies": {

@@ -200,44 +200,13 @@ export default {
 	methods: {
 		openDefaultDialogs() {
 			wektor.openDialog({
-				id: 'layers',
+				...settings.dialogs.layers,
 				values: this.layers,
-				layout: {
-					type: 'layers',			
-				},
-				payload: {
-					locked: true, 
-					resize: true, 
-					css: {
-						overflow: 'scroll',
-						top: '50%',
-						right: '20px',
-					},
-				},
-				convert: false,			
-			})	
-
-			wektor.addDialog({
-				id: 'scripts',
-				layout: {
-					type: 'code',
-				},
-				payload: {
-					locked: true,
-					css: { 
-						width: '50%',
-						height: '30%',
-						padding: '0',
-					},
-					fitContent: true,
-					resize: true,
-				} 
 			})
 
 			wektor.addDialog({
-				id: 'preferences',
+				...settings.dialogs.preferences,
 				values: settings,
-				layout: settings.dialog.layouts.preferences,
 				changeHandler: (target, key, value) => {
 					key.startsWith('theme') && this.theme.update()
 				},
@@ -304,12 +273,10 @@ export default {
 				if (!hit.item.data.wektorEffects)
 					hit.item.data.wektorEffects = []
 
-				console.log(hit.item.data)
-
 				wektor.openDialog({
+					...settings.dialogs.item,
 					id: hit.item.name || (hit.item.className + hit.item.id), 
-					values: hit.item, 
-					layout: settings.dialog.layouts.item,
+					values: hit.item,
 					reference: hit.item,
 				})
 			}

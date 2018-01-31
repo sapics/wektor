@@ -88,7 +88,10 @@ export default {
 		colorLabelShadow() {
 			if (!this.color) return
 
-			const dialogColorCss = getComputedStyle(document.querySelector('.dialog')).backgroundColor
+			const dialogEl = document.querySelector('.dialog')
+			if (!dialogEl) return
+
+			const dialogColorCss = getComputedStyle(dialogEl).backgroundColor
 			const dialogPaperColor = new paper.Color(dialogColorCss)
 			
 			const deltaE = getDeltaE(dialogPaperColor, alphaToWhite(this.color))
@@ -108,7 +111,7 @@ export default {
 			const id = this.id
 			const returnType = this.payload.return
 			const layout = {
-				[this.propKey]: {
+				[this.spec.key]: {
 					type: 'colorpicker',
 					label: this.label,
 					return: returnType,
@@ -120,17 +123,12 @@ export default {
 				parentId: this.dialogId,
 				reference: this.$refs.colorLabel.id,
 				layout,
-				payload: {
-					resize: true,
-					fitContent: true,
-					css: {
-						'padding': 'none', // reset the default padding
-						'padding-right': '1em',
-						'width': '150px',
-						'height': '100px',
-						'min-height': '4em',
-						'min-width': '4em',
-					}
+				resize: true,
+				padding: false,
+				stretchContent: true,
+				css: {
+					width: '150px',
+					height: '100px'
 				},				
 			})
 
