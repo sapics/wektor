@@ -69,7 +69,7 @@
 		}
 	}
 
-	& > .palette-label, .palette-content {
+	& > .palette-label-wrap, .palette-content {
 		display: table-cell;
 		padding-right: 0.27em;
 	}	

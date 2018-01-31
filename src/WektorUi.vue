@@ -200,37 +200,17 @@ export default {
 	methods: {
 		openDefaultDialogs() {
 			wektor.openDialog({
-				id: 'test',
-				values: {
-					test: 20,
-				},
-				padding: false,
-				layout: {
-					folder: {
-						label: 'advanced',
-						test: {
-							type: 'number',
-							label: 'aha',
-						},					
-					}
-				},
-				changeHandler() {
-					console.log('change')
-				},
+				...settings.dialogs.layers,
+				values: this.layers,
 			})
 
-			// wektor.openDialog({
-			// 	...settings.dialogs.layers,
-			// 	values: this.layers,
-			// })
-
-			// wektor.addDialog({
-			// 	...settings.dialogs.preferences,
-			// 	values: settings,
-			// 	changeHandler: (target, key, value) => {
-			// 		key.startsWith('theme') && this.theme.update()
-			// 	},
-			// })
+			wektor.addDialog({
+				...settings.dialogs.preferences,
+				values: settings,
+				changeHandler: (target, key, value) => {
+					key.startsWith('theme') && this.theme.update()
+				},
+			})
 		},
 
 		onKeyDown(event) {

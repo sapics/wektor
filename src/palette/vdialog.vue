@@ -18,7 +18,7 @@
 			@mouseleave="hover = false"				
 			v-outside:mousedown="onMouseDownOutside"
 		>
-			<!-- <resize-observer @notify="onResizeObserved" /> -->
+			<resize-observer @notify="onResizeObserved" />
 			<palette
 				class="dialog-content"
 				:id="`${spec.id}-palette`"
@@ -32,6 +32,7 @@
 					@click="onLockClick"
 				></div>
 				<svg 
+					v-if="spec.resize"
 					class="resize-corner" 
 					ref="resizeCorner"
 					viewBox="0 0 7 7"
@@ -58,28 +59,28 @@
 		isolation: isolate;
 		box-sizing: border-box;
 		white-space:nowrap;
-		display: table;
-
 		background: var(--wektor-dialog-background);
 		border: 1px solid;
 		border-color: var(--wektor-dialog-border-color);
 	}
 
 	.dialog-content {
-		display: table-cell;
+		float: left;
+		width: calc(100% - 1em);
 		padding-right: 0!important;
 		box-sizing: border-box;
 	}
 
 	.dialog-sidebar {
-		display: table-cell;
-		vertical-align: top;
+		float: left;
 		box-sizing: border-box;	
+		padding-top: 0.3em;
+		padding-right: 0.3em;
 		width: 1em;
-		padding: 0.3em;
 		cursor: grab;
 
 		.dialog-lock-close {
+			float: right;
 			@include bullet();
 			border: 1px solid var(--wektor-dialog-border-color);
 			background: white;
@@ -250,9 +251,9 @@ export default {
 
 		onResizeObserved() {
 			const bounds = this.$refs.dialog.getBoundingClientRect()
-			// this.width = bounds.width
-			// this.height = bounds.height
-			// this.updatePointerCorner()
+			this.width = bounds.width
+			this.height = bounds.height
+			this.updatePointerCorner()
 		},	
 
 		onMouseDown(event) {
