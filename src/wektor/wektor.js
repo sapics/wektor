@@ -3,7 +3,7 @@ import EventEmitter from 'event-emitter-es6'
 import settings from '@/settings'
 import { isArray, isObject, isFunction, isString, moveArrayElementToEnd, removeArrayElement, makeUniqueId } from '@/utils'
 import Dialog from '@/dialog'
-import History from './History'
+import WektorHistory from './WektorHistory'
 import ChangeTracker from './ChangeTracker'
 import ChangeFlag from './ChangeFlag'
 import State from './State'
@@ -138,7 +138,7 @@ class Wektor extends ImprovedEventEmitter {
 		this.project = project
 		this.active.layer = this.project.activeLayer
 
-		this.history = new History(this)
+		this.history = new WektorHistory(this)
 		this.state = new State(this.project)
 		this.shortcuts = new Shortcuts(this)
 		this.initShortcuts()

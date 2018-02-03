@@ -8,6 +8,7 @@ const theme = {
 		'theme.fontSize': {
 			type: 'number',
 			unit: 'pt',
+			useUnit: false,
 		},
 		'theme.color': {
 			type: 'color',
@@ -15,11 +16,21 @@ const theme = {
 			return: 'css',
 		},
 	},
-	'theme.highlightColor': {
-		type: 'color',
+	'theme.highlight': {
+		type: 'folder',
+		open: true,
 		label: 'highlight',
-		return: 'css',
-	}, 	
+		'theme.highlight.color': {
+			type: 'color',
+			label: 'color',
+			return: 'css',
+		},
+		'theme.highlight.background': {
+			type: 'color',
+			label: 'background color',
+			return: 'css',
+		},		
+	},	
 	dialogs: {
 		type: 'folder',
 		label: 'dialogs',

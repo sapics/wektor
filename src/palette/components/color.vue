@@ -86,9 +86,9 @@ export default {
 		},
 
 		colorLabelShadow() {
-			if (!this.color) return
+			if (!this.color || !this.$el) return
 
-			const dialogEl = document.querySelector('.dialog')
+			const dialogEl = this.$el.closest('.dialog')
 			if (!dialogEl) return
 
 			const dialogColorCss = getComputedStyle(dialogEl).backgroundColor

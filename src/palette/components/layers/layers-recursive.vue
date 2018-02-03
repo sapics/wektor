@@ -11,39 +11,39 @@
 		:selected="handleSelected"
 	>
 		<div v-if="item.children">
-			<vddl-nodrag
-				class="info"
-			>
+			<vddl-handle :class="{ highlight }" :style="{ paddingLeft: indent }" >
 				<span 
 					v-show="hasChildren"
 					class="chevron"
 					:class="{ opened }"
 					@click.stop="toggleOpen"
-				>&#9656;</span>
-				<vddl-handle>
-					<span 
-						class="label"
-						:class="{ selected, highlight }"
-					>{{ item.name }}</span>
-				</vddl-handle>
-			</vddl-nodrag>
+				>&#9656;</span><!--
+			--><span 
+					class="label"
+					:class="{ selected, hasChildren }"
+				>{{ item.name }}</span>
+			</vddl-handle>
 			<vddl-list
 				v-if="opened"
 				:list="item.children"
 				:index="index"
 				:inserted="handleInserted"
+				class="palette-layers-recursive-children"
+				:class="{ hasChildren }"
 			>
-				<nested-tree v-for="(child, index) in item.children"
+				<layers-recursive v-for="(child, index) in item.children"
 					:key="child.id"
 					:list="item.children"
 					:item="child"
 					:index="index"
-				></nested-tree>
-				<vddl-placeholder style="height: 1px; background: black; width: 100%; margin-top: -1px;"></vddl-placeholder>
+					:nestedIndex="nestedIndex + 1"
+				></layers-recursive>
+				<vddl-placeholder style="height: 5px; background: black; width: 100%"></vddl-placeholder>
 			</vddl-list>
 		</div>
 		<div v-else
-			class="label" 
+			class="label"
+			:style="{ paddingLeft: indent }" 
 			:class="{ selected, highlight }"
 			@contextmenu="handleContextMenu"
 		>
@@ -54,6 +54,8 @@
 
 
 <style lang="scss" scoped>
+@import "src/sass/variables";
+
 .vddl-dragging .vddl-list {
 	/* prevent that a item can be dropped into itself */
 	pointer-events: none;
@@ -62,23 +64,25 @@
 .palette-layers-recursive {
 	position: relative;
 
-	&.hasChildren {
-		padding-left: 0.65em;
-	}
-
 	.info {
 		user-select: none;
 		cursor: pointer;
 	}
 
 	.chevron {
-		position: absolute;
-		left: 0;
 		font-style: normal;
 		color: var(--wektor-dialog-border-color);
+		display: inline-block;
 
 		&.opened {
-			transform: rotate(90deg);
+			transform: rotate(90deg) translate(0, -0.1em);
+		}
+	}
+
+	.label {
+		padding-right: 0.1em;
+		&.hasChildren {
+			padding-left: 0.3em;
 		}
 	}
 }	
@@ -89,7 +93,7 @@ import wektor from '@/wektor'
 import { isFunction } from '@/utils' 
 
 export default {
-	name: 'nested-tree',
+	name: 'layers-recursive',
 
 	props: {
 		item: Object,
@@ -102,6 +106,10 @@ export default {
 		disable: {
 			type: Boolean,
 			default: false,
+		},
+		nestedIndex: {
+			type: Number,
+			default: 0,
 		}
 	},
 
@@ -131,7 +139,11 @@ export default {
 			} else {
 				return this.selected
 			}
-		}
+		},
+
+		indent() {
+			return (this.nestedIndex * 0.8 + 0.17) + 'em'
+		},
 	},
 
 	methods: {

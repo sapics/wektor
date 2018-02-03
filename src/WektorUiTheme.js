@@ -38,12 +38,13 @@ class WektorUiTheme {
 	}
 
 	update() {
-		const { color, fontSize, dialog, systemDialog, highlightColor } = this.spec
+		const { color, fontSize, dialog, systemDialog, highlight } = this.spec
 
 		this.styleSheet.innerHTML = `
 			:root {
 				--wektor-color: ${color};
-				--wektor-highlight-color: ${highlightColor};
+				--wektor-highlight-color: ${highlight.color};
+				--wektor-highlight-background: ${highlight.background};
 
 				--wektor-dialog-color: ${dialog.color || color};
 				--wektor-dialog-input-color: ${dialog.input.color || color};			
@@ -57,8 +58,8 @@ class WektorUiTheme {
 			}
 
 			#wektor .highlight {
-				background-color: ${highlightColor};
-				color: white;
+				background: ${highlight.background};
+				color: ${highlight.color};
 			}
 			#wektor {
 				color: ${color};

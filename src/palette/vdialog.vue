@@ -82,7 +82,6 @@
 		cursor: grab;
 
 		.dialog-lock-close {
-			float: right;
 			@include bullet();
 			border: 1px solid var(--wektor-dialog-border-color);
 			background: white;
@@ -248,7 +247,7 @@ export default {
 		const bounds = this.$refs.dialog.getBoundingClientRect()
 		this.width = bounds.width
 		this.height = bounds.height
-		this.updatePointerCorner()
+		this.updatePointerCorner()	
 	},
 
 	methods: {
@@ -262,6 +261,8 @@ export default {
 			this.width = bounds.width
 			this.height = bounds.height
 			this.updatePointerCorner()
+			wektor.emit('resizeDialog', { id: this.spec.id })	
+			wektor.emit('resizeDialog', { id: this.spec.id })			
 		},	
 
 		onMouseDown(event) {

@@ -1,4 +1,39 @@
 <template>
+	<svg class="pointer-line">
+		<line :x1="from.x" :y1="from.y" :x2="to.x" :y2="to.y"></line>
+	</svg>
+</template>
+
+<style lang="scss">
+.pointer-line {
+	position: absolute;
+	pointer-events: none;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	stroke-width: 1;
+	stroke: white;
+	mix-blend-mode: difference;
+}	
+</style>
+
+<script type="text/javascript">
+export default {
+	props: {
+		from: {
+			type: Object,
+			default: () => Object(),
+		},
+		to: {
+			type: Object,
+			default: () => Object(),
+		},		
+	},
+}
+</script>
+
+<!-- <template>
 	<canvas ref="canvas" class="pointer-line"></canvas>
 </template>
 
@@ -69,4 +104,4 @@ export default {
 		}		
 	},
 }
-</script>
+</script> -->

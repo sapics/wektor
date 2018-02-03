@@ -87,7 +87,10 @@ export default {
 	theme: {
 		color: 'black',
 		fontSize: 14, // pt
-		highlightColor: 'yellow',
+		highlight: {
+			background: 'gainsboro',
+			color: 'black',
+		},
 		dialog: {
 			background: 'white',
 			borderColor: 'black',
@@ -99,12 +102,12 @@ export default {
 			},			
 		},
 		systemDialog: {
-			background: 'blue',
-			borderColor: 'white',
-			color: 'white',
+			background: 'gainsboro',
+			borderColor: 'black',
+			color: 'black',
 			fontStyle: 'normal',
 			input: {
-				color: 'red',
+				color: 'blue',
 				fontStyle: 'normal', 
 			},		
 		},				

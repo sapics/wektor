@@ -115,6 +115,11 @@ export default {
 
 	methods: {
 		updateValue(string) {
+			if (this.spec.useUnit) {
+				this.$emit('input', parseFloat(string))
+				return
+			}
+
 			const result = unitValidator.parse(string)
 			if (result === false) return false
 

@@ -8,6 +8,7 @@ const layers = {
 		top: '50%',
 		right: '20px',
 	},
+	padding: '0.3em',
 	locked: true, 
 	resize: true,	
 	convert: false,		
