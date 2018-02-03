@@ -12,9 +12,7 @@
 	--><input 
 			ref="input"
 			v-autowidth
-			:value="inputFieldValue"
-			@input="updateValue($event.target.value)"
-			@blur="updateInputField"
+			v-model="inputFieldValue"
 		>
 	</div>
 </template>
@@ -43,7 +41,7 @@
 <script>
 import baseComponent from './baseComponent'
 import paper from 'paper'
-import { getUnit, round, convertUnits } from '@/utils.js' 
+import { getUnit, round, convertUnits, isString } from '@/utils.js' 
 import settings from '@/settings'
 import { UnitValidator, UnitValue } from './unitUtils'
 
@@ -56,15 +54,14 @@ export default {
 		return {
 			unit: this.payload.unit,
 			unitValue: null,
-			inputFieldValue: null,
 			resolution: 72,
+			changed: false,
 		}
 	},
 
 	mounted() {
 		this.resolution = window.paper.view.resolution
 		this.unitValue = this.value
-		this.updateInputField()
 	},
 
 	watch: {
@@ -73,7 +70,6 @@ export default {
 			// so this functuion will only watch if the value gets changed from outside
 			if (!this.input) {
 				this.unitValue = UnitValue.convertValue(value, this.valueUnit, this.unit)
-				this.updateInputField()
 			}
 			this.input = false
 		}
@@ -93,35 +89,41 @@ export default {
 		},
 
 		allowedUnits() {
-			return this.payload.allowedUnits || [this.valueUnit]
+			let units = this.payload.units
+
+			if (isString(units)) {
+				const name = units
+				units = settings.units.groups[name]
+				if (!units) 
+					console.warn(`No units-group found with name '${name}'`)
+			}
+
+			return units || [this.valueUnit]
+		},
+
+		inputFieldValue: {
+			get() {
+				return this.unit
+					? (isNaN(this.unitValue) ? '' : round(this.unitValue)) + this.unit
+					: this.unitValue
+			},
+			set(string) {
+				this.updateValue(string)
+			}
 		},
 	},
 
 	methods: {
 		updateValue(string) {
-			let value
+			const result = unitValidator.parse(string)
+			if (result === false) return false
 
-			if (!this.unit || this.unit === this.valueUnit) {
-				value = parseFloat(string)
-			} else {
-				const result = unitValidator.parse(string)
-
-				if (result === false) return false
-
-				this.unit = result.unit
-				this.unitValue = result.unitValue
-				value = result.value
-			}
+			this.unit = result.unit
+			this.unitValue = result.unitValue
+			const value = result.value
 
 			this.input = true
 			this.$emit('input', value)
-		},
-
-		updateInputField() {
-			if (!this.unit)
-				this.inputFieldValue = this.unitValue
-			else
-				this.inputFieldValue = (isNaN(this.unitValue) ? '' : round(this.unitValue)) + this.unit
 		},
 
 		up(event) {
@@ -136,7 +138,7 @@ export default {
 
 		changeValueBy(change) {
 			this.unitValue += change
-			this.updateInputField()
+			// this.updateInputField()
 			this.updateValue(this.inputFieldValue)
 		},
 	},

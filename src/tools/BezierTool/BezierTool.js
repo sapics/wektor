@@ -135,9 +135,14 @@ class BezierTool extends SelectionTool {
 	}
 
 	releasePath(unselect = true) {
-		console.log('release')
 		this.releasePathPreview()
-		if (unselect) this.path.selected = false
+		if (unselect) { 
+			this.path.selected = false
+		} else {
+			// unselect selected segments
+			this.path.selected = false
+			this.path.selected = true
+		}
 		this.path = null
 	}
 

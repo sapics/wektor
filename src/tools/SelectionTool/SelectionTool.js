@@ -1,13 +1,16 @@
 import paper from 'paper'
 import BaseTool from '../BaseTool.js'
 import Transformbox from './Transformbox.js'
-import specDefault from './specDefault.js'
 
 const {Key, Segment, Point} = paper
 
 class SelectionTool extends BaseTool {
 	constructor(target, spec) {
-		spec = Object.assign({}, specDefault, spec)
+		spec = Object.assign({
+			label: 'select',
+			shortcut: 's',
+			cursor: 'default'
+		}, spec)
 		super(target, spec)
 	}
 

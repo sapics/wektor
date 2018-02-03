@@ -3,6 +3,7 @@ import dialog from './dialog'
 export default {
 	label: 'bezier',
 	shortcut: 'b',
+	cursor: 'crosshair',
 	options: {
 		pathPreview: true,
 		snapToClose: {

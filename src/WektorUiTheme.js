@@ -38,36 +38,54 @@ class WektorUiTheme {
 	}
 
 	update() {
-		const { color, fontSize, input, dialog, highlightColor } = this.spec
+		const { color, fontSize, dialog, systemDialog, highlightColor } = this.spec
 
 		this.styleSheet.innerHTML = `
 			:root {
 				--wektor-color: ${color};
-				--wektor-input-color: ${input.color || color};
+				--wektor-highlight-color: ${highlightColor};
+
 				--wektor-dialog-color: ${dialog.color || color};
+				--wektor-dialog-input-color: ${dialog.input.color || color};			
 				--wektor-dialog-background: ${dialog.background};
 				--wektor-dialog-border-color: ${dialog.borderColor};
-				--wektor-highlight-color: ${highlightColor};
+
+				--wektor-systemDialog-color: ${systemDialog.color || color};
+				--wektor-systemDialog-input-color: ${systemDialog.input.color || color};
+				--wektor-systemDialog-background: ${systemDialog.background};
+				--wektor-systemDialog-border-color: ${systemDialog.borderColor};				
 			}
 
 			#wektor .highlight {
 				background-color: ${highlightColor};
+				color: white;
 			}
 			#wektor {
 				color: ${color};
 				font-size: ${fontSize}pt;
-			}
+			}		
 			#wektor .dialog {
 				color: ${dialog.color || 'inherit'};
 				${this.fontStyleToCss(dialog.fontStyle)}
 				background: ${dialog.background};
 				border-color: ${dialog.borderColor};
 			}
-			#wektor input, .input {
-				color: ${input.color || 'inherit'};
-				font-size: ${fontSize}pt;
-				${this.fontStyleToCss(input.fontStyle)}
+			#wektor .dialog input, #wektor .dialog .input {
+				color: ${dialog.input.color || 'inherit'};				
+				font-size: ${fontSize}pt;				
+				${this.fontStyleToCss(dialog.input.fontStyle)}
 			}
+			#wektor .systemDialog {
+				color: ${systemDialog.color || 'inherit'};
+				${this.fontStyleToCss(systemDialog.fontStyle)}
+				background: ${systemDialog.background};
+				border-color: ${systemDialog.borderColor};
+			}
+			#wektor .systemDialog input, #wektor .systemDialog .input {
+				color: ${systemDialog.input.color || 'inherit'};				
+				font-size: ${fontSize}pt;				
+				${this.fontStyleToCss(systemDialog.input.fontStyle)}
+			}			
 		`	
 	}
 

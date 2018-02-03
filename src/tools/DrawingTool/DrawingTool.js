@@ -4,6 +4,10 @@ import wektor from '@/wektor'
 const { Path } = paper
 
 const specDefault = {
+	label: 'draw',
+	shortcut: 'd',
+	cursor: 'crosshair',
+
 	options: {
 		simplify: 2.5,
 		flatten: 0,
@@ -54,8 +58,6 @@ class DrawingTool extends BaseTool {
 	constructor(target, spec) {
 		super(target)
 		Object.assign(this, specDefault, spec)
-		this.label = 'draw'
-		this.shortcut = 'd'
 	}
 	
 	onMouseDown(event) {

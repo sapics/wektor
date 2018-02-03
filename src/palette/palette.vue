@@ -7,7 +7,7 @@
 			>&#9656;</span>
 			<span class="palette-label"
 				ref="label"
-				:id="`${spec.id}-label`"
+				:id="`${id}-label`"
 				@click="onLabelClick"
 			>{{label}}</span>
 		</div>
@@ -37,10 +37,6 @@
 	.palette-chevron {
 		display: none;
 	}
-
-	.label {
-		user-select: none;
-	}
 }
 
 .palette.stretch-content {
@@ -51,11 +47,11 @@
 
 .palette.align-comma-separated {
 	& > .palette {
-		// display: table;
+		display: table;
 	}
 
 	& > .palette-content > * {
-		// display: table-cell;
+		display: table-cell;
 		padding-right: 0.27em;
 		&:after {
 			content: ',';
@@ -70,18 +66,19 @@
 	}
 
 	& > .palette-label-wrap, .palette-content {
-		// display: table-cell;
+		display: table-cell;
 		padding-right: 0.27em;
 	}	
 }
 
 .palette.align-columns {
-	& > .palette-content {
-		// display: table;
-	}
+	& > .palette-label-wrap, .palette-content {
+		display: table-cell;
+		padding-right: 0.27em;
+	}		
 
 	& > .palette-content > * {
-		// display: table-cell;
+		display: table-cell;
 		padding-right: 0.27em;
 	}
 
@@ -91,7 +88,7 @@
 }
 
 .palette.type-folder {
-	.palette-chevron {
+	> .palette-label-wrap .palette-chevron {
 		display: inline-block;
 		cursor:pointer;
 		user-select: none;
@@ -100,8 +97,14 @@
 		}
 	}
 
-	.palette-content {
+	> .palette-content {
 		margin-left: 0.8em;
+	}
+}
+
+.palette.type-popup {
+	.palette-label {
+		text-decoration: underline;
 	}
 }
 </style>

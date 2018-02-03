@@ -13,7 +13,6 @@ import paper from 'paper'
 import BezierTool from './tools/BezierTool/BezierTool'
 import SelectionTool from './tools/SelectionTool/SelectionTool'
 import { GridTool, Grid } from './tools/GridTool'
-import SnapperTool from './tools/SnapperTool'
 import DrawingTool from './tools/DrawingTool'
 import BaseTool from './tools/BaseTool'
 import MatterJsTool from './tools/MatterJsTool'
@@ -47,7 +46,7 @@ Vue.prototype.$settings = settings
 
 window.wektor = wektor
 wektor.setup(paper.project)
-wektor.addTools({ BezierTool, GridTool, SelectionTool, SnapperTool, DrawingTool })
+wektor.addTools({ BezierTool, GridTool, SelectionTool, DrawingTool })
 wektor.addEffects({ 
 	Snapper: SnapperEffect,
 	Test: TestEffect,

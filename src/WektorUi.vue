@@ -47,7 +47,16 @@
 }
 
 #wektor {
+	* {
+		user-select: none;
+	}
+
+	*:focus {
+		outline: none;
+	}
+
 	&, input, textarea, button {
+		background: transparent;
 		font-family: HKGrotesk;
 		// font-size: 14pt;
 		// font-weight: 300;
@@ -157,6 +166,9 @@ export default {
 	created() {
 		this.theme = new WektorUiTheme(settings.theme)
 		this.theme.activate()
+		// window.onbeforeunload = function() {
+		// 		return 'Are you sure you want to leave?'
+		// }
 	},
 
 	mounted() {
@@ -203,6 +215,10 @@ export default {
 				...settings.dialogs.layers,
 				values: this.layers,
 			})
+
+			wektor.addDialog({
+				...settings.dialogs.scripts
+			})			
 
 			wektor.addDialog({
 				...settings.dialogs.preferences,

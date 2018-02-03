@@ -351,7 +351,9 @@ function moveArrayElement(array, element, to) {
 }
 
 function removeArrayElement(array, element) {
-	
+	const index = array.indexOf(element)
+	if (index > -1)
+		array.splice(index, 1)
 }
 
 function toCssPercent(arg, direction) {
@@ -404,4 +406,5 @@ export {
 	seededRandom,
 	getRandomInt,
 	moveArrayElement,
+	removeArrayElement,
 }

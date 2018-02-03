@@ -1,15 +1,30 @@
 <template>
 	<vddl-draggable
-		:id="`effect${key}`"
+		class="palette-effect"
+		:id="`${dialogId}-effect${key}`"
 		:wrapper="wrapper"
 		:index="index"
 		:draggable="spec"
 		:selected="handleSelected"
 		:moved="moved"
 	>
-		<span style="text-decoration: underline">{{label}}</span>
+		<span 
+			:id="`${dialogId}-effect${key}-label`"
+			class="palette-label"
+			:class="{ highlight: isSelected }"
+			@contextmenu="onContextMenu"
+		>{{label}}</span>
 	</vddl-draggable>
 </template>
+
+<style lang="scss" scoped>
+.palette-effect {
+	.palette-label {
+		cursor: pointer;
+		text-decoration: underline;
+	}
+}	
+</style>
 
 <script>
 import wektor from '@/wektor'
@@ -26,6 +41,7 @@ export default {
 		index: Number,
 		dialogId: String,
 		moved: null,
+		isSelected: false,
 	},
 
 	computed: {
@@ -48,6 +64,10 @@ export default {
 
 	methods: {
 		handleSelected(item, target) {
+			this.$emit('selected')
+		},
+
+		onContextMenu(event) {
 			const paperItem = wektor.project.getItem({ id: this.ownerId })
 			if (!paperItem) {
 				console.warn(`No item found with id '${this.ownerId}'`)
@@ -55,7 +75,7 @@ export default {
 			}
 
 			const effect = paperItem.wektorEffects.list.find(effect => effect.key === this.key)
-			effect.openDialog({target}, { parentId: this.dialogId })
+			effect.openDialog(event, { parentId: this.dialogId })
 		},
 	},
 }	

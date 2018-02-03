@@ -149,6 +149,7 @@ class Dialog {
 			locked: spec.locked,
 			resize: spec.resize,
 			stretchContent: spec.stretchContent,
+			system: spec.system,
 		})
 	}
 }

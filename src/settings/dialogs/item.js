@@ -1,7 +1,7 @@
 const item = {
 	layout: {
 		name: {
-			label: 'name:',
+			label: 'name',
 			type: 'text',
 		},
 		group: {
@@ -32,6 +32,7 @@ const item = {
 			strokeWidth: {
 				type: 'number',
 				unit: 'px',
+				units: 'distances',				
 			},
 			strokeColor: {
 				type: 'color',

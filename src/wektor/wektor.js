@@ -1,7 +1,7 @@
 import paper from 'paper'
 import EventEmitter from 'event-emitter-es6'
 import settings from '@/settings'
-import { isArray, isObject, isFunction, isString, moveArrayElementToEnd, makeUniqueId } from '@/utils'
+import { isArray, isObject, isFunction, isString, moveArrayElementToEnd, removeArrayElement, makeUniqueId } from '@/utils'
 import Dialog from '@/dialog'
 import History from './History'
 import ChangeTracker from './ChangeTracker'
@@ -19,6 +19,10 @@ class WektorEffects {
 	}
 
 	apply() {
+		if (!this.list.length) {
+			this.item.opacity = 1
+		}
+
 		for (let i = 0; i < this.list.length; i++) {
 			const effect = this.list[i]
 			const prevEffect = this.list[i - 1]
@@ -55,6 +59,10 @@ class WektorEffects {
 		const index = this.list.length
 		effect.key = makeUniqueId()
 		effect.original = this.item
+		effect.on('remove', () => {
+			removeArrayElement(this.list, effect)
+			this.apply()
+		})
 		this.list[index] = effect
 		this.apply()
 	}

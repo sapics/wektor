@@ -26,12 +26,12 @@
 	isolation: isolate;
 
 	.palette-code-run-button {
-		position: absolute;
+		// position: absolute;
 		width: 0.8em;
 		top: 0.8em;
-		right: 0;
+		// right: 0;
 		cursor: default;
-		z-index: 999999999;
+		// z-index: 999999999;
 		color: var(--wektor-dialog-border-color);
 	}
 

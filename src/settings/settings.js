@@ -88,16 +88,26 @@ export default {
 		color: 'black',
 		fontSize: 14, // pt
 		highlightColor: 'yellow',
-		input: {
-			color: false,
-			fontStyle: 'normal', 
-		},
 		dialog: {
 			background: 'white',
 			borderColor: 'black',
 			color: false,
 			fontStyle: 'normal',
-		},	
+			input: {
+				color: 'blue',
+				fontStyle: 'normal', 
+			},			
+		},
+		systemDialog: {
+			background: 'blue',
+			borderColor: 'white',
+			color: 'white',
+			fontStyle: 'normal',
+			input: {
+				color: 'red',
+				fontStyle: 'normal', 
+			},		
+		},				
 	},
 	history: {
 		maxUndos: 80,
@@ -114,8 +124,11 @@ export default {
 	},
 	dialogs,
 	units: {
-		whitelist: ['px'],
-		allowedUnits: ['px', 'cm', 'mm'],
+		groups: {
+			distances: ['px', 'mm', 'cm'],
+		},
+		// whitelist: ['px'],
+		// allowedUnits: ['px', 'cm', 'mm'],
 		decimals: 2,
 	},
 }

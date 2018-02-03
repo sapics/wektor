@@ -1,6 +1,6 @@
 <template>
 	<span 
-		class="palette-button input"
+		class="palette-button"
 		:class="{ active: (active || !mouseupDelayFinished) }"
 		@click="handleClick"
 		@mousedown="handleMouseDown"
@@ -11,7 +11,7 @@
 <style lang="scss" scoped>
 .palette-button	{
 	user-select: none;
-	border: 1px solid var(--wektor-input-color);
+	border: 1px solid var(--wektor-dialog-color);
 	border-radius: 0.2em;
 	padding: 0.01em 0.27em;
 	box-sizing: border-box;
@@ -20,7 +20,7 @@
 
 	&.active {
 		color: var(--wektor-dialog-background);
-		background: var(--wektor-input-color);
+		background: var(--wektor-dialog-color);
 	}
 }
 </style>

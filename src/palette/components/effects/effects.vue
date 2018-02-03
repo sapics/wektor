@@ -1,5 +1,8 @@
 <template>
-	<div class="palette-effects">
+	<div class="palette-effects"
+		tabindex="0" 
+		@keydown.delete.stop="removeEffect(selectedEffect)"
+	>
 		<span class="label" v-if="label">{{label}}</span>
 		<vselect
 			class="palette-effects-select"
@@ -22,6 +25,8 @@
 				:moved="handleMoved"
 				:spec="item"
 				:dialogId="dialogId"
+				@selected="selectEffect(item)"
+				:isSelected="(selectedEffect && item.key === selectedEffect.key)"
 			>{{item.label}}</effect>
 			<vddl-placeholder style="height: 1px; background: black; width: 100%; margin-top: -1px;"></vddl-placeholder>
 		</vddl-list>
@@ -51,6 +56,12 @@ export default {
 	extends: baseComponent,
 
 	components: { vselect, effect },
+
+	data() {
+		return {
+			selectedEffect: null,
+		}
+	},
 
 	computed: {
 		appliedEffects() {
@@ -92,6 +103,22 @@ export default {
 			if (id === 'add') return
 
 			this.ownerItem.wektorEffects.add(wektor.effects[id])
+			wektor.emit('updateDialogBridge', { id: this.dialogId })
+		},
+
+		removeEffect(item) {
+			if (!item) return
+
+			const wektorEffects = this.ownerItem.wektorEffects
+			const effect = wektorEffects.list.find(effect => effect.key === item.key)
+			effect.remove()
+			const dialog = wektor.dialogs[this.dialogId]
+			wektor.emit('updateDialogBridge', { id: this.dialogId })
+		},
+
+		selectEffect(item) {
+			this.$el.focus()
+			this.selectedEffect = item
 		},
 	},
 }	

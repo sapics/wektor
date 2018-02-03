@@ -4,6 +4,7 @@
 	>	
 		<span class="label" v-if="label">{{ label }}</span>
 		<input
+			v-autowidth
 			v-model="text"
 			type="text"
 		/>
@@ -16,7 +17,7 @@
 		box-sizing: border-box;
 		border: none;
 		outline: none;
-		width: 5em;
+		max-width: 5em;
 	}
 }	
 </style>

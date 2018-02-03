@@ -14,6 +14,11 @@ class BaseEffect extends EventEmitter {
 		this.on('click', event => this.openDialog(event))
 	}
 
+	remove() {
+		this.emit('remove')
+		this.output.remove()
+	}
+
 	openDialog(event, spec) {
 		if (!this.options || !this.dialog) return
 

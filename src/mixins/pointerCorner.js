@@ -94,14 +94,20 @@ export default {
 
 			if (checkVisibility) {
 				corner = null
+				console.log(corners.length)
+				const visible = []
 				for (let i = 0; i < corners.length; i++) {
 					const point = corners[i]
 					const topMostEl = document.elementFromPoint(point.x, point.y)
 					if (el === topMostEl) {
-						corner = point
-						break
+						if (!corner)
+							corner = point
+						
+						visible.push(point)
 					}
 				}
+				console.log(visible.length)
+				console.log('----')
 				corners = []
 			} 
 

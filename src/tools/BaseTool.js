@@ -6,7 +6,9 @@ class BaseTool extends paper.Tool {
 	constructor(target, spec) {
 		super()
 
-		// const id = makeUniqueId()
+		spec = Object.assign({
+			cursor: 'crosshair'
+		}, spec)
 		this.set({ ...spec, target })
 
 		const eventKeys = [
@@ -29,6 +31,22 @@ class BaseTool extends paper.Tool {
 		}
 
 		this.on('contextmenu', this.onContextMenu)
+		this.on('activate', () => {
+			this.activateCursor()
+		})
+	}
+
+	set cursor(cursor) {
+		this._cursor = cursor
+		this.activateCursor()
+	}
+
+	get cursor() {
+		return this._cursor
+	}
+
+	activateCursor() {
+		document.body.style.cursor = this.cursor || 'default'
 	}
 
 	onContextMenu(event) {

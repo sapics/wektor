@@ -6,6 +6,7 @@
 			:to="reference.position"
 		></pointer-line>
 		<div class="dialog draghandle"
+			:class="{ 'systemDialog': spec.system || spec.layout.system }"
 			ref="dialog"
 			:id="spec.id"
 			:style="css"
@@ -20,7 +21,7 @@
 		>
 			<resize-observer @notify="onResizeObserved" />
 			<palette
-				class="dialog-content draghandle"
+				class="dialog-content"
 				:id="`${spec.id}-palette`"
 				:dialogId="spec.id"
 				:spec="{ values, layout, stretchContent: spec.stretchContent }"
@@ -62,6 +63,7 @@
 		background: var(--wektor-dialog-background);
 		border: 1px solid;
 		border-color: var(--wektor-dialog-border-color);
+		cursor: default;
 	}
 
 	.dialog-content {
@@ -110,7 +112,7 @@ import resizeable from '@/mixins/resizeable'
 import pointerCorner from '@/mixins/pointerCorner'
 import pointerLine from './components/pointer-line'
 import wektor from '@/wektor'
-import { pointToCssPercent, isInViewport } from '@/utils'
+import { isFunction, pointToCssPercent, isInViewport } from '@/utils'
 
 export default {
 	mixins: [ draggable, resizeable, pointerCorner ],
@@ -193,7 +195,7 @@ export default {
 		contentPadding() {
 			return this.spec.padding !== undefined
 				? this.spec.padding
-				: '0.8em'
+				: '0.3em 0.5em'
 		},
 
 		showPointerLine() {
@@ -206,12 +208,14 @@ export default {
 		hover(hover) {
 			if (hover) {
 				this.updateBridge()
+				this.updateReference()				
 				this.updatePointerCorner(true)
 			}
 		},
 
 		'reference.hover'(hover) {
 			if (hover) {
+				this.updateReference()	
 				this.updatePointerCorner(true)
 			}
 		},
@@ -232,6 +236,10 @@ export default {
 					this.updateReference()
 				}	
 			},
+			updateDialogBridge: dialog => {
+				if (dialog.id == this.spec.id)
+					this.updateBridge()
+			}
 		})		
 	},
 
@@ -307,8 +315,8 @@ export default {
 		},	
 
 		updateReference() {
-			if (!this.reference) return
-			this.reference.update()
+			const reference = this.reference
+			reference && isFunction(reference.update) && reference.update()
 		},			
 
 		setPosition() {
