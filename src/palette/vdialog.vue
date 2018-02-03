@@ -64,24 +64,24 @@
 		border: 1px solid;
 		border-color: var(--wektor-dialog-border-color);
 		cursor: default;
+		display: flex;
 	}
 
 	.dialog-content {
-		float: left;
-		width: calc(100% - 1em);
 		padding-right: 0!important;
 		box-sizing: border-box;
 	}
 
 	.dialog-sidebar {
-		float: left;
 		box-sizing: border-box;	
 		padding-top: 0.3em;
 		padding-right: 0.3em;
 		width: 1em;
 		cursor: grab;
+		background: red;
 
 		.dialog-lock-close {
+			float: right;
 			@include bullet();
 			border: 1px solid var(--wektor-dialog-border-color);
 			background: white;
