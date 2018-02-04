@@ -24,6 +24,7 @@ import VueResize from 'vue-resize'
 import Vddl from 'vddl'
 
 import 'vue-resize/dist/vue-resize.css'
+import Wek from './wek'
 
 window.Vue = Vue
 
@@ -31,7 +32,7 @@ paper.install(window)
 paper.setup('main-canvas')
 paper.project.currentStyle = {
 	strokeColor: 'blue',
-	strokeWidth: 2,
+	strokeWidth: 1,
 }
 
 Vue.config.productionTip = false
@@ -55,11 +56,14 @@ wektor.addEffects({
 wektor.tools['BaseTool'] = BaseTool
 wektor.tools.SelectionTool.activate()
 
+// const wek = new Wek()
+
 const gelb = window.gelb = new paper.Path.Circle({
 	radius: 100,
 	position: [400, 400],
 	name: 'gelb',
-	fillColor: 'yellow'
+	fillColor: 'yellow',
+	guide: true,
 })
 
 // var p2 = new paper.Path.Circle({
