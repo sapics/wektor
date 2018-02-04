@@ -1,6 +1,6 @@
 <template>
 	<svg class="pointer-line">
-		<line :x1="from.x" :y1="from.y" :x2="to.x" :y2="to.y"></line>
+		<line :x1="from && from.x" :y1="from && from.y" :x2="to && to.x" :y2="to && to.y"></line>
 	</svg>
 </template>
 

@@ -1,6 +1,7 @@
 <template>
 	<div class="dialog-wrap">
-		<pointer-line v-if="reference && showPointerLine"
+		<pointer-line v-if="reference"
+			v-show="showPointerLine"
 			class="pointer-line"
 			:from="pointerCorner"
 			:to="reference.position"
@@ -70,15 +71,17 @@
 	.dialog-content {
 		padding-right: 0!important;
 		box-sizing: border-box;
+		flex: 1;
 	}
 
 	.dialog-sidebar {
 		box-sizing: border-box;	
 		padding-top: 0.3em;
-		padding-right: 0.3em;
 		width: 1em;
 		cursor: grab;
-		background: red;
+		display: flex;
+		flex-direction: column;
+		align-items: center; 		
 
 		.dialog-lock-close {
 			float: right;
@@ -94,8 +97,9 @@
 		.resize-corner {
 			cursor: default;
 			position: absolute;
-			right: 1px;
-			bottom: 1px;
+			right: 0;
+			bottom: 0;
+			padding: 3px 1px 1px 3px;
 			width: 7px;
 			height: 7px;
 			stroke: var(--wektor-dialog-border-color);
@@ -111,7 +115,7 @@ import resizeable from '@/mixins/resizeable'
 import pointerCorner from '@/mixins/pointerCorner'
 import pointerLine from './components/pointer-line'
 import wektor from '@/wektor'
-import { isFunction, pointToCssPercent, isInViewport } from '@/utils'
+import { isFunction, pointToCssPercent, isInViewport, constrainElPosition } from '@/utils'
 
 export default {
 	mixins: [ draggable, resizeable, pointerCorner ],
@@ -194,10 +198,11 @@ export default {
 		contentPadding() {
 			return this.spec.padding !== undefined
 				? this.spec.padding
-				: '0.3em 0.5em'
+				: '0.2em 0.4em'
 		},
 
 		showPointerLine() {
+			if (this.reference.exists === false || !this.pointerCorner) return false
 			if (this.drag || this.hover || this.reference.hover) return true
 			return !this.locked 
 		},			
@@ -223,6 +228,21 @@ export default {
 	created() {
 		this.activate()
 
+		window.addEventListener('resize', () => {
+			const windowSize = {
+				width: window.innerWidth || document.documentElement.clientWidth,
+				height: window.innerHeight || document.documentElement.clientHeight,
+			}
+
+			const bounds = this.$refs.dialog.getBoundingClientRect()
+			const position = {
+				x: bounds.left,
+				y: bounds.top,
+			}		
+
+			this.position = constrainElPosition(windowSize, bounds, position)			
+		})
+
 		wektor.on({
 			openDialog: dialog => {
 				if (dialog.id === this.spec.parentId) {
@@ -238,7 +258,7 @@ export default {
 			updateDialogBridge: dialog => {
 				if (dialog.id == this.spec.id)
 					this.updateBridge()
-			}
+			},
 		})		
 	},
 

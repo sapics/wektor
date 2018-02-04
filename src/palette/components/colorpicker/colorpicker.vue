@@ -18,8 +18,7 @@
 				viewBox="0 0 10 10"
 				@click="unsetColor"
 			>
-				<line vector-effect="non-scaling-stroke" fill="none" stroke="#000000" stroke-width="1" stroke-miterlimit="10" x1="0" y1="10" x2="10" y2="0"/>
-				<line vector-effect="non-scaling-stroke" fill="none" stroke="#000000" stroke-width="1" stroke-miterlimit="10" x1="10" y1="10" x2="0" y2="0"/>				
+				<line vector-effect="non-scaling-stroke" fill="none" stroke="red" stroke-width="1" stroke-miterlimit="10" x1="0" y1="10" x2="10" y2="0"/>			
 			</svg>
 		</div>
 		<div class="data">
@@ -44,28 +43,27 @@
 	min-width: 3em;
 	min-height: 3em;
 	overflow: hidden;
+	display: flex;
+	box-sizing: border-box;
+	border-right: 1px solid var(--wektor-dialog-border-color);
 
 	.saturation {
-		float: left;
-		width: calc(100% - 2 * 1em);
-		height: 100%;
+		flex: 1;
 	}	
 
 	.hue {
-		height: 100%;
 		width: 1em;
-		float: left;
 	}
 
 	.alpha-nocolor-wrap {
-		position: relative;
-		float: left;
 		width: 1em;
-		height: 100%;
+		display: flex;
+		flex-direction: column;
 
 		.alpha {
-			width: 100%;
-			height: calc(100% - 1em);
+			flex: 1;
+			// width: 100%;
+			// height: calc(100% - 1em);
 		}
 
 		.no-color {

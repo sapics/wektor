@@ -1,5 +1,5 @@
 <template>
-	<div class="palette" :class="[ alignClass, typeClass, spec.stretchContent ? 'stretch-content' : null]">
+	<div class="palette" :class="[ alignClass, typeClass ]">
 		<div class="palette-label-wrap" v-if="label">
 			<span class="palette-chevron"
 				:class="{ open }"
@@ -30,18 +30,19 @@
 
 <style lang="scss" scoped>
 .palette {
+	display: flex;
+
+	.palette-content {
+		flex: 1;
+	}
+
 	input {
 		background: transparent!important;
 	}
 
 	.palette-chevron {
 		display: none;
-	}
-}
-
-.palette.stretch-content {
-	&, .palette-content {
-		height: 100%;
+		font-style: normal!important;
 	}
 }
 
@@ -88,6 +89,8 @@
 }
 
 .palette.type-folder {
+	flex-direction: column;
+
 	> .palette-label-wrap .palette-chevron {
 		display: inline-block;
 		cursor:pointer;

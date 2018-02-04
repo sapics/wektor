@@ -80,13 +80,13 @@ export default {
 			return this.payload.space
 		},
 
-		returnUnit() {
-			return this.payload.return || 'px'
-		},
-
 		valueUnit() {
 			return this.payload.unit || 'px'
 		},
+
+		returnUnit() {
+			return this.payload.return || this.valueUnit
+		},		
 
 		allowedUnits() {
 			let units = this.payload.units
@@ -115,17 +115,25 @@ export default {
 
 	methods: {
 		updateValue(string) {
-			if (this.spec.useUnit) {
-				this.$emit('input', parseFloat(string))
-				return
+			let value
+
+			if (!isString(string)) {
+				value = string
+			} else {
+				const unit = UnitValue.extractUnit(string)
+				if (unit === this.returnUnit) {
+					console.log(unit, string)
+					this.unit = unit
+					value = this.unitValue = parseFloat(string)
+				} else {
+					const result = unitValidator.parse(string)
+					if (result === false) return false
+
+					this.unit = result.unit
+					this.unitValue = result.unitValue
+					value = result.value
+				}
 			}
-
-			const result = unitValidator.parse(string)
-			if (result === false) return false
-
-			this.unit = result.unit
-			this.unitValue = result.unitValue
-			const value = result.value
 
 			this.input = true
 			this.$emit('input', value)
@@ -143,7 +151,6 @@ export default {
 
 		changeValueBy(change) {
 			this.unitValue += change
-			// this.updateInputField()
 			this.updateValue(this.inputFieldValue)
 		},
 	},

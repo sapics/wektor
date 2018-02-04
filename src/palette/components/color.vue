@@ -5,7 +5,7 @@
 			<span
 				:data-id="`${id}-color-label`"
 				:id="`${id}-color-label`"
-				class="color-label input"
+				class="color-label"
 				ref="colorLabel"
 				:class="{'no-color': !cssColor}"
 				@mousedown="openColorpicker"
@@ -47,6 +47,7 @@ export default {
 	data() {
 		return {
 			colorPickerId: null,
+			isMounted: false,
 		}
 	},
 
@@ -86,7 +87,7 @@ export default {
 		},
 
 		colorLabelShadow() {
-			if (!this.color || !this.$el) return
+			if (!this.color || !this.isMounted) return
 
 			const dialogEl = this.$el.closest('.dialog')
 			if (!dialogEl) return
@@ -104,6 +105,10 @@ export default {
 
 			return `${shadowColor} 1px 1px`
 		},
+	},
+
+	mounted() {
+		this.isMounted = true
 	},
 
 	methods: {

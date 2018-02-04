@@ -24,15 +24,16 @@
 	width: 100%;
 	height: 100%;
 	isolation: isolate;
+	border-right: 1px solid;
 
 	.palette-code-run-button {
-		// position: absolute;
 		width: 0.8em;
 		top: 0.8em;
-		// right: 0;
 		cursor: default;
-		// z-index: 999999999;
 		color: var(--wektor-dialog-border-color);
+	}
+	.palette-code-run-button{
+		color: red;
 	}
 
 	.ace_print-margin {
@@ -102,9 +103,7 @@ export default {
 			const text = event.dataTransfer.getData('text')
 			const object = JSON.parse(text)
 			if (object._wektorPastePaperItem === true) {
-				const { id, paperName } = object
-				const query = paperName ? `{ name: '${paperName}' }` : `{ id: ${id} }`
-				this.editor.insert(`project.getItem(${query})`)
+				this.editor.insert(`project.getItem({ id: ${object.id} })`)
 			}
 		},
 	},

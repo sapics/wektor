@@ -2,7 +2,9 @@
 	<div class="menu-item">
 		<span
 			@click="$emit('click', $event)"
+			@contextmenu="$emit('contextmenu', $event)"
 			v-html="labelHtml" 
+			:id="`menu-item-${label}-label`"
 			class="label"
 		></span>
 	</div>

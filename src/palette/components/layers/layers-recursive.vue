@@ -21,6 +21,7 @@
 			--><span 
 					class="label"
 					:class="{ selected, hasChildren }"
+					@mousedown.stop="capturedMouseDown = true"
 				>{{ item.name }}</span>
 			</vddl-handle>
 			<vddl-list
@@ -38,7 +39,7 @@
 					:index="index"
 					:nestedIndex="nestedIndex + 1"
 				></layers-recursive>
-				<vddl-placeholder style="height: 5px; background: black; width: 100%"></vddl-placeholder>
+				<vddl-placeholder style="height: 1px; background: black; width: 100%; margin-top: -1px;"></vddl-placeholder>
 			</vddl-list>
 		</div>
 		<div v-else
@@ -46,6 +47,7 @@
 			:style="{ paddingLeft: indent }" 
 			:class="{ selected, highlight }"
 			@contextmenu="handleContextMenu"
+			@mousedown.stop="capturedMouseDown = true"
 		>
 			{{item.name}}
 		</div>
@@ -158,6 +160,13 @@ export default {
 		},
 
 		handleSelected() {
+			if (this.capturedMouseDown) {
+				var event = document.createEvent('Event');
+				event.initEvent('mousedown', true, true); // can bubble, and is cancellable
+				document.body.dispatchEvent(event);
+				this.capturedMouseDown = false
+			}
+
 			const paperItem = wektor.project.getItem({ id: this.item.id })
 			if (this.item.type === 'Layer') {
 				paperItem.activate()

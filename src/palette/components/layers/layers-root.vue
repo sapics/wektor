@@ -16,6 +16,12 @@
 	</div>
 </template>
 
+<style lang="scss">
+.palette-layers-root {
+	border-right: 1px solid var(--wektor-dialog-border-color);
+}	
+</style>
+
 <script>
 import baseComponent from '@/palette/components/baseComponent'
 import layersRecursive from './layers-recursive'

@@ -391,6 +391,7 @@ class Wektor extends ImprovedEventEmitter {
 		const dialog = this.dialogs[id]
 		if (!dialog) return
 		dialog.open = false
+		dialog.show = false
 		this.dialogsStackingOrder.remove(id)
 		this.emit('closeDialog', dialog)
 		this.emit('updateDialogs', this.dialogs, 'close')

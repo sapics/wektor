@@ -4,11 +4,10 @@ const theme = {
 	system: true,
 	'theme.font': {
 		align: 'columns',
-		label: 'font',
+		label: 'text',
 		'theme.fontSize': {
 			type: 'number',
 			unit: 'pt',
-			useUnit: false,
 		},
 		'theme.color': {
 			type: 'color',
@@ -18,11 +17,11 @@ const theme = {
 	},
 	'theme.highlight': {
 		type: 'folder',
-		open: true,
+		open: false,
 		label: 'highlight',
 		'theme.highlight.color': {
 			type: 'color',
-			label: 'color',
+			label: 'text color',
 			return: 'css',
 		},
 		'theme.highlight.background': {
@@ -34,7 +33,7 @@ const theme = {
 	dialogs: {
 		type: 'folder',
 		label: 'dialogs',
-		open: false,
+		open: true,
 		'theme.dialog.background': {
 			type: 'color',
 			label: 'background color',
@@ -47,7 +46,7 @@ const theme = {
 		},
 		'theme.dialog.font': {
 			align: 'columns',
-			label: 'font',
+			label: 'text',
 			'theme.dialog.color': {
 				type: 'color',
 				label: 'color',
@@ -88,7 +87,7 @@ const theme = {
 		},
 		'theme.systemDialog.font': {
 			align: 'columns',
-			label: 'font',
+			label: 'text',
 			'theme.systemDialog.color': {
 				type: 'color',
 				label: 'color',
@@ -99,6 +98,19 @@ const theme = {
 				options: ['normal', 'italic', 'bold'],
 			},			
 		},
+		'theme.systemDialog.input': {
+				align: 'columns',
+				label: 'input',
+				'theme.systemDialog.input.color': {
+					type: 'color',
+					label: 'color',
+					return: 'css',
+				},
+				'theme.systemDialog.input.fontStyle': {
+					type: 'select',
+					options: ['normal', 'italic', 'bold'],
+				},	
+		},		
 	},			
 }
 

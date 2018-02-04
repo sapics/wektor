@@ -7,6 +7,7 @@
 			:shortcut="item.shortcut"
 			:class="{ 'highlight': item === focused }"
 			@click="selectItem(item, $event)"
+			@contextmenu="selectItem(item, $event)"
 		></vmenu-item>
 	</div>
 </template>
@@ -31,7 +32,6 @@ export default {
 
 	methods: {
 		selectItem(selector, event) {
-			console.log('select item')
 			let item
 
 			if (isObject(selector))

@@ -217,11 +217,13 @@ export default {
 			})
 
 			wektor.addDialog({
-				...settings.dialogs.scripts
+				...settings.dialogs.scripts,
+				reference: document.getElementById('menu-item-scripts-label'),				
 			})			
 
 			wektor.addDialog({
 				...settings.dialogs.preferences,
+				reference: document.getElementById('menu-item-preferences-label'),
 				values: settings,
 				changeHandler: (target, key, value) => {
 					key.startsWith('theme') && this.theme.update()

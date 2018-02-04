@@ -72,7 +72,7 @@ export default {
 			'shortcut': {
 				key: 'p',
 				modifier: '<default>',
-				callback: wektor => wektor.toggleShowDialog('preferences'),
+				callback: (wektor, event) => wektor.toggleShowDialog('preferences', event),
 			},
 		},
 		{
