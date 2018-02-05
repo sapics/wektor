@@ -3,6 +3,7 @@ export default {
 	padding: 0,
 	stretchContent: true,
 	resize: true,
+	keepAlive: true,
 	layout: {
 		type: 'code',
 	},

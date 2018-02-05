@@ -308,7 +308,10 @@ export default {
 
 		close(event) {
 			if (event && this.targetIsDescendant(event.target)) return
-			wektor.closeDialog(this.spec.id)
+			if (this.spec.keepAlive === true)
+				wektor.hideDialog(this.spec.id)
+			else
+				wektor.closeDialog(this.spec.id)
 		},
 
 		targetIsDescendant(target) {

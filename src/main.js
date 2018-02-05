@@ -78,8 +78,9 @@ const gelb = window.gelb = new paper.Path.Circle({
 	position: [400, 400],
 	name: 'gelb',
 	fillColor: 'yellow',
-	guide: true,
 })
+
+new paper.Group( new paper.Group([gelb]) )
 
 // var p2 = new paper.Path.Circle({
 // 	radius: 100,

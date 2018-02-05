@@ -10,47 +10,49 @@
 		:disable-if="disable"
 		:selected="handleSelected"
 	>
-		<div v-if="item.children">
-			<vddl-handle :class="{ highlight }" :style="{ paddingLeft: indent }" >
-				<span 
-					v-show="hasChildren"
-					class="chevron"
-					:class="{ opened }"
-					@click.stop="toggleOpen"
-				>&#9656;</span><!--
-			--><span 
-					class="label"
-					:class="{ selected, hasChildren }"
-					@mousedown.stop="capturedMouseDown = true"
-				>{{ item.name }}</span>
-			</vddl-handle>
-			<vddl-list
-				v-if="opened"
-				:list="item.children"
-				:index="index"
-				:inserted="handleInserted"
-				class="palette-layers-recursive-children"
-				:class="{ hasChildren }"
-			>
-				<layers-recursive v-for="(child, index) in item.children"
-					:key="child.id"
+		<div v-if="item.children" class="palette-layers-content-wrap">
+			<div class="palette-layers-indent">
+					<span 
+						v-show="hasChildren"
+						class="chevron"
+						:class="{ opened }"
+						@click.stop="toggleOpen"
+					>&#9656;</span>
+					<div v-if="opened" class="palette-indent-line"></div>
+			</div>	
+			<div class="palette-layers-content">
+				<vddl-handle :class="{ highlight }">
+					<span 
+						class="label"
+						:class="{ selected, hasChildren }"
+						@mousedown.stop="capturedMouseDown = true"
+					>{{ item.name }}</span>
+				</vddl-handle>	
+				<vddl-list
+					v-if="opened"
 					:list="item.children"
-					:item="child"
 					:index="index"
-					:nestedIndex="nestedIndex + 1"
-				></layers-recursive>
-				<vddl-placeholder style="height: 1px; background: black; width: 100%; margin-top: -1px;"></vddl-placeholder>
-			</vddl-list>
+					:inserted="handleInserted"
+					class="palette-layers-recursive-children"
+					:class="{ hasChildren }"
+				>		
+					<layers-recursive v-for="(child, index) in item.children"
+						:key="child.id"
+						:list="item.children"
+						:item="child"
+						:index="index"
+						:nestedIndex="nestedIndex + 1"
+					></layers-recursive>
+					<vddl-placeholder style="height: 1px; background: black; width: 100%; margin-top: -1px;"></vddl-placeholder>
+				</vddl-list>								
+			</div>
 		</div>
 		<div v-else
 			class="label"
-			:style="{ paddingLeft: indent }" 
 			:class="{ selected, highlight }"
 			@contextmenu="handleContextMenu"
 			@mousedown.stop="capturedMouseDown = true"
-		>
-			{{item.name}}
-		</div>
+		>{{item.name}}</div>
 	</vddl-draggable>
 </template>
 
@@ -61,6 +63,29 @@
 .vddl-dragging .vddl-list {
 	/* prevent that a item can be dropped into itself */
 	pointer-events: none;
+}
+
+.palette-layers-content-wrap {
+	display: flex;
+}
+
+.palette-layers-content {
+	flex: 1;
+}
+
+.palette-layers-indent {
+	width: 1em;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+
+	.palette-indent-line {
+		margin-top: -0.2em;
+		width: 1px;
+		background: var(--wektor-dialog-border-color);
+		flex: 1;
+		margin-bottom: 0.35em;	
+	}
 }
 
 .palette-layers-recursive {
@@ -77,25 +102,14 @@
 		display: inline-block;
 
 		&.opened {
-			transform: rotate(90deg) translate(0, -0.1em);
+			margin-left: 0.066em;
+			transform: rotate(90deg);
 		}
 	}
 
 	.label {
-		padding-right: 0.1em;
-		&.hasChildren {
-			padding-left: 0.3em;
-		}
+		padding-right: $space;
 	}
-
-	// .label:before {
-	// 	content: '';
-	// 	position: absolute;
-	// 	left: 0;
-	// 	height: 100%;
-	// 	width: 1px; 
-	// 	background: red;
-	// }	
 }	
 </style>
 

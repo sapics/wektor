@@ -150,6 +150,7 @@ class Dialog {
 			resize: spec.resize,
 			stretchContent: spec.stretchContent,
 			system: spec.system,
+			keepAlive: spec.keepAlive,
 		})
 	}
 }
