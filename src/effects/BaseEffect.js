@@ -97,9 +97,11 @@ class BaseEffect extends EventEmitter {
 			this.addInputListeners(input, output)
 			this.apply(input, output)	
 		}
-		output.opacity = 1
-		output.visible = true
-		output.data.iterable = false
+		output.set({
+			opacity: 1,
+			visible: true,
+			guide: true,
+		})
 		output.data.changeTracking = true
 	}
 

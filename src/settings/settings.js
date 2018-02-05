@@ -120,7 +120,7 @@ export default {
 			tolerance: 5,
 			stroke: true,
 			fill: true,
-			match: ({item}) => item.data.iterable !== false,
+			match: ({item}) => !item.guide,
 		},
 		margin: 20,
 		keepAlive: true,

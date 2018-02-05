@@ -17,7 +17,6 @@ class SelectionTool extends BaseTool {
 	onActivate() {
 		this.item = this.target.getItem({
 			selected: true,
-			match: ({item}) => item && item.data.iterable !== false,
 		})
 	}
 
@@ -58,7 +57,7 @@ class SelectionTool extends BaseTool {
 		}
 
 		const hitResultSelected = this.getHit(this.target, event, { 
-			match: ({item}) => item.selected && item.data.iterable !== false,
+			match: ({item}) => item.selected,
 			segments: true,
 			handles: true,
 		})
@@ -68,7 +67,6 @@ class SelectionTool extends BaseTool {
 			stroke: true, 
 			segments: true, 
 			handles: true,
-			match: ({item}) => item.data.iterable !== false,
 		})
 
 		if (!event.modifiers.shift)
@@ -141,13 +139,11 @@ class SelectionTool extends BaseTool {
 			this.selectionRect = new paper.Path.Rectangle({
 				from: startPoint,
 				to: event.point,
+				guide: true,
 				style: {
 					strokeWidth: 1,
 					dashArray: [1, 1],
 					strokeColor: 'gray',
-				},
-				data: { 
-					iterable: false,
 				},
 			})
 		} else {

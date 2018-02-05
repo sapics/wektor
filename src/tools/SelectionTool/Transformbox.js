@@ -30,10 +30,7 @@ class Transformbox extends paper.Path {
 			closed: true,
 			strokeWidth: 0,
 			applyMatrix: false,
-			data: {
-				// prevent transformbox from showing up in the layers-panel
-				iterable: false,
-			},
+			guide: true,
 		})		
 	}
 

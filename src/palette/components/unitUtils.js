@@ -46,7 +46,8 @@ class UnitValue {
 	}
 	
 	static extractUnit(string) {
-		return string.replace(/([-+]?[0-9]*\.?[0-9]*)+([\S]+)?/, '$2').trim()
+		const unit = string.replace(/([-+]?[0-9]*\.?[0-9]*)+([\S]+)?/, '$2').trim()
+		return (unit !== '') && unit
 	}
 
 	static convertValue(value, from, to, resolution = 72) {

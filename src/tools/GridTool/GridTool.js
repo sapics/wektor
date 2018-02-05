@@ -24,10 +24,10 @@ class GridTool extends BaseTool {
 			this.newGridRect = new paper.Path.Rectangle({
 				from: this.mouseDownPoint,
 				to: event.point,
+				guide: true,
 				strokeWidth: 0,
 				fillColor: null,
 				selected: true,
-				data: { iterable: false },
 			})
 		} else {
 			const { topLeft, topRight, bottomLeft, bottomRight } = new paper.Rectangle(this.mouseDownPoint, event.point)

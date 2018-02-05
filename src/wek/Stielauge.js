@@ -3,7 +3,7 @@ const { Path, CompoundPath, Group, Point } = paper
 
 class StielaugeLinkBase extends Group {
 	constructor(prevLink) {
-		super()
+		super({ guide: true })
 		this.prevLink = prevLink
 		this.create()
 		this.applyMatrix = false
@@ -30,8 +30,8 @@ class StielaugeLinkBase extends Group {
 		const rect = new Path.Rectangle({
 			width: 300,
 			height: 300,
+			guide: true,
 		})
-		
 		const outer = this.prevLink.content.children['filling']
 			? this.prevLink.content.children['filling'].children['outer']
 			: this.prevLink.content.children['outer']
@@ -56,6 +56,7 @@ class StielaugeLink extends StielaugeLinkBase {
 			name: 'filling',
 			fillColor: 'white',
 			strokeWidth: 0,
+			guide: true,
 		})
 		fill.children[0].name = 'outer'
 		fill.children[1].name = 'inner'
@@ -64,12 +65,11 @@ class StielaugeLink extends StielaugeLinkBase {
 	c-9.6,0-17.4-7.6-17.4-17c0-4.5,1.8-8.7,5-11.9c3.3-3.3,7.7-5.1,12.4-5.1c7.7,0,13,4.5,17.7,8.4c3.5,3,6.6,5.6,9.9,5.6h3`)
 		outline.strokeColor = 'black'
 
-		const inline = new Path(`M0.5,11.5c0,6.1,5.1,11,11.4,11c3,0,5.6-1,8-2.5
-	c9.3-5.8,9.3-11.2,0-16.9c-2.4-1.5-5-2.5-8-2.6c-3.1,0-6,1.2-8.1,3.3C1.6,5.9,0.5,8.6,0.5,11.5z`)  
-		inline.position += [6, 6]   
+		const inline = new Path(`M0.5,11.5c0,6.1,5.1,11,11.4,11c3,0,5.6-1,8-2.5 c9.3-5.8,9.3-11.2,0-16.9c-2.4-1.5-5-2.5-8-2.6c-3.1,0-6,1.2-8.1,3.3C1.6,5.9,0.5,8.6,0.5,11.5z`)  
+		inline.position = inline.position.add([6, 6])   
 		inline.strokeColor = 'black'
 		
-		const content = new Group([fill, outline, inline])
+		const content = new Group([fill, inline, outline])
 		content.pivot = [48, 17]
 		return content
 	}
@@ -100,7 +100,7 @@ class StielaugeEyeball extends StielaugeLinkBase {
 
 class StielaugeSkeleton extends Path {
 	constructor(spec) {
-		super()
+		super({ guide: true })
 		this.set({
 			spec,
 			strokeColor: 'white',
@@ -136,7 +136,8 @@ class StielaugeSkeleton extends Path {
 			
 		this.outline = new Path({
 			strokeColor: 'black',
-			strokeWidth: 20,            
+			strokeWidth: 20, 
+			guide: true,           
 		})
 		this.outline.insertBelow(this)
 	}    
@@ -171,7 +172,7 @@ class StielaugeSkeleton extends Path {
 
 class Stielauge extends Group {
 	constructor(spec) {
-		super()
+		super({ guide: true })
 		
 		spec = Object.assign({
 			length: 20,
@@ -183,7 +184,7 @@ class Stielauge extends Group {
 		spec.points = spec.links + 2
 		spec.position = new Point(spec.position)
 		this.spec = spec
-		
+
 		this.create()
 	}
 	
@@ -197,7 +198,7 @@ class Stielauge extends Group {
 	createLinks() {
 		const { points } = this.spec
 		const { skeleton } = this
-		const linksGroup = new Group()
+		const linksGroup = new Group({ guide: true })
 		
 		let prevLink
 		for (let i = 1; i < points - 1; i++) {

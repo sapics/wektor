@@ -4,7 +4,8 @@ const { Path, Group, Point } = paper
 
 class Wek extends Group {
 	constructor() {
-		super()
+		super({ guide: true })
+
 		this.relativePositions = {
 			eyes: {
 				left: [45, 86],
@@ -12,13 +13,14 @@ class Wek extends Group {
 			},
 			above: [75, 90],
 		}
-			
+
 		this.create()
 	}
 	
 	create() {
 		this.below = new Group({
 			name: 'below',
+			guide: true,
 			children: [
 				// ears
 				new Path({
@@ -64,6 +66,7 @@ class Wek extends Group {
 		
 		this.above = new Group({
 			name: 'above',
+			guide: true,
 			children: [
 				new Path.Rectangle({
 					name: 'overlayLeft',
@@ -94,10 +97,12 @@ class Wek extends Group {
 		const left = new Stielauge({
 			position: this.relativePositions.eyes.left,
 		})
+		left.guide = true
 		
 		const right = new Stielauge({
 			position: this.relativePositions.eyes.right,
 		})
+		left.guide = true
 		
 		this.eyes = { left, right }
 		return { left, right }
@@ -112,9 +117,9 @@ class Wek extends Group {
 	set position(value) {
 		super.position = value
 		const { left, right } = this.eyes
-		left.position = this.bounds.topLeft + this.relativePositions.eyes.left
-		right.position = this.bounds.topLeft + this.relativePositions.eyes.right
-		this.above.position = this.bounds.topLeft + this.relativePositions.above
+		left.position = this.bounds.topLeft.add( this.relativePositions.eyes.left )
+		right.position = this.bounds.topLeft.add( this.relativePositions.eyes.right )
+		this.above.position = this.bounds.topLeft.add( this.relativePositions.above )
 	}
 	
 	get position() {

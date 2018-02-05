@@ -35,9 +35,13 @@ class Mirror extends paper.Group {
 			wektor.changeTracker.on('insertion', item, insertionHandler)
 		} else {
 			const clone = item.clone()
-			clone.data.original = item
-			clone.data.iterable = true
-			clone.locked = true
+			clone.set({
+				guide: true,
+				locked: true,
+				data: {
+					original: item,
+				}
+			})
 			this.addChild(clone)
 
 			if (item.data.finished !== false)

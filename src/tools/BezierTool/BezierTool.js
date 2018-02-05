@@ -62,7 +62,7 @@ class BezierTool extends SelectionTool {
 			})			
 			this.segment = this.path.firstSegment
 			this.onlySelect(this.segment)
-			this.releasePath(false)
+			this.releasePath(false, false)
 		} else {
 			this.segment = this.addSegment(this.path, event)
 			this.action = this.action || 'addSegment'
@@ -75,6 +75,8 @@ class BezierTool extends SelectionTool {
 	}
 
 	onMouseUp(event) {
+		if (!this.path) return
+
 		switch (this.action) {
 			case 'addSegment':
 				// storing the path in a new variable is important, because using this.path 
@@ -134,12 +136,13 @@ class BezierTool extends SelectionTool {
 		return new Path()
 	}
 
-	releasePath(unselect = true) {
+	releasePath(unselect = true, unselectSegments = true) {
+		if (!this.path) return
+
 		this.releasePathPreview()
 		if (unselect) { 
 			this.path.selected = false
-		} else {
-			// unselect selected segments
+		} else if (unselectSegments) {
 			this.path.selected = false
 			this.path.selected = true
 		}

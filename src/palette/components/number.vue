@@ -118,11 +118,10 @@ export default {
 			let value
 
 			if (!isString(string)) {
-				value = string
+				value = this.unitValue = string
 			} else {
 				const unit = UnitValue.extractUnit(string)
-				if (unit === this.returnUnit) {
-					console.log(unit, string)
+				if (!unit || unit === this.returnUnit) {
 					this.unit = unit
 					value = this.unitValue = parseFloat(string)
 				} else {

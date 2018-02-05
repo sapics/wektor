@@ -111,6 +111,7 @@ class Grid extends Group {
 
 		const symbolDefinition = new SymbolDefinition(this.background)
 		this.clippingMask = new SymbolItem(symbolDefinition)
+		this.clippingMask.guide = true
 
 		// making a symbol definition out of this.background somehow sets back the background's position
 		// so we have to set the bounds again
@@ -120,38 +121,34 @@ class Grid extends Group {
 	}
 
 	initLines() {
-		this.linesVertical = new Group()
-		this.linesHorizontal = new Group()
+		this.linesVertical = new Group({ guide: true })
+		this.linesHorizontal = new Group({ guide: true })
 
 		this.lines = new Group({
 			children: [this.clippingMask, this.linesVertical, this.linesHorizontal],
 			clipped: true,
-			data: {
-				iterable: false,
-			}
+			guide: true,
 		})
 
 		this.lineVertical = new Path.Line({
 			from: window.view.bounds.topLeft,
 			to: window.view.bounds.bottomLeft,
-			data: {
-				iterable: false,
-			}
+			guide: true,
 		})
 		this.lineVertical.pivot = this.lineVertical.bounds.topLeft
 
 		this.lineHorizontal = new Path.Line({
 			from: window.view.bounds.topLeft,
 			to: window.view.bounds.topRight,
-			data: {
-				iterable: false,
-			}
+			guide: true,
 		})
 		this.lineHorizontal.pivot = this.lineHorizontal.bounds.topLeft
 
 		// they will be removed from the stage but still be there to be cloned
 		this.lineHorizontal.remove()
 		this.lineVertical.remove()
+
+		this.addChildren([this.lines])
 	}
 
 	handleDialogChange(target, key, value) {
@@ -199,9 +196,6 @@ class Grid extends Group {
 		if (spacing.vertical <= 1) spacing.vertical = 1
 		for (let x = 0; x < width; x += spacing.vertical) {		
 			const newLine = this.lineVertical.clone()
-			newLine.data = {
-				iterable: false,
-			}
 			newLine.position = {
 				x: Math.round(this.background.bounds.topLeft.x) + x,
 				y: 0
@@ -223,9 +217,6 @@ class Grid extends Group {
 		if (spacing.horizontal <= 1) spacing.horizontal = 1
 		for (let y = 0; y < height; y += spacing.horizontal) {
 			const newLine = this.lineHorizontal.clone()
-			newLine.data = {
-				iterable: false,
-			}
 			newLine.position = {
 				x: 0,
 				y: Math.round(this.background.bounds.topLeft.y) + y,

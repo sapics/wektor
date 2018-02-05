@@ -10,6 +10,7 @@ class ChangeTracker {
 		this.listeners = {}
 		this.itemListeners = {}
 		this.ChangeFlag = ChangeFlag
+		this.enabled = true
 		this.init()
 	}
 
@@ -21,12 +22,14 @@ class ChangeTracker {
 		project._changesById = {}
 
 		view.onFrame = () => {
+			if (!this.enabled) return
+
 			if (project._changes.length) {
 				let changed = false
 				for (const change of project._changes) {
 					const { item, flags } = change
 
-					if (item.data.iterable === false && item.data.changeTracking !== true)
+					if (item.guide && item.data.changeTracking !== true)
 						continue
 
 					for (const name in ChangeFlag) {

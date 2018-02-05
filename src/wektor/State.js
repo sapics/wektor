@@ -8,6 +8,7 @@ class WektorState extends EventEmitter {
 		this.nested = null
 		this.flat = null
 		this.indexes = {}
+		this.enabled = true
 	}
 
 	createItemName(item) {
@@ -24,11 +25,13 @@ class WektorState extends EventEmitter {
 	// todo:
 	// single item, replace only attributes and not the children
 	update(items) {
+		if (!this.enabled) return
+
 		const convertItems = items => {
 			const converted = []
 			for (let i = items.length - 1; i >= 0; i--) {
 				const item = items[i]
-				if (item.data.iterable === false) continue
+				if (item.guide) continue
 				item.name = item.name || this.createItemName(item)
 				const convertedItem = {
 					id: item.id,
@@ -40,7 +43,7 @@ class WektorState extends EventEmitter {
 					open: item.data.open,
 					selected: item.selected,
 					finished: item.data.finished,
-					children: (item.children && (item.data.iterableChildren !== false)) ? convertItems(item.children) : undefined,
+					children: item.children && convertItems(item.children),
 					_wektorPastePaperItem: true, // this lets the built-in code editor in wektor know, that when we paste the item into the editor, it'll resolve it to a reference to the item        
 				}
 				flat[item.id] = convertedItem

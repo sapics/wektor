@@ -9,10 +9,7 @@ class PathPreview extends Path {
 			selected: true,
 			strokeWidth: 0,
 			fillColor: null,
-			data: {
-				// prevent the path preview from beeing listed in the layers panel
-				iterable: false,
-			},
+			guide: true,
 		})
 	}
 

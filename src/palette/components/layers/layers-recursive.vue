@@ -87,6 +87,15 @@
 			padding-left: 0.3em;
 		}
 	}
+
+	// .label:before {
+	// 	content: '';
+	// 	position: absolute;
+	// 	left: 0;
+	// 	height: 100%;
+	// 	width: 1px; 
+	// 	background: red;
+	// }	
 }	
 </style>
 
