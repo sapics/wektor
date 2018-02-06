@@ -1,7 +1,11 @@
 import paper from 'paper'
 import EventEmitter from 'event-emitter-es6'
 import settings from '@/settings'
-import { isArray, isObject, isFunction, isString, moveArrayElementToEnd, removeArrayElement, makeUniqueId } from '@/utils'
+import { 
+	isArray, isObject, isFunction, isString, 
+	moveArrayElementToEnd, removeArrayElement, 
+	makeUniqueId, getTimeStamp, 
+} from '@/utils'
 import Dialog from '@/dialog'
 import WektorHistory from './WektorHistory'
 import ChangeTracker from './ChangeTracker'
@@ -409,6 +413,18 @@ class Wektor extends ImprovedEventEmitter {
 
 	redo() {
 		this.history.redo()
+	}
+
+	export() {
+		const svg = this.project.exportSVG({ asString: true })
+		const blob = new Blob([svg], {type: "image/svg+xml;charset=utf-8"})
+		const url = URL.createObjectURL(blob)
+		const downloadLink = document.createElement("a")
+		downloadLink.href = url
+		downloadLink.download = `wektor_${getTimeStamp()}.svg`
+		document.body.appendChild(downloadLink)
+		downloadLink.click()
+		document.body.removeChild(downloadLink)
 	}
 }
 

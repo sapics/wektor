@@ -37,9 +37,11 @@ class StielaugeLinkBase extends Group {
 			: this.prevLink.content.children['outer']
 		rect.position = outer.position
 		const mask = rect.subtract(outer)
-		mask.fillColor = 'yellow'
-		mask.pivot = this.prevLink.content.pivot
+		mask.set({
+			guide: true,
+		})
 		mask.applyMatrix = false
+		mask.pivot = this.prevLink.content.pivot
 		this.prevLink.data.mask = mask
 		rect.remove()
 		
@@ -263,17 +265,16 @@ class Stielauge extends Group {
 		const { position, length, points } = this.spec
 		const pathMaxLength = (points - 1) * length
 		const vector = event.point.subtract(position)
-		
-		let target
-		if (vector.length > pathMaxLength) {
-			vector.length = pathMaxLength
-			target = position.add(vector)
-		} else {
-			target = event.point
-		}
-		
+		vector.length = pathMaxLength
+		const target = position.add(vector) 
+
+		if (target.y > (this.position.y - 20)) {
+			target.y = this.position.y - 20
+			target.x = this.position.x - pathMaxLength
+		} 
+
 		this.skeleton.update(target)
-		this.updateLinks()
+		this.updateLinks()		
 	}    
 	
 	updateLinks() {

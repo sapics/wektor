@@ -1,5 +1,6 @@
 <template>
 	<div id="wektor">
+		<vwek></vwek>
 		<div id="wektor-sidebar">
 			<wektor-search
 				id="wektor-search"
@@ -138,13 +139,14 @@ import createDialog from '@/dialog'
 import WektorUiTheme from './WektorUiTheme'
 import vmenu from './components/vmenu'
 import wektorSearch from './components/wektor-search'
+import vwek from './components/vwek'
 
 export default {
 	name: 'wektorUi',
 
 	props: ['target'],
 
-	components: { toolBar, vdialog, vmenu, wektorSearch },
+	components: { toolBar, vdialog, vmenu, wektorSearch, vwek },
 
 	data() {
 		return {

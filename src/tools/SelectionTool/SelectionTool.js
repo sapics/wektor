@@ -157,10 +157,8 @@ class SelectionTool extends BaseTool {
 
 		const selectedItems = this.target.getItems({
 			overlapping: this.selectionRect.bounds,
-			match: item => item.className !== 'Layer'
+			match: item => (item.className !== 'Layer' && !item.guide),
 		})
-
-		console.log({selectedItems})
 
 		this.onlySelect(selectedItems)
 	}

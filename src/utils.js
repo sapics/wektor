@@ -21,6 +21,12 @@ function deepExtend(out) {
 	return out
 }
 
+// taken from https://github.com/paperjs/sketch.paperjs.org/blob/master/assets/js/main.js
+function getTimeStamp() {
+	var parts = new Date().toJSON().toString().replace(/[-:]/g, '').match(/^20(.*)T(.*)\.\d*Z$/)
+	return parts[1] + '_' + parts[2]
+}
+
 function getBounds(el) {
 	if (el.bounds) {
 		var { top, topLeft, topRight, topCenter, bottom, bottomLeft, bottomRight, bottomCenter, left, leftCenter, right, rightCenter, x, y, width, height, center } = el.bounds 
@@ -407,4 +413,5 @@ export {
 	getRandomInt,
 	moveArrayElement,
 	removeArrayElement,
+	getTimeStamp,
 }

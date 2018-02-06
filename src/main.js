@@ -56,22 +56,22 @@ wektor.addEffects({
 wektor.tools['BaseTool'] = BaseTool
 wektor.tools.SelectionTool.activate()
 
-const wek = new Wek()
-wek.pivot = wek.bounds.bottomRight
-const margin = 20
+// const wek = new Wek()
+// wek.pivot = wek.bounds.bottomRight
+// const margin = 20
 
-function alignWek() {
-	wek.position = window.view.bounds.bottomRight.subtract([margin, margin])
-}
-alignWek()
+// function alignWek() {
+// 	wek.position = window.view.bounds.bottomRight.subtract([margin, margin])
+// }
+// alignWek()
 
-window.addEventListener('resize', alignWek)
+// window.addEventListener('resize', alignWek)
 
-window.addEventListener('mousemove', (event) => {
-	wek.update({
-		point: new paper.Point(event),
-	})
-})
+// window.addEventListener('mousemove', (event) => {
+// 	wek.update({
+// 		point: new paper.Point(event),
+// 	})
+// })
 
 const gelb = window.gelb = new paper.Path.Circle({
 	radius: 100,

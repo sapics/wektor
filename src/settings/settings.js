@@ -52,8 +52,8 @@ export default {
 	],
 	menu: [
 		{
-			'label': 'search',
-			'shortcut': {
+			label: 'search',
+			shortcut: {
 				key: 'h',
 				modifier: '<default>',
 				callback: wektor => wektor.emit('search'),
@@ -68,21 +68,29 @@ export default {
 			},
 		},
 		{
-			'label': 'preferences',
-			'shortcut': {
+			label: 'preferences',
+			shortcut: {
 				key: 'p',
 				modifier: '<default>',
 				callback: (wektor, event) => wektor.toggleShowDialog('preferences', event),
 			},
 		},
 		{
-			'label': 'scripts',
-			'shortcut': {
+			label: 'scripts',
+			shortcut: {
 				key: 'i',
 				modifier: '<default>',
 				callback: wektor => wektor.toggleShowDialog('scripts'),
 			},
-		},		
+		},
+		{
+			label: 'export',
+			shortcut: {
+				key: 'e',
+				modifier: '<default>',
+				callback: wektor => wektor.export(),
+			}
+		},	
 	],
 	theme: {
 		color: 'black',
