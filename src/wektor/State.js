@@ -29,6 +29,7 @@ class WektorState extends EventEmitter {
 
 		const convertItems = items => {
 			const converted = []
+
 			for (let i = items.length - 1; i >= 0; i--) {
 				const item = items[i]
 				if (item.guide) continue
@@ -49,6 +50,7 @@ class WektorState extends EventEmitter {
 				flat[item.id] = convertedItem
 				converted.push(convertedItem)					
 			}
+
 			return converted
 		}
 

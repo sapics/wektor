@@ -32,7 +32,7 @@
 					v-if="opened"
 					:list="item.children"
 					:index="index"
-					:inserted="handleInserted"
+					:drop="handleDrop"
 					class="palette-layers-recursive-children"
 					:class="{ hasChildren }"
 				>		
@@ -41,7 +41,6 @@
 						:list="item.children"
 						:item="child"
 						:index="index"
-						:nestedIndex="nestedIndex + 1"
 					></layers-recursive>
 					<vddl-placeholder style="height: 1px; background: black; width: 100%; margin-top: -1px;"></vddl-placeholder>
 				</vddl-list>								
@@ -176,10 +175,48 @@ export default {
 			// in paper.js, items with a lower index are lower in the hierarchy
 			// for the layers panel however we need to show them in inverted hierarchy
 			// so that the first item in the layers panel will be the top-most paper item
-			const invertedIndex = (list.length - 1) - index
+			// const invertedIndex = (list.length - 1) - index
+			// const paperItem = wektor.project.getItem({ id: this.item.id })
+			// const insertedPaperItem = wektor.project.getItem({ id: insertedItem.id })
+			// paperItem.insertChild(invertedIndex, insertedPaperItem)
+
+			wektor.state.enabled = false
+			// const paperItem = wektor.project.getItem({ id: this.item.id })
+			// const insertedPaperItem = wektor.project.getItem({ id: insertedItem.id })
+			// paperItem.insertChild(index, insertedPaperItem)
+			// console.log({index})
+			// wektor.state.enabled = true
+
+			return arguments[0]
+		},	
+
+		handleDrop(data) {
+			let { index, list, item: droppedItem } = data
+
+			list.splice(index, 0, droppedItem)
+
+			const hasDuplicates = list.filter(el => el.id === droppedItem.id).length === 2
+			const oldIndex = list.findIndex(el => el.id === droppedItem.id)
+			let listLength = list.length	
+
+			// vddl has duplicated the item and not removed the old one yet. so when we are
+			// dropping an item into the same list it was before we'll have a duplicate in the list.
+			// to tell paper.js the right index to insert the item we have to calculate the items 
+			// final index (and the final list length in order to calculate the correct inverted index)
+			if (hasDuplicates) {
+				listLength -= 1
+				if (oldIndex < index)
+					index -= 1
+			}
+
+			// in paper.js, items with a lower index are lower in the hierarchy
+			// for the layers panel however we need to show them in inverted hierarchy
+			// so that the first item in the layers panel will be the top-most paper item
+			const invertedIndex = (listLength - 1) - index
 			const paperItem = wektor.project.getItem({ id: this.item.id })
-			const insertedPaperItem = wektor.project.getItem({ id: insertedItem.id })
-			paperItem.insertChild(invertedIndex, insertedPaperItem)
+			const droppedPaperItem = wektor.project.getItem({ id: droppedItem.id })
+
+			paperItem.insertChild(invertedIndex, droppedPaperItem)
 		},
 
 		handleSelected() {

@@ -1,6 +1,6 @@
 <template>
 	<div id="wektor">
-		<vwek></vwek>
+		<!-- <vwek></vwek> -->
 		<div id="wektor-sidebar">
 			<wektor-search
 				id="wektor-search"
@@ -203,6 +203,7 @@ export default {
 			this.layers.push(...state.nested) 
 		})
 		wektor.state.update()
+		this.layers = wektor.state.nested
 
 		wektor.on('search', this.$refs.search.focus)
 

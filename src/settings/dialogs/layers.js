@@ -6,7 +6,7 @@ const layers = {
 	css: {
 		overflow: 'scroll',
 		top: '50%',
-		right: '20px',
+		right: '200px',
 	},
 	padding: false,
 	locked: true, 
