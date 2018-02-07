@@ -96,7 +96,7 @@ export default {
 		color: 'black',
 		fontSize: 14, // pt
 		highlight: {
-			background: 'gainsboro',
+			background: 'aquamarine',
 			color: 'black',
 		},
 		dialog: {

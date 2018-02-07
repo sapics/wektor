@@ -10,7 +10,7 @@
 		:disable-if="disable"
 		:selected="handleSelected"
 	>
-		<div v-if="item.children" class="palette-layers-content-wrap">
+		<div v-if="hasChildren" class="palette-layers-content-wrap">
 			<div class="palette-layers-indent">
 					<span 
 						v-show="hasChildren"

@@ -61,7 +61,7 @@ class WektorUiTheme {
 				background: ${highlight.background};
 				color: ${highlight.color};
 			}
-			#wektor {
+			#wektor, .wektor-search input {
 				color: ${color};
 				font-size: ${fontSize}pt;
 			}		

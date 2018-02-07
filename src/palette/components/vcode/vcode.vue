@@ -49,7 +49,7 @@
 	}
 
 	.ace_selection {
-		background-color: yellow !important;
+		background-color: var(--wektor-highlight-background) !important;
 	}
 
 	.ace_gutter {

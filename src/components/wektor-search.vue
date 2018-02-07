@@ -25,7 +25,8 @@
 		}
 
 		&.searching .focused {
-			background-color: var(--wektor-highlight-color);
+			background-color: var(--wektor-highlight-background);
+			color: var(--wektor-highlight-color);
 		}
 	}
 </style>

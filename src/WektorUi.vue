@@ -1,6 +1,6 @@
 <template>
 	<div id="wektor">
-		<!-- <vwek></vwek> -->
+		<vwek></vwek>
 		<div id="wektor-sidebar">
 			<wektor-search
 				id="wektor-search"

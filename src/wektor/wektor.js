@@ -187,6 +187,7 @@ class Wektor extends ImprovedEventEmitter {
 		if (!selectedItems.length) return
 		if ((selectedItems.length === 1) && ['Group', 'Layer'].includes(selectedItems[0].className)) return
 
+		// TODO: add group to parent
 		new paper.Group({
 			children: selectedItems,
 			selected: true
