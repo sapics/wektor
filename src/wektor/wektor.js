@@ -139,6 +139,8 @@ class Wektor extends ImprovedEventEmitter {
 			return
 		}
 
+		paper.settings.handleSize = 6
+
 		this.project = project
 		this.active.layer = this.project.activeLayer
 
@@ -417,12 +419,12 @@ class Wektor extends ImprovedEventEmitter {
 	}
 
 	export() {
-		const svg = this.project.exportSVG({ asString: true })
+		const svg = this.project.exportSVG({ ...settings.export, asString: true })
 		const blob = new Blob([svg], {type: "image/svg+xml;charset=utf-8"})
 		const url = URL.createObjectURL(blob)
 		const downloadLink = document.createElement("a")
 		downloadLink.href = url
-		downloadLink.download = `wektor_${getTimeStamp()}.svg`
+		downloadLink.download = settings.export.name
 		document.body.appendChild(downloadLink)
 		downloadLink.click()
 		document.body.removeChild(downloadLink)

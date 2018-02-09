@@ -88,7 +88,7 @@ export default {
 			shortcut: {
 				key: 'e',
 				modifier: '<default>',
-				callback: wektor => wektor.export(),
+				callback: wektor => wektor.openDialog('export'),
 			}
 		},	
 	],
@@ -110,9 +110,9 @@ export default {
 			},			
 		},
 		systemDialog: {
-			background: 'gainsboro',
+			background: 'lightslategray',
 			borderColor: 'black',
-			color: 'black',
+			color: false,
 			fontStyle: 'normal',
 			input: {
 				color: 'blue',
@@ -141,5 +141,11 @@ export default {
 		// whitelist: ['px'],
 		// allowedUnits: ['px', 'cm', 'mm'],
 		decimals: 2,
+	},
+	export: {
+		name: 'wektor.svg',
+		bounds: 'view',
+		precision: 5,
+		embedImages: true,	
 	},
 }

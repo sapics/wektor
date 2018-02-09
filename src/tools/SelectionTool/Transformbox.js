@@ -30,7 +30,10 @@ class Transformbox extends paper.Path {
 			closed: true,
 			strokeWidth: 0,
 			applyMatrix: false,
-			guide: true,
+			data: {
+				iterable: false,
+			},
+			// guide: true,
 		})		
 	}
 
@@ -43,13 +46,13 @@ class Transformbox extends paper.Path {
 			return true
 		}
 
-		handle = this.hitTest(event.point, { bounds: true, tolerance: 20 })
-		if (handle) {
-			if (['top-left', 'top-right', 'bottom-left', 'bottom-right'].includes(handle.name)) {
-				this.initTransform(this.transformRotate, event, handle)
-				return true
-			}		
-		}
+		// handle = this.hitTest(event.point, { bounds: true, tolerance: 20 })
+		// if (handle) {
+		// 	if (['top-left', 'top-right', 'bottom-left', 'bottom-right'].includes(handle.name)) {
+		// 		this.initTransform(this.transformRotate, event, handle)
+		// 		return true
+		// 	}		
+		// }
 
 		let hit = this.item.hitTest(event.point, { stroke: true, fill: true, segment: true, tolerance: 5 })
 		if (hit) {
@@ -65,6 +68,14 @@ class Transformbox extends paper.Path {
 			this.transformFn(event)
 			this.updateItem()
 		}
+	}
+
+	handleMouseMove(event) {
+		const handle = this.hitTest(event.point, { bounds: true, tolerance: 5 })
+		if (handle)
+			this.cursor = this.getHandleCursor(handle)
+		else
+			this.cursor = null
 	}	
 
 	initTransform(transformFn, event, handle) {
@@ -74,9 +85,21 @@ class Transformbox extends paper.Path {
 			oppositeHandle: handle ? this.getOppositeHandle(handle) : null,
 			delta: this.position.subtract(event.point),
 			startRotation: this.rotation,
-		})	
+		})
+	}
 
-		this.oppositeHandle && (this.pivot = this.oppositeHandle.point)
+	getHandleCursor(handle) {
+		const map = {
+			'top-left': 'nwse-resize',
+			'top-center': 'ns-resize',
+			'top-right': 'nesw-resize',
+			'bottom-left': 'nesw-resize',
+			'bottom-center': 'ns-resize',
+			'bottom-right': 'nwse-resize',
+			'left-center': 'ew-resize',
+			'right-center': 'ew-resize'			
+		}
+		return map[handle.name]
 	}
 
 	getOppositeHandle(handle) {
@@ -127,32 +150,40 @@ class Transformbox extends paper.Path {
 		const distanceX = event.point.x - this.oppositeHandle.point.x
 		const newWidth = Math.abs(distanceX)
 
-		if (distanceX === 0) return
+		if (newWidth < 2) return
 
-		this.bounds.width = newWidth
+		const newBounds = new paper.Rectangle({
+			from: {
+				x: this.oppositeHandle.point.x,
+				y: this.bounds.topLeft.y
+			},
+			to: {
+				x: event.point.x,
+				y: this.bounds.bottomRight.y
+			},
+		})	
 
-		if (distanceX < 0)
-			this.pivot = this.bounds.rightCenter
-		else
-			this.pivot = this.bounds.leftCenter
-
-		this.position = this.oppositeHandle.point
+		this.bounds = newBounds
 	}
 
 	transformScaleY(event) {
 		const distanceY = event.point.y - this.oppositeHandle.point.y
 		const newHeight = Math.abs(distanceY)
+		
+		if (newHeight < 2) return
 
-		if (distanceY === 0) return
+		const newBounds = new paper.Rectangle({
+			from: {
+				x: this.bounds.bottomRight.x,
+				y: this.oppositeHandle.point.y
+			},
+			to: {
+				x: this.bounds.topLeft.x,
+				y: event.point.y
+			},
+		})
 
-		this.bounds.height = newHeight
-
-		if (distanceY < 0)
-			this.pivot = this.bounds.bottomCenter
-		else
-			this.pivot = this.bounds.topCenter
-			
-		this.position = this.oppositeHandle.point
+		this.bounds = newBounds		
 	}
 
 	transformScaleXY(event) {
@@ -160,7 +191,7 @@ class Transformbox extends paper.Path {
 
 		// if the size is zero the item will disappear from the canvas
 		// even if we change its size again
-		if (newBounds.size.width <= 0 || newBounds.size.height <= 0)
+		if (newBounds.size.width <= 2 || newBounds.size.height <= 2)
 			return false
 
 		this.bounds = newBounds	
@@ -170,6 +201,19 @@ class Transformbox extends paper.Path {
 		this.pivot = this.bounds.center
 		this.rotation = this.pivot.subtract(event.point).angle - this.delta.angle + this.startRotation
 	}
+
+	set cursor(cursor) {
+		this._cursor = cursor
+		this.activateCursor()
+	}
+
+	get cursor() {
+		return this._cursor
+	}
+
+	activateCursor() {
+		document.body.style.cursor = this.cursor || 'default'
+	}	
 
 	updateItem() {
 		this.item.pivot = this.pivot

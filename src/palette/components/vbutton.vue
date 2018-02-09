@@ -17,6 +17,8 @@
 	box-sizing: border-box;
 	cursor: pointer;
 	box-shadow: 1px 1px;
+	display: inline-block;
+	margin-bottom: 0.2em;
 
 	&.active {
 		color: var(--wektor-dialog-background);

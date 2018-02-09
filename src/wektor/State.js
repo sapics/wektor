@@ -32,7 +32,8 @@ class WektorState extends EventEmitter {
 
 			for (let i = items.length - 1; i >= 0; i--) {
 				const item = items[i]
-				if (item.guide) continue
+				if (item.guide || item.data.iterable === false) continue
+
 				item.name = item.name || this.createItemName(item)
 				const convertedItem = {
 					id: item.id,
@@ -42,7 +43,7 @@ class WektorState extends EventEmitter {
 					paperName: item.name,
 					type: item.constructor.name,
 					open: item.data.open,
-					selected: item.selected,
+					selected: item.selected && (item.data.hoverSelected !== true),
 					finished: item.data.finished,
 					children: item.children && convertItems(item.children),
 					_wektorPastePaperItem: true, // this lets the built-in code editor in wektor know, that when we paste the item into the editor, it'll resolve it to a reference to the item        

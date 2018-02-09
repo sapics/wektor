@@ -74,6 +74,15 @@
 		flex: 1;
 	}
 
+	.dialog.systemDialog {
+		.dialog-lock-close {
+			border: 1px solid var(--wektor-systemDialog-border-color);
+			&.locked {
+				background: var(--wektor-systemDialog-border-color);
+			}			
+		}
+	}
+
 	.dialog-sidebar {
 		box-sizing: border-box;	
 		padding-top: 0.3em;
@@ -226,6 +235,7 @@ export default {
 	},
 
 	created() {
+		this.updateReference()
 		this.activate()
 
 		window.addEventListener('resize', () => {

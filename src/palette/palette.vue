@@ -88,6 +88,10 @@
 	}
 }
 
+.palette.align-rows {
+	flex-direction: column;
+}
+
 .palette.type-folder {
 	flex-direction: column;
 

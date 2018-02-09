@@ -232,6 +232,14 @@ export default {
 					key.startsWith('theme') && this.theme.update()
 				},
 			})
+
+			const exportDialog = settings.dialogs.export
+			exportDialog.layout.exportButton.click = () => wektor.export()
+			wektor.addDialog({
+				...settings.dialogs.export,
+				reference: document.getElementById('menu-item-export-label'),
+				values: settings.export,
+			})
 		},
 
 		onKeyDown(event) {

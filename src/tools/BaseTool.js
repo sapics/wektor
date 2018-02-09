@@ -87,14 +87,27 @@ class BaseTool extends paper.Tool {
 	// 	this.openDialog({ ...this.dialogs.settings, payload }, 'settings')
 	// }
 
-	onlySelect(value) {
+	onlySelect(value, options) {
 		this.target && this.target.deselectAll()
+
+		const select = function(item) {
+			item.selected = true
+
+			if (options && (options.segments || options.points)) {
+				for (const segment of item.segments) {
+					if (options.segments)
+						segment.select = true
+					else if (options.points)
+						segment.point.selected = true
+				}
+			}
+		}
 
 		if (isArray(value)) {
 			for (const item of value)
-				this.select(item)
+				select(item)
 		} else {
-			this.select(value)
+			select(value)
 		}
 	}
 

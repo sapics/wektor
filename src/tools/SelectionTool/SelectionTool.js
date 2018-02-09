@@ -56,6 +56,8 @@ class SelectionTool extends BaseTool {
 			return
 		}
 
+		this.releaseHoverSelectItem()
+
 		const hitResultSelected = this.getHit(this.target, event, { 
 			match: ({item}) => item.selected,
 			segments: true,
@@ -66,7 +68,6 @@ class SelectionTool extends BaseTool {
 			fill: true, 
 			stroke: true, 
 			segments: true, 
-			handles: true,
 		})
 
 		if (!event.modifiers.shift)
@@ -95,6 +96,7 @@ class SelectionTool extends BaseTool {
 
 			case 'handle-in':
 			case 'handle-out':
+				this.segment = hitResult.segment
 				this.onlySelect(this.segment)
 				this.handle = hitResult
 				break
@@ -109,11 +111,11 @@ class SelectionTool extends BaseTool {
 	onDoubleClick(event) {
 		const hit = this.getHit(this.target, event, { stroke: true, fill: true, segments: true })
 
-		if (!hit) return
+		if (!hit || !this.item) return
 		
 		switch (hit.type) {
 			case 'segment':
-				this.convertSegment(hit.segment)
+				// this.convertSegment(hit.segment)
 				break
 			case 'stroke':
 			case 'fill':
@@ -121,6 +123,39 @@ class SelectionTool extends BaseTool {
 					this.createTransformbox(this.item)
 				break
 		}
+	}
+
+	onMouseMove(event) {
+		if (this.transformbox)
+			this.transformbox.handleMouseMove(event)
+
+		const result = this.getHit(this.target, event, { 
+			fill: true, 
+			stroke: true, 
+			segments: true, 
+			handles: true,
+		})
+
+		if (result) {
+			if (!this.item || this.item !== result.item)
+				this.setHoverSelectItem(result.item)
+		} else {
+			this.releaseHoverSelectItem()
+		}
+	}
+
+	setHoverSelectItem(item) {
+		if (item.data.iterable === false) return
+		item.selected = true
+		item.data.hoverSelected = true
+		this.hoverSelectItem = item
+	}
+
+	releaseHoverSelectItem() {
+		if (!this.hoverSelectItem) return
+		this.hoverSelectItem.selected = false
+		delete this.hoverSelectItem.data.hoverSelected
+		this.hoverSelectItem = null			
 	}
 
 	onMouseDrag(event) {
@@ -171,8 +206,9 @@ class SelectionTool extends BaseTool {
 
 	createTransformbox(item) {
 		const transformbox = new Transformbox(item)
-		this.onlySelect(this.item)
+		this.onlySelect(this.item, { points: true })
 		this.transformbox = transformbox
+		transformbox.selected = true
 		return transformbox	
 	}	
 

@@ -131,7 +131,7 @@ class WektorHistory extends BaseHistory {
 	}
 
 	updateAutoHistory({item, flags}) {
-		if (item.guide) return
+		if (item.guide || item.data.iterable === false) return
 
 		// item.preventHistoryOnce ist set when when we modify an item in an undo/redo function and we don't
 		// want it to cause a new history entry

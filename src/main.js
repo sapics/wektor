@@ -79,24 +79,24 @@ const gelb = window.gelb = new paper.Path.Circle({
 	name: '1 gelb',
 	fillColor: 'yellow',
 })
-const red = window.red = new paper.Path.Circle({
-	radius: 100,
-	position: [410, 410],
-	name: '2 red',
-	fillColor: 'red',
-})
-new paper.Path.Circle({
-	radius: 100,
-	position: [420, 420],
-	name: '3 blue',
-	fillColor: 'blue',
-})
-new paper.Path.Circle({
-	radius: 100,
-	position: [430, 430],
-	name: '4 purple',
-	fillColor: 'purple',
-})
+// const red = window.red = new paper.Path.Circle({
+// 	radius: 100,
+// 	position: [410, 410],
+// 	name: '2 red',
+// 	fillColor: 'red',
+// })
+// new paper.Path.Circle({
+// 	radius: 100,
+// 	position: [420, 420],
+// 	name: '3 blue',
+// 	fillColor: 'blue',
+// })
+// new paper.Path.Circle({
+// 	radius: 100,
+// 	position: [430, 430],
+// 	name: '4 purple',
+// 	fillColor: 'purple',
+// })
 
 // new paper.Group( new paper.Group([gelb]) )
 
