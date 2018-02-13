@@ -1,5 +1,6 @@
 import { isFunction, isObject } from '@/utils'
 import ChangeFlag from './ChangeFlag'
+import paper from 'paper'
 
 class Command {
 	undo() {
@@ -131,7 +132,7 @@ class WektorHistory extends BaseHistory {
 	}
 
 	updateAutoHistory({item, flags}) {
-		if (item.guide || item.data.iterable === false) return
+		if (item.guide || item.iterable === false || item.parent instanceof paper.CompoundPath) return
 
 		// item.preventHistoryOnce ist set when when we modify an item in an undo/redo function and we don't
 		// want it to cause a new history entry

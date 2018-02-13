@@ -26,6 +26,7 @@
 						class="label"
 						:class="{ selected, hasChildren }"
 						@mousedown.stop="capturedMouseDown = true"
+						@contextmenu="handleContextMenu"
 					>{{ item.name }}</span>
 				</vddl-handle>	
 				<vddl-list
@@ -49,6 +50,7 @@
 		<div v-else
 			class="label"
 			:class="{ selected, highlight }"
+			:id="`${dialogId}-${item.id}-label`"
 			@contextmenu="handleContextMenu"
 			@mousedown.stop="capturedMouseDown = true"
 		>{{item.name}}</div>
@@ -123,6 +125,7 @@ export default {
 		item: Object,
 		list: Array,
 		index: Number,
+		dialogId: String,
 		open: {
 			type: Boolean,
 			default: true
@@ -239,7 +242,20 @@ export default {
 		},	
 
 		handleContextMenu(event) {
-			
+			// const paperItem = wektor.project.getItem({ id: this.item.id })
+
+			// if (paperItem.responds('contextmenu')) {
+			// 	paperItem.emit('contextmenu', event)
+			// } else {
+			// 	wektor.openDialog({
+			// 		...wektor.settings.dialogs.item,
+			// 		id: paperItem.name || (paperItem.className + paperItem.id), 
+			// 		values: paperItem,
+			// 		reference: {
+			// 			id: `${this.dialogId}-${this.item.id}-label`,
+			// 		},
+			// 	})
+			// }
 		},
 
 		toggleOpen() {

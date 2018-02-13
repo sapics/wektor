@@ -7,7 +7,9 @@ import DialogBridge from './DialogBridge'
 
 function createPaperReference(item) {
 	function getPosition(item) {
+		const pivot = item.pivot
 		const { x, y } = item.bounds.center
+		item.pivot = pivot
 		return { x, y }
 	}
 
@@ -84,8 +86,10 @@ function createReference(arg) {
 		return createDomIdReference(arg)
 	else if (arg.id)
 		return createDomIdReference(arg.id)
-	else
+	else if (arg instanceof HTMLElement)
 		return createDomReference(arg)
+	else 
+		return arg
 }
 
 function isComponentDescription(layout) {

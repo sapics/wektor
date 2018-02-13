@@ -27,9 +27,11 @@ class DialogBridge {
 		const converted = {}
 
 		function convert(value) {
-			if (!value)
+			if (!value) {
 				return value
-			if (isFunction(value.toJSON)) {
+			} else if (value instanceof paper.Item) {
+				return { id: value.id }
+			} else if (isFunction(value.toJSON)) {
 				return value.toJSON()
 			} else if (isArray(value)) {
 				return value.map(element => convert(element))

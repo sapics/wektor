@@ -118,12 +118,16 @@ export default {
 			let value
 
 			if (!isString(string)) {
-				value = this.unitValue = string
+				value = this.constrainValue(string)
+				this.unitValue = value
 			} else {
 				const unit = UnitValue.extractUnit(string)
 				if (!unit || unit === this.returnUnit) {
-					this.unit = unit
-					value = this.unitValue = parseFloat(string)
+					value = parseFloat(string)
+					if (isNaN(value)) return false
+					value = this.constrainValue(value)
+					this.unit = unit || this.payload.unit
+					this.unitValue = value
 				} else {
 					const result = unitValidator.parse(string)
 					if (result === false) return false
@@ -136,6 +140,15 @@ export default {
 
 			this.input = true
 			this.$emit('input', value)
+		},
+
+		constrainValue(value) {
+			const { min, max } = this.payload
+
+			if (min !== undefined && value < min) return min
+			if (max !== undefined && value > max) return max
+
+			return value
 		},
 
 		up(event) {

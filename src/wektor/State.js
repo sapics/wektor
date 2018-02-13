@@ -32,7 +32,7 @@ class WektorState extends EventEmitter {
 
 			for (let i = items.length - 1; i >= 0; i--) {
 				const item = items[i]
-				if (item.guide || item.data.iterable === false) continue
+				if (item.guide || item.iterable === false) continue
 
 				item.name = item.name || this.createItemName(item)
 				const convertedItem = {

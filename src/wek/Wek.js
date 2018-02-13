@@ -1,26 +1,64 @@
 import Stielauge from './Stielauge'
+import wektor from '@/wektor'
 import paper from 'paper'
 const { Path, Group, Point } = paper
 
 class Wek extends Group {
 	constructor() {
-		super({ guide: true })
+		super({ iterable: false, selectable: false })
 
 		this.relativePositions = {
 			eyes: {
 				left: [45, 86],
 				right: [105, 86],
 			},
-			above: [75, 90],
+			above: {
+				left: [46, 89],
+				right: [105, 89],
+			},
 		}
 
+		this.on('click', event => {
+			if (event.event.button === 2) return false
+			this.selected = true
+		})
+
+		this.on('contextmenu', () => {
+			const dialogId = this.constructor.name + this.id
+			wektor.openDialog({
+				id: dialogId,
+				layout: {
+					group: {
+						align: 'columns',
+						label: 'stroke',			
+						strokeWidth: {
+							type: 'number',
+							unit: 'px',
+							units: 'distances',				
+						},
+						strokeColor: {
+							type: 'color',
+						},						
+					},					
+					fillColor: {
+						type: 'color',
+						label: 'fill color',
+					},
+				},
+				values: this,
+				reference: this,
+			})
+		})
+
 		this.create()
+		this.fillColor = 'white'
+		this.strokeColor = 'black'
 	}
 	
 	create() {
-		this.below = new Group({
+		this.below = new paper.Group({
 			name: 'below',
-			guide: true,
+			iterable: false,
 			children: [
 				// ears
 				new Path({
@@ -49,60 +87,81 @@ class Wek extends Group {
 				new Path('M93.5,84.3 c0,0,3.2-10.3,12.4-10.3c7,0,9,2.7,12.3,9.7'),
 				
 				// mouth
-				new Path('M91.4,144.3 c1.9-4.6-6.1-15-9.7-20.3c-1-1.5-3.2-1.6-4.5-0.3l-2.5,4c-0.4,0.6-1.2,0.5-1.5-0.2L72,124c-0.4-1-1.7-1.3-2.5-0.6l-17.7,16.2'),
-				new Path('M55.9,139.3 c0,0,9.7-0.5,18.5,0.6c8.7,1.1,11,0.8,16.8,4.1'),
-				new Path('M52.5,140.1 c0,0,6.8,14.3,20,14c13.3-0.2,18.9-9.6,18.9-9.6l-4.1-6.4c0,0-6.1-3.5-6.9-8.7c-2.2,3.1-11,6.3-14.7,2.7c-4,9.5-13.2,7-13.2,7'),
-				new Path('M64.7,134.5 c1.2,1.8,0.7,4.5,0.7,4.5s0.2-5.4,2.8-5.6'),
-				new Path('M70.6,133.9 c0,0,1.3,0.5,1,5.6c0.1-0.1,0.4-6,3.8-6.7c3.4-0.7,3.7,4.9,3.3,7.3c0.2-1.4,0.4-6.2,3.7-6.2'),    
-				
+				new Path('M92.8,139.7 c-4.1-6.5-10.6-13.8-12.1-15.1c-1.5-1.5-3.5-1.6-4.6,0.2l-2.4,3.7l-1.2-2.7c-0.8-1.8-2.9-1.9-4.4-0.9c-2,1.4-8.9,6-15.4,14.8'),
+				new Path('M50.1,138.7c2.9,2.3,9.8,0.7,16.7-5.5c3.5,1.8,10.5,1.9,13.2,0.2c3.4,5.6,12.3,7.6,15.5,5.6'),
+				new Path('M73,151.4 c10.7-0.1,19.2-11.3,19.2-11.3s-11.5,0.3-19.1,0.1c-7.7-0.1-19.7-0.2-19.7-0.2S62.4,151.5,73,151.4z'),
+				new Path('M73.6,140.2 c0,0,0.7-5-2.3-5.7c-3-0.7-3.7,5.7-3.7,5.7s0.3-4.9-2-6'),
+				new Path('M84.5,140.1 c0-2.3-0.3-2.7-0.3-2.7'),
+				new Path('M81.3,135.1 c-1.8,0.5-1.9,5.1-1.9,5.1'),
+				new Path('M79.4,140.3 c0-5.3-1.8-6-1.8-6'),
+				new Path('M75.9,134.5 c-1.7,0.5-2.3,5.7-2.3,5.7'),
+				new Path('M62.6,136.5 c-0.6,2.2-0.5,3.6-0.5,3.6'),
+
 				// nose
 				new Path('M67.9,114.6 c0,0-3.9,3.9-0.6,10.8'),
 				new Path('M84.8,112.9 c0,0,4.5,6-1.2,13.7'),
 			],
 			strokeColor: 'black',
 		})
-		
+		for (const child of this.below.children) {
+			child.set({
+				iterable: false,
+				selectable: false,
+			})
+			child.on('contextmenu', event => this.emit('contextmenu', event))
+		}
+
 		const eyes = this.createEyes()
-		
-		this.above = new Group({
-			name: 'above',
+
+		this.aboveLeft = new Group({
+			name: 'aboveLeft',
 			guide: true,
 			children: [
-				new Path.Rectangle({
+				new Path({
 					name: 'overlayLeft',
-					width: 25,
-					height: 20,
-					position: [46, 93.5],
-					fillColor: 'white',
+					pathData: 'M33.8,83.3l24.4,0.5c4.8,0,7.3,5.7,7.3,5.7V101H33.8V83.3z',
 					strokeWidth: 0,
+					guide: true,
 				}),
-				new Path.Rectangle({
-					name: 'overlayRight',
-					width: 25,
-					height: 20,
-					position: [106, 94],
-					fillColor: 'white',
-					strokeWidth: 0,
-				}),                
-				new Path('M65.5,89.5 c0,0-2.5-5.7-7.3-5.7l-24.4-0.5c-5.3,0.3-6.5-5.5-6.5-5.5'),
-				new Path('M86.9,89.9c0,0,2.5-5.7,7.3-5.7l24.4-0.5c5.3,0.3,6.5-5.5,6.5-5.5'),
+				new Path({
+					name: 'eyeLine',
+					pathData: 'M65.5,89.5 c0,0-2.5-5.7-7.3-5.7l-24.4-0.5c-5.3,0.3-6.5-5.5-6.5-5.5',
+					guide: true,
+				}),
 			],
-			strokeColor: 'black',
 		})
 		
-		this.addChildren([this.below])
+		this.aboveRight = new Group({
+			name: 'aboveRight',
+			guide: true,
+			children: [
+				new Path({
+					name: 'overlayRight',
+					pathData: 'M118.6,83.8l-24.4,0.5c-4.8,0-7.3,5.7-7.3,5.7V101h31.7V83.8z',
+					strokeWidth: 0,
+					guide: true,
+				}),
+				new Path({
+					name: 'eyeLine',
+					pathData: 'M86.9,89.9c0,0,2.5-5.7,7.3-5.7l24.4-0.5c5.3,0.3,6.5-5.5,6.5-5.5',
+					guide: true,
+				})
+			],
+		})
+
+		this.aboveLeft.insertAbove(eyes.left)
+		this.aboveRight.insertAbove(eyes.right)
+		this.addChild(this.below)
 	}
 	
 	createEyes() {
-		const left = new Stielauge({
+		const left = new Stielauge(this, {
 			position: this.relativePositions.eyes.left,
 		})
-		left.guide = true
 		
-		const right = new Stielauge({
+		const right = new Stielauge(this, {
 			position: this.relativePositions.eyes.right,
 		})
-		left.guide = true
 		
 		this.eyes = { left, right }
 		return { left, right }
@@ -119,7 +178,8 @@ class Wek extends Group {
 		const { left, right } = this.eyes
 		left.position = this.bounds.topLeft.add( this.relativePositions.eyes.left )
 		right.position = this.bounds.topLeft.add( this.relativePositions.eyes.right )
-		this.above.position = this.bounds.topLeft.add( this.relativePositions.above )
+		this.aboveLeft.position = this.bounds.topLeft.add( this.relativePositions.above.left )
+		this.aboveRight.position = this.bounds.topLeft.add( this.relativePositions.above.right )
 	}
 	
 	get position() {
@@ -127,20 +187,41 @@ class Wek extends Group {
 	}
 	
 	set fillColor(value) {
+		this._fillColor = value
 		try {
 			const { face, earLeft, earRight } = this.below.children
-			const { overlayLeft, overlayRight } = this.above.children
+			const { overlayLeft } = this.aboveLeft.children
+			const { overlayRight } = this.aboveRight.children
 			for (const item of [face, earLeft, earRight, overlayLeft, overlayRight])
 				item.fillColor = value
 		} catch (e) {
 			// children might not be created yet
 		}
 	}
+
+	get fillColor() {
+		return this._fillColor
+	}
 	
 	set strokeColor(value) {
 		super.strokeColor = value
-		this.above.strokeColor = value
+		this.aboveLeft.strokeColor = value
+		this.aboveRight.strokeColor = value
 	}
-}
+
+	get strokeColor() {
+		return super.strokeColor
+	}
+
+	set strokeWidth(value) {
+		super.strokeWidth = value
+		this.aboveLeft.children['eyeLine'].strokeWidth = value
+		this.aboveRight.children['eyeLine'].strokeWidth = value		
+	}
+
+	get strokeWidth() {
+		return super.strokeWidth
+	}
+}	
 
 export default Wek

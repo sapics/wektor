@@ -10,13 +10,12 @@ class GridTool extends BaseTool {
 		super(target, spec)
 	}
 
+	onActivate() {
+		this.tooltip = 'Click and drag on the canvas to create a new grid.'
+	}
+
 	onMouseDown(event) {
-		// mousedown will close our new dialog directly after we opend it so we have to stop the event
-		event.stopPropagation()
-
 		this.mouseDownPoint = event.point
-
-		// var group = new Grid()
 	}
 
 	onMouseDrag(event) {
@@ -36,21 +35,16 @@ class GridTool extends BaseTool {
 	}
 
 	onMouseUp(event) {
-		let bounds 
-		if (this.newGridRect) {
-			bounds = this.newGridRect.bounds
-			console.log(bounds)
-			this.newGridRect.remove()
-			this.newGridRect = null
-		} else {
-			bounds = {
-				x: event.point.x,
-				y: event.point.y,
-				width: 500,
-				height: 500,
-			}
-		}
+		let bounds
 
+		if (!this.newGridRect) return true
+
+		bounds = this.newGridRect.bounds
+		console.log(bounds)
+		this.newGridRect.remove()
+		this.newGridRect = null
+
+		this.tooltip = 'Rightclick on the grid to alter it.'
 		new Grid({ bounds })
 	}
 }

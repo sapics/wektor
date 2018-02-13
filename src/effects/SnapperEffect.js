@@ -6,17 +6,30 @@ class SnapperEffect extends BaseEffect {
 		spec = Object.assign({
 			options: {
 				grid: null,
+				snap: {
+					segments: true,
+					handles: true,
+				},
 			},
 			dialog: {
 				layout: {
 					grid: {
-						type: 'drop',
-						label: 'drop grid'
+						type: 'item',
+						label: 'grid',
+						selector: { class: 'Grid' },
+					},
+					'snap.segments': {
+						type: 'boolean',
+						label: 'snap segments',
+					},
+					'snap.handles': {
+						type: 'boolean',
+						label: 'snap handles',
 					},
 				},
 			},
 			applyOnChanges: ['geometry'],
-			// mirrorChanges: ['style'],			
+			mirrorChanges: ['style'],			
 		}, spec)
 
 		super(input, spec)	
@@ -26,6 +39,10 @@ class SnapperEffect extends BaseEffect {
 		switch (key) {
 			case 'grid':
 				this.grid = value
+				break
+			case 'snap.segments':
+			case 'snap.handles':
+				this.applyAll()
 				break
 		}
 	}
@@ -48,16 +65,22 @@ class SnapperEffect extends BaseEffect {
 	apply(input, output) {
 		if (this.grid) {
 			output.removeSegments()
-			output.segments = input.segments.map(segment => this.snapSegment(segment))
+			output.segments = input.segments.map(segment => this.snap(segment))
 		} else {
 			output.segments = input.segments
 		}
 	}
 
-	snapSegment(segment) {
-		const snappedSegment = new paper.Segment( this.snapPoint(segment.point) )
-		snappedSegment.handleIn = this.snapPoint( segment.handleIn.add(segment.point) ).subtract(snappedSegment.point)
-		snappedSegment.handleOut = this.snapPoint( segment.handleOut.add(segment.point) ).subtract(snappedSegment.point)
+	snap(segment) {
+		const point = this.options.snap.segments ? this.snapPoint(segment.point) : segment.point
+		const snappedSegment = new paper.Segment(point)
+		if (this.options.snap.handles) {
+			snappedSegment.handleIn = this.snapPoint( segment.handleIn.add(segment.point) ).subtract(snappedSegment.point)
+			snappedSegment.handleOut = this.snapPoint( segment.handleOut.add(segment.point) ).subtract(snappedSegment.point)
+		} else {
+			snappedSegment.handleIn = segment.handleIn
+			snappedSegment.handleOut = segment.handleOut
+		}
 		return snappedSegment
 	}
 

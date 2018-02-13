@@ -51,6 +51,15 @@
 		display: table;
 	}
 
+	& > * {
+		display: table-cell;
+		padding-right: 0.27em;		
+	}	
+
+	& > :last-child {
+		padding-right: 0;
+	}	
+
 	& > .palette-content > * {
 		display: table-cell;
 		padding-right: 0.27em;
@@ -66,17 +75,21 @@
 		}
 	}
 
-	& > .palette-label-wrap, .palette-content {
-		display: table-cell;
-		padding-right: 0.27em;
-	}	
+	// & > .palette-label-wrap, .palette-content {
+	// 	display: table-cell;
+	// 	padding-right: 0.27em;
+	// }	
 }
 
 .palette.align-columns {
-	& > .palette-label-wrap, .palette-content {
+	& > * {
 		display: table-cell;
-		padding-right: 0.27em;
-	}		
+		padding-right: 0.27em;		
+	}	
+
+	& > :last-child {
+		padding-right: 0;
+	}	
 
 	& > .palette-content > * {
 		display: table-cell;

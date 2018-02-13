@@ -15,73 +15,8 @@ import StackingOrder from './StackingOrder'
 import Vue from 'vue'
 import Shortcuts from './Shortcuts'
 import BaseEffect from '@/effects/BaseEffect'
-
-class WektorEffects {
-	constructor(item) {
-		this.item = item
-		this.list = []
-	}
-
-	apply() {
-		if (!this.list.length) {
-			this.item.opacity = 1
-		}
-
-		for (let i = 0; i < this.list.length; i++) {
-			const effect = this.list[i]
-			const prevEffect = this.list[i - 1]
-			const input = prevEffect
-				? prevEffect.output
-				: this.item
-			effect.input = input
-		} 
-	}
-
-	add(arg1, arg2) {
-		let effect
-
-		if (isArray(arg1)) {
-			const array = arg1
-			for (let i = 0; i < array.length; i++) {
-				this.add(array[i])	
-			}
-			return
-		}
-
-		if (isFunction(arg1)) {
-			// class constructors are also functions
-			const Constructor = arg1
-			const spec = arg2
-			effect = new Constructor(null, spec)
-			effect.label = Constructor.label
-		} else if (isObject(arg1)) {
-			const spec = arg1
-			effect = new BaseEffect(null, spec)
-			effect.label = spec.label
-		}
-
-		const index = this.list.length
-		effect.key = makeUniqueId()
-		effect.original = this.item
-		effect.on('remove', () => {
-			removeArrayElement(this.list, effect)
-			this.apply()
-		})
-		this.list[index] = effect
-		this.apply()
-	}
-
-	toJSON() {
-		const effectsJSON = this.list.map(effect => effect.toJSON())
-		return [
-			'WektorEffects',
-			{
-				list: effectsJSON,
-				ownerId: this.item.id
-			}
-		]
-	}	
-}
+import BaseTool from '@/tools/BaseTool'
+import WektorEffects from './WektorEffects'
 
 class ImprovedEventEmitter extends EventEmitter {
 	on(...args) {
@@ -106,7 +41,9 @@ class Wektor extends ImprovedEventEmitter {
 					this._wektorEffects = new WektorEffects(this)
 
 				return this._wektorEffects
-			}
+			},
+			iterable: true,
+			selectable: true,
 		})		
 
 		Object.assign(this, {
@@ -139,7 +76,7 @@ class Wektor extends ImprovedEventEmitter {
 			return
 		}
 
-		paper.settings.handleSize = 6
+		paper.settings.handleSize = 5
 
 		this.project = project
 		this.active.layer = this.project.activeLayer
@@ -243,7 +180,7 @@ class Wektor extends ImprovedEventEmitter {
 			tool = new ToolClass(this.project)
 		} else {
 			const toolSpec = arg
-			tool = new paper.Tool(toolSpec)
+			tool = new BaseTool(this.project, toolSpec)
 		}
 
 		tool._wektorToolId = id
@@ -264,8 +201,6 @@ class Wektor extends ImprovedEventEmitter {
 		})
 
 		this.emit('addTool', { id, tool })
-		// activate after emit, so the tool-list has added the tool before selecting it
-		tool.activate()
 	}
 
 	addTools(object) {
@@ -418,7 +353,9 @@ class Wektor extends ImprovedEventEmitter {
 		this.history.redo()
 	}
 
-	export() {
+	export(event) {
+		const wekLayer = this.project.layers.wekLayer
+		wekLayer.remove()
 		const svg = this.project.exportSVG({ ...settings.export, asString: true })
 		const blob = new Blob([svg], {type: "image/svg+xml;charset=utf-8"})
 		const url = URL.createObjectURL(blob)
@@ -428,6 +365,7 @@ class Wektor extends ImprovedEventEmitter {
 		document.body.appendChild(downloadLink)
 		downloadLink.click()
 		document.body.removeChild(downloadLink)
+		this.project.insertLayer(0, wekLayer)
 	}
 }
 

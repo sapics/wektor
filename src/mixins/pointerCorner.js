@@ -88,28 +88,26 @@ export default {
 				} else if (isLeft) {
 					corner = bounds.topRight
 					corners = [corner, bounds.bottomRight]
-				}
-				// else: dialog overlays reference, no pointerline possible			
+				} else {
+					// dialog overlays reference, no pointerline possible	
+				}		
 			}
 
-			if (checkVisibility) {
-				corner = null
-				console.log(corners.length)
-				const visible = []
-				for (let i = 0; i < corners.length; i++) {
-					const point = corners[i]
-					const topMostEl = document.elementFromPoint(point.x, point.y)
-					if (el === topMostEl) {
-						if (!corner)
-							corner = point
+			// if (checkVisibility) {
+			// 	corner = null
+			// 	const visible = []
+			// 	for (let i = 0; i < corners.length; i++) {
+			// 		const point = corners[i]
+			// 		const topMostEl = document.elementFromPoint(point.x, point.y)
+			// 		if (el === topMostEl) {
+			// 			if (!corner)
+			// 				corner = point
 						
-						visible.push(point)
-					}
-				}
-				console.log(visible.length)
-				console.log('----')
-				corners = []
-			} 
+			// 			visible.push(point)
+			// 		}
+			// 	}
+			// 	corners = []
+			// } 
 
 			if (!corner) {
 				const distances = corners.map(corner => getDistance(corner, reference.position))

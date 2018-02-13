@@ -97,6 +97,7 @@ export default {
 			const effect = wektorEffects.list.find(effect => effect.key === draggable.key)
 			const to = list.findIndex(entry => entry.key === draggable.key)
 			moveArrayElement(wektorEffects.list, effect, to)
+			wektorEffects.apply()
 		},
 
 		addEffect(id) {

@@ -16,6 +16,7 @@ import boolean from './boolean'
 import effects from './effects'
 import vbutton from './vbutton'
 import folder from './folder'
+import item from './item'
 
 const components = {
 	number, 
@@ -36,6 +37,7 @@ const components = {
 	effects,
 	vbutton,
 	folder,
+	item,
 }
 
 export default components

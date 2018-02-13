@@ -7,6 +7,7 @@
 			:to="reference.position"
 		></pointer-line>
 		<div class="dialog draghandle"
+			@contextmenu.stop.prevent
 			:class="{ 'systemDialog': spec.system || spec.layout.system }"
 			ref="dialog"
 			:id="spec.id"
@@ -239,18 +240,7 @@ export default {
 		this.activate()
 
 		window.addEventListener('resize', () => {
-			const windowSize = {
-				width: window.innerWidth || document.documentElement.clientWidth,
-				height: window.innerHeight || document.documentElement.clientHeight,
-			}
-
-			const bounds = this.$refs.dialog.getBoundingClientRect()
-			const position = {
-				x: bounds.left,
-				y: bounds.top,
-			}		
-
-			this.position = constrainElPosition(windowSize, bounds, position)			
+			this.constrainPosition()		
 		})
 
 		wektor.on({
@@ -277,7 +267,7 @@ export default {
 		const bounds = this.$refs.dialog.getBoundingClientRect()
 		this.width = bounds.width
 		this.height = bounds.height
-		this.updatePointerCorner()	
+		this.updatePointerCorner()
 	},
 
 	methods: {
@@ -291,9 +281,25 @@ export default {
 			this.width = bounds.width
 			this.height = bounds.height
 			this.updatePointerCorner()
+			this.constrainPosition()
+
 			wektor.emit('resizeDialog', { id: this.spec.id })	
 			wektor.emit('resizeDialog', { id: this.spec.id })			
 		},	
+
+		constrainPosition() {
+			const windowSize = {
+				width: window.innerWidth || document.documentElement.clientWidth,
+				height: window.innerHeight || document.documentElement.clientHeight,
+			}			
+			const bounds = this.$refs.dialog.getBoundingClientRect()
+			const position = {
+				x: bounds.left,
+				y: bounds.top,
+			}		
+
+			this.position = constrainElPosition(windowSize, bounds, position)
+		},
 
 		onMouseDown(event) {
 			this.activate()

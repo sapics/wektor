@@ -73,23 +73,40 @@
 
 		&::after {
 			position: absolute;
-			margin: 0 auto;
 			color: inherit;
 			content: '';
 			left: 0;
 			right: 0;
 			width: 100%;
-			left: 0;
-			bottom: 3px;
+			bottom: 0.1em;
 			height: 0;
 			background: none;
-			border-bottom: calc(1em * 0.08) solid;
+			border-bottom: 0.08em solid; // 2px solid;
 		}
 	}
 
-	.shortcut {
-		text-decoration: underline;
+	.underline.descender {
+		&::after {
+			bottom: -0.05em;
+		}
 	}
+
+	.underline.low-descender {
+		&::after {
+			bottom: -0.08em;
+		}
+	}
+
+	.underline.narrow {
+		&::after {
+			width: calc(100% + 0.1em);
+			left: -0.05em;
+		}
+	}	
+
+	// .shortcut {
+	// 	text-decoration: underline;
+	// }
 }
 
 #wektor-sidebar {
@@ -229,7 +246,19 @@ export default {
 				reference: document.getElementById('menu-item-preferences-label'),
 				values: settings,
 				changeHandler: (target, key, value) => {
-					key.startsWith('theme') && this.theme.update()
+					if (key.startsWith('theme')) {
+						this.theme.update()
+						return
+					}
+					console.log(key)
+					switch (key) {
+						case 'scope.handleSize':
+							window.paper.settings.handleSize = value
+							var event = document.createEvent('Event');
+							event.initEvent('mousemove', true, true); // can bubble, and is cancellable
+							document.body.dispatchEvent(event);
+							break
+					}
 				},
 			})
 
@@ -280,7 +309,7 @@ export default {
 
 		onContextmenu(event) {
 			event.preventDefault()
-			event.stopPropagation()
+			// event.stopPropagation()
 
 			const point = { x: event.x, y: event.y }
 			const hit = wektor.project.hitTest(point, settings.dialog.hitOptions)
@@ -297,10 +326,9 @@ export default {
 			// } 
 
 			if (hit.item.responds('contextmenu')) {
-				hit.item.emit('contextmenu')
+				hit.item.emit('contextmenu', event)
 			} else {
-				if (!hit.item.data.wektorEffects)
-					hit.item.data.wektorEffects = []
+				if (!hit.item.selectable) return true
 
 				wektor.openDialog({
 					...settings.dialogs.item,
@@ -309,6 +337,8 @@ export default {
 					reference: hit.item,
 				})
 			}
+
+			return false
 		},
 
 		undo() {

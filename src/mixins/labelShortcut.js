@@ -24,6 +24,9 @@ const modifierKeyMap = {
 		mac: 'cmd',
 		windows: 'ctrl',
 	},
+	alt: {
+		mac: '&#8997;',
+	},
 }
 
 const os = bowser.mac 
@@ -65,10 +68,19 @@ export default {
 
 			const shortcutKey = shortcut.key
 			const shortcutKeyPos = label.indexOf(shortcutKey)
+			const narrowClass = shortcutKey === 'i'
+				? 'shortcut narrow'
+				: ''
+			const descenderClass = shortcutKey === 'g'
+				? 'low-descender'
+				: 'jypq'.includes(shortcutKey)
+					? 'descender'
+					: ''
+
 			let labelHtml = ''
-			labelHtml += this.modifierKey ? `<span class="shortcut">${this.modifierKey}</span>&nbsp;` : ''
+			labelHtml += this.modifierKey ? `<span class="shortcut" style="font-size: 0.8em;">${this.modifierKey}</span>&nbsp;` : ''
 			labelHtml += label.slice(0, shortcutKeyPos)
-			labelHtml += `<span class="shortcut">${shortcutKey}</span>`
+			labelHtml += `<span class="shortcut underline ${descenderClass} ${narrowClass}">${shortcutKey}</span>`
 			labelHtml += label.slice(shortcutKeyPos + shortcutKey.length, label.length)
 
 			return labelHtml							

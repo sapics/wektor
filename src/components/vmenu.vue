@@ -1,5 +1,5 @@
 <template>
-	<div>
+	<div class="menu">
 		<vmenu-item v-for="item of filteredItems"
 			class="label"
 			:key="item.label"
@@ -11,6 +11,12 @@
 		></vmenu-item>
 	</div>
 </template>
+
+<style>
+.menu {
+	margin-left: -0.2em;
+}	
+</style>
 
 <script>
 import vmenuItem from './vmenu-item.vue'

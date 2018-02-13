@@ -22,8 +22,6 @@ class BaseEffect extends EventEmitter {
 	openDialog(event, spec) {
 		if (!this.options || !this.dialog) return
 
-		// console.log('opt', this.options)
-
 		wektor.openDialog({
 			id: this.constructor.name + this.key,
 			values: this.options,

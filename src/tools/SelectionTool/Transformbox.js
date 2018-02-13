@@ -13,9 +13,13 @@ class Transformbox extends paper.Path {
 
 		const segments = [
 			item.bounds.bottomLeft,
+			item.bounds.leftCenter,
 			item.bounds.topLeft,
+			item.bounds.topCenter,
 			item.bounds.topRight,
-			item.bounds.bottomRight
+			item.bounds.rightCenter,
+			item.bounds.bottomRight,
+			item.bounds.bottomCenter,
 		]
 
 		// ... and rotate it back
@@ -30,9 +34,7 @@ class Transformbox extends paper.Path {
 			closed: true,
 			strokeWidth: 0,
 			applyMatrix: false,
-			data: {
-				iterable: false,
-			},
+			iterable: false,
 			// guide: true,
 		})		
 	}

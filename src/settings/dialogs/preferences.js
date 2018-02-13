@@ -118,10 +118,11 @@ const preferences = {
 	id: 'preferences',
 	system: true,
 	layout: {
-		'shortcutModifiers.default': {
-			type: 'select',
-			label: 'modifier key',
-			options: ['meta', 'ctrl', 'alt', 'shift'],
+		'scope.handleSize': {
+			type: 'number',
+			label: 'handle size',
+			unit: 'px',
+			units: 'distances',
 		},
 		theme,
 	},

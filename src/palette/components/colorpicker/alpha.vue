@@ -50,7 +50,7 @@ export default {
 
 	data() {
 		return {
-			range: { min: 1, max: 0 }, // we need the value to increase from bottom to top
+			range: { min: 1, max: 0.00001 }, // we need the value to increase from bottom to top
 			pointerColor: 'black',
 			backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' view='0 0 20 20'%3E%3Crect x='0' y='0' width='10' height='10' fill='gray' /%3E%3Crect x='10' y='10' width='10' height='10' fill='gray' /%3E%3C/svg%3E")`,
 			backgroundImageOLD: 'url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAL0lEQVQ4T2N89uzZfwY8QFJSEp80A+OoAcMiDP4DAb6Ifv78Of50MGoAA+PQDwMAuX5VedFT3cEAAAAASUVORK5CYII=")',

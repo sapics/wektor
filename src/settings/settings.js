@@ -62,7 +62,7 @@ export default {
 		{
 			label: 'layers',
 			shortcut: {
-				key: 'l',
+				key: 'y',
 				modifier: '<default>',
 				callback: wektor => wektor.toggleShowDialog('layers')
 			},
@@ -110,10 +110,10 @@ export default {
 			},			
 		},
 		systemDialog: {
-			background: 'lightslategray',
+			background: 'white',
 			borderColor: 'black',
-			color: false,
-			fontStyle: 'normal',
+			color: 'black',
+			fontStyle: 'italic',
 			input: {
 				color: 'blue',
 				fontStyle: 'normal', 
@@ -128,12 +128,14 @@ export default {
 			tolerance: 5,
 			stroke: true,
 			fill: true,
-			match: ({item}) => !item.guide,
 		},
 		margin: 20,
 		keepAlive: true,
 	},
 	dialogs,
+	scope: {
+		handleSize: 5,
+	},
 	units: {
 		groups: {
 			distances: ['px', 'mm', 'cm'],

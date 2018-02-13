@@ -46,20 +46,20 @@ class SelectionTool extends BaseTool {
 			return
 		}
 
-		// catch right click
-		if (event.event.button === 2)
-			return
+		// catch right click (on macOS rightclick can be also done by mousedown + control)
+		if (event.event.button === 2 || event.modifiers.control)
+			return true
 
 		// catch double click
 		if (event.event.detail === 2) {
 			this.onDoubleClick(event)
-			return
+			return true
 		}
 
 		this.releaseHoverSelectItem()
 
 		const hitResultSelected = this.getHit(this.target, event, { 
-			match: ({item}) => item.selected,
+			match: ({item}) => item.selected && item.selectable,
 			segments: true,
 			handles: true,
 		})
@@ -68,6 +68,7 @@ class SelectionTool extends BaseTool {
 			fill: true, 
 			stroke: true, 
 			segments: true, 
+			match: ({item}) => item.selectable,
 		})
 
 		if (!event.modifiers.shift)
@@ -76,7 +77,10 @@ class SelectionTool extends BaseTool {
 		if (!hitResult) {
 			this.item && this.releaseItem()
 			this.mousedown = event.point 
+			return true
 		}
+
+		this.tooltip = 'Doubleclick on the path to move or transform it.'
 
 		switch (hitResult.type) {
 			case 'stroke':
@@ -119,6 +123,7 @@ class SelectionTool extends BaseTool {
 				break
 			case 'stroke':
 			case 'fill':
+				this.select(this.item, { segments: true })
 				if (!this.transformbox)
 					this.createTransformbox(this.item)
 				break
@@ -134,6 +139,7 @@ class SelectionTool extends BaseTool {
 			stroke: true, 
 			segments: true, 
 			handles: true,
+			match: ({item}) => item.selectable !== false
 		})
 
 		if (result) {
@@ -145,10 +151,10 @@ class SelectionTool extends BaseTool {
 	}
 
 	setHoverSelectItem(item) {
-		if (item.data.iterable === false) return
-		item.selected = true
-		item.data.hoverSelected = true
-		this.hoverSelectItem = item
+		// if (item.data.iterable === false) return
+		// item.selected = true
+		// item.data.hoverSelected = true
+		// this.hoverSelectItem = item
 	}
 
 	releaseHoverSelectItem() {
@@ -170,32 +176,32 @@ class SelectionTool extends BaseTool {
 	}
 
 	drawSelection(startPoint, event) {
-		if (!this.selectionRect) {
-			this.selectionRect = new paper.Path.Rectangle({
-				from: startPoint,
-				to: event.point,
-				guide: true,
-				style: {
-					strokeWidth: 1,
-					dashArray: [1, 1],
-					strokeColor: 'gray',
-				},
-			})
-		} else {
-			const { topLeft, topRight, bottomLeft, bottomRight } = new paper.Rectangle(startPoint, event.point)
-			this.selectionRect.segments = [topLeft, topRight, bottomRight, bottomLeft]
-		}
+		// if (!this.selectionRect) {
+		// 	this.selectionRect = new paper.Path.Rectangle({
+		// 		from: startPoint,
+		// 		to: event.point,
+		// 		guide: true,
+		// 		style: {
+		// 			strokeWidth: 1,
+		// 			dashArray: [1, 1],
+		// 			strokeColor: 'gray',
+		// 		},
+		// 	})
+		// } else {
+		// 	const { topLeft, topRight, bottomLeft, bottomRight } = new paper.Rectangle(startPoint, event.point)
+		// 	this.selectionRect.segments = [topLeft, topRight, bottomRight, bottomLeft]
+		// }
 	}
 
 	setSelection() {
-		if (!this.selectionRect) return
+		// if (!this.selectionRect) return
 
-		const selectedItems = this.target.getItems({
-			overlapping: this.selectionRect.bounds,
-			match: item => (item.className !== 'Layer' && !item.guide),
-		})
+		// const selectedItems = this.target.getItems({
+		// 	overlapping: this.selectionRect.bounds,
+		// 	match: item => (item.className !== 'Layer' && !item.guide),
+		// })
 
-		this.onlySelect(selectedItems)
+		// this.onlySelect(selectedItems)
 	}
 
 	releaseItem(unselect = true) {

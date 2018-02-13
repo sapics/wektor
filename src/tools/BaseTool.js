@@ -45,6 +45,15 @@ class BaseTool extends paper.Tool {
 		return this._cursor
 	}
 
+	set tooltip(string) {
+		this._tooltip = string
+		wektor.emit('speak', string)
+	}
+
+	get tooltip() {
+		return this._tooltip
+	}
+
 	activateCursor() {
 		document.body.style.cursor = this.cursor || 'default'
 	}
@@ -58,6 +67,7 @@ class BaseTool extends paper.Tool {
 	}
 
 	openDialog(event) {
+		console.log('open dialog')
 		if (!this.options || !this.dialog) return
 
 		wektor.openDialog({
@@ -111,16 +121,35 @@ class BaseTool extends paper.Tool {
 		}
 	}
 
-	select(item) {
-		function selectParentGroups(item) {
+	select(value, options) {
+		const selectParentGroups = function(item) {
 			if (item.parent && item.parent.className === 'Group') {
 				item.parent.selected = true
 				selectParentGroups(item.parent)
 			}
 		}
 
-		item.selected = true
-		selectParentGroups(item)
+		const select = function(item) {
+			item.selected = true
+
+			if (options.parents) selectParentGroups(item)
+
+			if (options && (options.segments || options.points)) {
+				for (const segment of item.segments) {
+					if (options.segments)
+						segment.select = true
+					else if (options.points)
+						segment.point.selected = true
+				}
+			}
+		}
+
+		if (isArray(value)) {
+			for (const item of value)
+				select(item)
+		} else {
+			select(value)
+		}			
 	}
 
 	getHit(target, event, options, returnType = null) {

@@ -17,7 +17,7 @@
 	.checkbox {
 		display: inline-block;
 		line-width: 0;
-		width: 0.6em;		
+		width: 0.6em;	
 	}
 
 	.label {

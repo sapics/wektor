@@ -29,7 +29,9 @@ function getTimeStamp() {
 
 function getBounds(el) {
 	if (el.bounds) {
-		var { top, topLeft, topRight, topCenter, bottom, bottomLeft, bottomRight, bottomCenter, left, leftCenter, right, rightCenter, x, y, width, height, center } = el.bounds 
+		const pivot = el.pivot
+		const { top, topLeft, topRight, topCenter, bottom, bottomLeft, bottomRight, bottomCenter, left, leftCenter, right, rightCenter, x, y, width, height, center } = el.bounds 
+		el.pivot = pivot
 		return {
 			top,
 			topLeft: { x: topLeft.x, y: topLeft.y },
@@ -378,6 +380,17 @@ function pointToCssPercent(point) {
 	}
 }
 
+function getHashCode(string) {
+	let hash = 0
+	if (string.length === 0) return hash
+	for (let i = 0; i < string.length; i++) {
+		const char = string.charCodeAt(i)
+		hash = ((hash << 5) - hash) + char
+		hash = hash & hash; // Convert to 32bit integer
+	}
+	return hash
+}
+
 export { 
 	isInt, 
 	isNumeric,
@@ -414,4 +427,5 @@ export {
 	moveArrayElement,
 	removeArrayElement,
 	getTimeStamp,
+	getHashCode
 }

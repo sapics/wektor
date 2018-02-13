@@ -7,6 +7,7 @@ const { Path, Group, Symbol, SymbolDefinition, SymbolItem, Color } = paper
 class Grid extends Group {
 	constructor(spec = {}) {
 		super()
+		this._class = 'Grid'
 
 		this.options = deepExtend({}, {
 			spacing: {
@@ -28,14 +29,16 @@ class Grid extends Group {
 					align: 'comma-separated',
 					'spacing.vertical': {
 						type: 'number',
-						label: 'x:',
-						space: 'thin',
+						label: 'x',
+						unit: 'px',
+						units: 'distances',
 						min: 1,
 					},							
 					'spacing.horizontal': {
 						type: 'number',
-						label: 'y:',
-						space: 'thin',
+						label: 'y',
+						unit: 'px',
+						units: 'distances',
 						min: 1,
 					},				
 				},
@@ -43,7 +46,9 @@ class Grid extends Group {
 					label: 'lines',
 					align: 'columns',
 					'lines.style.strokeWidth': {
-						type: 'number'
+						type: 'number',
+						unit: 'px',
+						units: 'distances',
 					},						
 					'lines.style.strokeColor': {
 						type: 'color',
@@ -59,7 +64,9 @@ class Grid extends Group {
 						align: 'columns',
 						label: 'stroke',
 						'background.strokeWidth': {
-							type: 'number'
+							type: 'number',
+							unit: 'px',
+							units: 'distances',
 						},								
 						'background.strokeColor': {
 							type: 'color'

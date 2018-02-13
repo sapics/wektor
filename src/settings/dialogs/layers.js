@@ -5,8 +5,8 @@ const layers = {
 	}, 
 	css: {
 		overflow: 'scroll',
-		top: '50%',
-		right: '200px',
+		top: '2em',
+		right: 'calc(104px + 2em)',
 	},
 	padding: false,
 	locked: true, 

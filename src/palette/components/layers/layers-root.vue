@@ -7,6 +7,7 @@
 		>
 			<layers-recursive v-for="(item, index) in list"
 				:key="item.id"
+				:dialogId="dialogId"
 				:item="item"
 				:index="index"
 				:list="list"
