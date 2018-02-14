@@ -39,6 +39,9 @@ class BezierTool extends SelectionTool {
 		// and / or mouseUp (see onMouseUp) 
 		this.action = null
 
+		if (this.path && this.path.index === undefined)
+			this.releasePath()
+
 		if (!this.path) {
 			this.path = this.createPath()
 			this.action = 'createPath'
@@ -66,6 +69,8 @@ class BezierTool extends SelectionTool {
 		} else {
 			this.segment = this.addSegment(this.path, event)
 			this.action = this.action || 'addSegment'
+			if (this.path.segments.length === 3)
+				this.tooltip = 'Press the <span class="italic">esc</span>-key if you want to finish the path.'
 		}
 
 		this.handle = {

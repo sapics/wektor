@@ -19,6 +19,7 @@ import MatterJsTool from './tools/MatterJsTool'
 import SnapperEffect from './effects/SnapperEffect'
 import TestEffect from './effects/TestEffect'
 import ShakeEffect from './effects/ShakeEffect'
+import { EllipseTool, RectangleTool } from './tools/ShapeTool'
 
 import VueResize from 'vue-resize'
 import Vddl from 'vddl'
@@ -31,8 +32,8 @@ window.Vue = Vue
 paper.install(window)
 paper.setup('main-canvas')
 paper.project.currentStyle = {
-	strokeColor: 'blue',
-	strokeWidth: 1,
+	strokeColor: 'aquamarine',
+	strokeWidth: 4,
 }
 
 Vue.config.productionTip = false
@@ -47,10 +48,9 @@ Vue.prototype.$settings = settings
 
 window.wektor = wektor
 wektor.setup(paper.project)
-wektor.addTools({ BezierTool, GridTool, SelectionTool, DrawingTool })
+wektor.addTools({ SelectionTool, BezierTool, DrawingTool, EllipseTool, RectangleTool, GridTool })
 wektor.addEffects({ 
 	Snapper: SnapperEffect,
-	Test: TestEffect,
 	Shaker: ShakeEffect, 
 })
 wektor.tools['BaseTool'] = BaseTool

@@ -121,6 +121,7 @@ export default {
 		onMouseDown(event) {
 			event.stopPropagation()
 			this.bindListeners()
+			this.onChange(event)
 		},
 
 		bindListeners() {

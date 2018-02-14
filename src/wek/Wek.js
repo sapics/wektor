@@ -53,6 +53,7 @@ class Wek extends Group {
 		this.create()
 		this.fillColor = 'white'
 		this.strokeColor = 'black'
+		this.strokeWidth = 1
 	}
 	
 	create() {

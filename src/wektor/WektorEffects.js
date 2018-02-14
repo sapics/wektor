@@ -35,6 +35,8 @@ class WektorEffects {
 	add(arg1, arg2) {
 		let effect
 
+		wektor.speak(`<span class="italic">Right-click</span> the effect to open it's settings.`)
+
 		if (isArray(arg1)) {
 			const array = arg1
 			for (let i = 0; i < array.length; i++) {

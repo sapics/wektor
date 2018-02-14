@@ -1,6 +1,18 @@
 <template>
 	<div class="wek">
-		<div 
+		<vwek-bubble v-for="(bubble, index) in bubbles"
+			:key="bubble.hash"
+			:index="index"
+			:spec="bubble"
+			:bubbles="bubbles"
+		></vwek-bubble>		
+		<vwek-bubble v-for="(bubble, index) in systemBubbles"
+			:key="bubble.hash"
+			:index="index"
+			:spec="bubble"
+			:bubbles="systemBubbles"
+		></vwek-bubble>
+<!-- 		<div 
 			class="wek-bubble-wrap" 
 			v-if="text !== null"
 			v-outside:mousedown="onMouseDownOutside"
@@ -17,7 +29,7 @@
 				<line vector-effect="non-scaling-stroke" x1="0" y1="0" x2="10" y2="10" />
 				<line vector-effect="non-scaling-stroke" x1="10" y1="0" x2="0" y2="10" />
 			</svg>
-		</div>
+		</div> -->
 	</div>
 </template>
 
@@ -26,50 +38,59 @@
 	position: absolute;
 	bottom: 0;
 	right: 0;
-	margin: 0 1em 260px;
+	margin: 0 1em 240px;
 	z-index: 999999;
+	display: flex;
+	flex-direction: column;
+	align-items: flex-end;
+
+	.initial-bubble-wrap .wek-bubble {
+		max-width: 12em;
+	}	
 }
 
 .wek-bubble-wrap {
-	.wek-bubble {
-		background: white;
-		border: 1px solid black;
-		border-radius: 2em;
-		padding: 1em;
-		min-width: 2em;
-		max-width: 7em;
-		hyphens: auto;
-	}
 
-	.wek-bubble-pointer {
-		width: auto;
-		height: 20px;
-		margin-top: -1px;
-		margin-left: 2em;
-		fill: white;
-		stroke: black;
-	}
+	// .wek-bubble {
+	// 	background: white;
+	// 	border: 1px solid black;
+	// 	border-radius: 2em;
+	// 	padding: 1em;
+	// 	min-width: 2em;
+	// 	max-width: 7em;
+	// 	hyphens: auto;
+	// }
 
-	.wek-bubble-close {
-		display: none;
-		cursor: pointer;
-		position: absolute;
-		top: 0;
-		right: 0;
-		width: 0.5em;
-		height: 0.5em;
-		stroke: black;
-	}
+	// .wek-bubble-pointer {
+	// 	width: auto;
+	// 	height: 20px;
+	// 	margin-top: -1px;
+	// 	margin-left: 2em;
+	// 	fill: white;
+	// 	stroke: black;
+	// }
 
-	&:hover {
-		.wek-bubble-close {
-			display: block;
-		}
-	}
+	// .wek-bubble-close {
+	// 	display: none;
+	// 	cursor: pointer;
+	// 	position: absolute;
+	// 	top: 0;
+	// 	right: 0;
+	// 	width: 0.5em;
+	// 	height: 0.5em;
+	// 	stroke: black;
+	// }
+
+	// &:hover {
+	// 	.wek-bubble-close {
+	// 		display: block;
+	// 	}
+	// }
 }
 </style>
 
 <script>
+import vwekBubble from './vwek-bubble'
 import Vue from 'vue'
 import Wek from '@/wek'
 import wektor from '@/wektor'
@@ -77,9 +98,14 @@ import paper from 'paper'
 import { getHashCode } from '@/utils'
 
 export default {
+	components: { vwekBubble },
+
 	data() {
 		return {
-			text: null,
+			systemBubbles: [],
+			bubbles: [],
+			// text: null,
+			// initialText: 'Welcome to wektor!',
 			hashes: [],
 			closeDelay: 6 * 1000,
 		}
@@ -111,7 +137,13 @@ export default {
 		wek.update({ point: startPoint })
 		wek.update({ point: startPoint })
 
-		wektor.on('speak', text => this.speak(text))
+		wektor.on({
+			speak: (text, system) => this.speak(text, system),
+			silence: text => this.silence(text)
+		})
+		
+		wektor.speak('test', true)
+		wektor.silence('test')
 	},
 
 	methods: {
@@ -126,22 +158,44 @@ export default {
 				this.closeAfterTimeout = true
 		},
 
-		speak(text) {
+		silence(text) {
+			const hash = getHashCode(text)
+			const index = this.systemBubbles.findIndex(bubble => bubble.hash === hash)
+			this.systemBubbles.splice(index, 1)
+			console.log(this.systemBubbles)
+		},
+
+		speak(text, system = false) {
 			const hash = getHashCode(text)
 			if (this.hashes.includes(hash)) return
 
-			this.hashes.push(hash)	
-			this.text = text
+			this.hashes.push(hash)
+			const bubbleSpec = {
+				text,
+				system,
+				hash,
+			}
 
-			clearTimeout(this.timeoutId)
+			if (system)
+				this.systemBubbles.unshift(bubbleSpec)
+			else 
+				this.bubbles = [bubbleSpec]		
 
-			this.closeAfterTimeout = false
-			this.timeout = true
-			this.timeoutId = setTimeout(() => { 
-				this.timeout = false
-				if (this.closeAfterTimeout)
-					this.close() 
-			}, this.closeDelay)	
+			// const hash = getHashCode(text)
+			// if (this.hashes.includes(hash)) return
+
+			// this.hashes.push(hash)	
+			// this.text = text
+
+			// clearTimeout(this.timeoutId)
+
+			// this.closeAfterTimeout = false
+			// this.timeout = true
+			// this.timeoutId = setTimeout(() => { 
+			// 	this.timeout = false
+			// 	if (this.closeAfterTimeout)
+			// 		this.close() 
+			// }, this.closeDelay)	
 		},
 	},
 }	

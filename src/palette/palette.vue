@@ -12,7 +12,7 @@
 			>{{label}}</span>
 		</div>
 		<div v-if="children && open"
-			class="palette-content"
+			class="palette-content draghandle"
 		>
 			<component v-for="(child, index) in children"
 				:is="child.component"

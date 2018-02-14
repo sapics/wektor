@@ -77,6 +77,7 @@ class Wektor extends ImprovedEventEmitter {
 		}
 
 		paper.settings.handleSize = 5
+		paper.settings.hitTolerance = 5
 
 		this.project = project
 		this.active.layer = this.project.activeLayer
@@ -351,6 +352,14 @@ class Wektor extends ImprovedEventEmitter {
 
 	redo() {
 		this.history.redo()
+	}
+
+	speak(text, system) {
+		this.emit('speak', text, system)
+	}
+
+	silence(text) {
+		this.emit('silence', text)
 	}
 
 	export(event) {

@@ -11,8 +11,8 @@ class Grid extends Group {
 
 		this.options = deepExtend({}, {
 			spacing: {
-				vertical: 15,
-				horizontal: 15
+				vertical: 20,
+				horizontal: 20
 			},
 			lines: {
 				style: {
@@ -101,7 +101,8 @@ class Grid extends Group {
 			closed: true,
 			style: {
 				strokeColor: 'black',
-				strokeWidth: 1
+				strokeWidth: 1,
+				fillColor: 'white',
 			}
 		})
 
@@ -114,6 +115,11 @@ class Grid extends Group {
 
 		this.background.on('change', event => {
 			this.drawLines()
+		})
+
+		wektor.changeTracker.on(this.background, 'insertion', change => {
+			if (this.background.index === undefined)
+				this.remove()
 		})
 
 		const symbolDefinition = new SymbolDefinition(this.background)

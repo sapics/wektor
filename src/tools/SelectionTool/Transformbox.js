@@ -35,8 +35,14 @@ class Transformbox extends paper.Path {
 			strokeWidth: 0,
 			applyMatrix: false,
 			iterable: false,
-			// guide: true,
-		})		
+			fillColor: new paper.Color(1, 0, 0, 0.0000001),
+			cursor: 'move',
+		})	
+
+		this.on({
+			mouseenter: event => { this.hover = true },
+			mouseleave: event => { this.hover = false }
+		})
 	}
 
 	handleMouseDown(event) {
@@ -56,7 +62,7 @@ class Transformbox extends paper.Path {
 		// 	}		
 		// }
 
-		let hit = this.item.hitTest(event.point, { stroke: true, fill: true, segment: true, tolerance: 5 })
+		let hit = this.hitTest(event.point, { stroke: true, fill: true })
 		if (hit) {
 			this.initTransform(this.transformMove, event)
 			return true
@@ -76,6 +82,8 @@ class Transformbox extends paper.Path {
 		const handle = this.hitTest(event.point, { bounds: true, tolerance: 5 })
 		if (handle)
 			this.cursor = this.getHandleCursor(handle)
+		else if (this.hover)
+			this.cursor = 'move'
 		else
 			this.cursor = null
 	}	
@@ -206,15 +214,15 @@ class Transformbox extends paper.Path {
 
 	set cursor(cursor) {
 		this._cursor = cursor
-		this.activateCursor()
+		this.activateCursor(cursor)
 	}
 
 	get cursor() {
 		return this._cursor
 	}
 
-	activateCursor() {
-		document.body.style.cursor = this.cursor || 'default'
+	activateCursor(cursor) {
+		document.body.style.cursor = cursor || null
 	}	
 
 	updateItem() {
@@ -222,6 +230,11 @@ class Transformbox extends paper.Path {
 		this.item.bounds = this.bounds
 		this.item.rotation = this.rotation
 		this.item.emit('change')
+	}
+
+	remove() {
+		this.cursor = null
+		super.remove()
 	}
 }
 

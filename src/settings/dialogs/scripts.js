@@ -8,7 +8,7 @@ export default {
 		type: 'code',
 	},
 	css: {
-		width: '300px',
-		height: '100px',
+		width: '450px',
+		height: '300px',
 	},	
 }

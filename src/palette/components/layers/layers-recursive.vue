@@ -61,6 +61,10 @@
 <style lang="scss" scoped>
 @import "src/sass/variables";
 
+.vddl-dragging {
+	cursor: grabbing;
+}
+
 .vddl-dragging .vddl-list {
 	/* prevent that a item can be dropped into itself */
 	pointer-events: none;
@@ -110,6 +114,7 @@
 
 	.label {
 		padding-right: $space;
+		cursor: pointer;
 	}
 }	
 </style>

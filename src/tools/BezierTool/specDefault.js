@@ -1,4 +1,4 @@
-import dialog from './dialog'
+// import dialog from './dialog'
 
 export default {
 	label: 'bezier',
@@ -16,5 +16,5 @@ export default {
 			'independendHandles': 'alt'
 		},
 	},
-	dialog,
+	// dialog,
 }

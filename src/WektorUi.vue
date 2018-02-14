@@ -30,6 +30,13 @@
 				:spec="dialog"
 			></vdialog>
 		</div>
+		<vbutton
+			class="restart-button"
+			:payload="{
+				label: 'restart',
+				click: () => restart(),
+			}"
+		></vbutton>
 	</div>
 </template>
 
@@ -68,6 +75,10 @@
 		padding: 0;
 	}
 
+	.italic {
+		font-style: italic;
+	}
+
 	.underline {
 		position: relative;
 
@@ -104,9 +115,22 @@
 		}
 	}	
 
-	// .shortcut {
-	// 	text-decoration: underline;
-	// }
+	.nobr {
+		white-space: nowrap;
+	}	
+
+	.restart-button {
+		background: aquamarine;
+		position: absolute;
+		left: $padding;
+		bottom: $padding;
+		margin-bottom: -0.1em;
+
+		&.active {
+			color: aquamarine;
+			background: black;
+		}
+	}	
 }
 
 #wektor-sidebar {
@@ -141,7 +165,7 @@
 		.label {
 			pointer-events: all;
 		}
-	}
+	}	
 }
 </style>
 
@@ -157,13 +181,14 @@ import WektorUiTheme from './WektorUiTheme'
 import vmenu from './components/vmenu'
 import wektorSearch from './components/wektor-search'
 import vwek from './components/vwek'
+import vbutton from '@/palette/components/vbutton'
 
 export default {
 	name: 'wektorUi',
 
 	props: ['target'],
 
-	components: { toolBar, vdialog, vmenu, wektorSearch, vwek },
+	components: { toolBar, vdialog, vmenu, wektorSearch, vwek, vbutton },
 
 	data() {
 		return {
@@ -314,7 +339,8 @@ export default {
 			const point = { x: event.x, y: event.y }
 			const hit = wektor.project.hitTest(point, settings.dialog.hitOptions)
 
-			if (!(hit && hit.item)) return
+			if (!hit) return
+			if (!hit.item) return
 
 			// if (wektor.project.selectedItems.length > 1) {
 			// 	wektor.openDialog({
@@ -336,6 +362,7 @@ export default {
 					values: hit.item,
 					reference: hit.item,
 				})
+				wektor.silence(settings.tooltips.hoverItem)
 			}
 
 			return false
@@ -347,6 +374,10 @@ export default {
 
 		redo() {
 			wektor.history.redo()
+		},
+
+		restart() {
+			window.location.reload()			
 		},
 	},
 }

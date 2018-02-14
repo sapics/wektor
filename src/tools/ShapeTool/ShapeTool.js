@@ -1,4 +1,5 @@
-import BaseTool from './BaseTool.js'
+import BaseTool from '../BaseTool.js'
+import { Transformbox } from '../SelectionTool'
 
 class ShapeTool extends BaseTool {
 	onMouseDown(event) {
@@ -10,20 +11,29 @@ class ShapeTool extends BaseTool {
 
 	onMouseDrag(event) {
 		if (!this.shape) {
-			this.shape = this.target.addChild(this.createShape(event))
+			this.shape = this.createShape(event)
+			this.shape.selected = true
+			this.transformbox = new Transformbox(this.shape)
+			this.transformbox.position = event.point
+			this.transformbox.initTransform(this.transformbox.transformScale, event, {
+				name: 'bottom-right',
+				point: event.point,
+				type: 'bounds',
+			})
 		}
 
-		this._shape.pivot = this._startPoint
-		this._scaleItemXY(this._shape, event)		
-
-		this._shape.visible = true
-		this._shape.selected = true		
+		this.transformbox.handleMouseDrag(event)
+		this.cursor = 'crosshair'
 	}
 
-	releaseShape(unselect = true) {
-		if (unselect)
-			this.shape.selected = false
+	onMouseUp(event) {
+		this.releaseShape()
+	}
+
+	releaseShape() {
 		this.shape = null
+		this.transformbox.remove()
+		this.transformbox = null
 	}
 }
 

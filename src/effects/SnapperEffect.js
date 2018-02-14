@@ -1,5 +1,6 @@
 import BaseEffect from './BaseEffect'
 import paper from 'paper'
+import wektor from '@/wektor'
 
 class SnapperEffect extends BaseEffect {
 	constructor(input, spec) {
@@ -33,6 +34,13 @@ class SnapperEffect extends BaseEffect {
 		}, spec)
 
 		super(input, spec)	
+	}
+
+	openDialog(...args) {
+		super.openDialog(...args)
+		const hasGrids = wektor.project.getItem({ class: 'Grid' })
+		if (!hasGrids)
+			wektor.speak(`Snapper needs a grid. You can create one with the <span class="italic">grid-tool</span>, then select it here.`)
 	}
 
 	onDialogChange(target, key, value) {

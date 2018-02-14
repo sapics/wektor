@@ -11,7 +11,7 @@ class GridTool extends BaseTool {
 	}
 
 	onActivate() {
-		this.tooltip = 'Click and drag on the canvas to create a new grid.'
+		this.tooltip = '<span class="italic">Click</span> and <span class="italic">drag</span> on the canvas to create a new grid.'
 	}
 
 	onMouseDown(event) {
@@ -44,7 +44,7 @@ class GridTool extends BaseTool {
 		this.newGridRect.remove()
 		this.newGridRect = null
 
-		this.tooltip = 'Rightclick on the grid to alter it.'
+		this.tooltip = '<span class="italic">Right-click</span> on the grid to alter it.'
 		new Grid({ bounds })
 	}
 }

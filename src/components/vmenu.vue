@@ -1,7 +1,6 @@
 <template>
 	<div class="menu">
 		<vmenu-item v-for="item of filteredItems"
-			class="label"
 			:key="item.label"
 			:label="item.label"
 			:shortcut="item.shortcut"

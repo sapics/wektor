@@ -9,6 +9,31 @@
 			height="100%"
 			width="100%"
 			theme="tomorrow"
+			:content="`/* Example script */
+
+var circles = project.getItem({ name: 'circles' })
+
+if (circles) {
+    circles.removeChildren()
+} else {
+    circles = new Group({
+        name: 'circles',
+    })
+}
+
+for (var i = 0; i < 10; i++) {
+	var circle = new Path.Circle({
+		radius: 100,
+		fillColor: 'red',
+		position: Point.random() * view.size,
+// 		position: new Point({
+// 		    x: i * 70,
+// 		    y: i * 70
+// 		}),
+	})
+// 	circle.segments[1].point.y += (i * 20)
+	circles.addChild(circle)
+}`"
 		></editor>
 		<span 
 			class="palette-code-run-button"
@@ -48,7 +73,7 @@
 		border: none;
 	}
 
-	.ace_selection {
+	.ace_selection, {
 		background-color: var(--wektor-highlight-background) !important;
 	}
 

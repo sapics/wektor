@@ -18,7 +18,8 @@
 			:data-nested-index="spec.nestedIndex"			
 			@mousedown="onMouseDown"
 			@mouseenter="hover = true"
-			@mouseleave="hover = false"				
+			@mouseleave="hover = false"	
+		
 			v-outside:mousedown="onMouseDownOutside"
 		>
 			<resize-observer @notify="onResizeObserved" />
@@ -88,7 +89,6 @@
 		box-sizing: border-box;	
 		padding-top: 0.3em;
 		width: 1em;
-		cursor: grab;
 		display: flex;
 		flex-direction: column;
 		align-items: center; 		

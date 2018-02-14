@@ -1,7 +1,7 @@
 export default {
 	layout: {
 		pathPreview: {
-			type: 'checkbox',
+			type: 'boolean',
 			label: 'path preview'
 		},
 	},

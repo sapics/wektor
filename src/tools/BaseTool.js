@@ -1,6 +1,18 @@
 import paper from 'paper'
 import wektor from '@/wektor'
-import { isArray, makeUniqueId } from '../utils.js'
+import { isArray, makeUniqueId, isFunction } from '../utils.js'
+
+function isRightClick(event) {
+	return (event.event.button === 2 || event.modifiers.control) 
+}
+
+function getEventName(handlerName) {
+	return handlerName.substr(2).toLowerCase()
+}
+
+function isCanvasEvent(event) {
+	return (event.event.target.id === 'main-canvas')
+}
 
 class BaseTool extends paper.Tool {
 	constructor(target, spec) {
@@ -12,10 +24,6 @@ class BaseTool extends paper.Tool {
 		this.set({ ...spec, target })
 
 		const eventKeys = [
-			'onMouseDown',
-			'onMouseDrag',
-			'onMouseMove',
-			'onMouseUp',
 			'onKeyDown',
 			'onKeyUp',
 			'onActivate',
@@ -24,9 +32,29 @@ class BaseTool extends paper.Tool {
 		]
 
 		for (const key of eventKeys) {
-			const event = this[key]
-			if (event) {
-				this.on(key.substr(2).toLowerCase(), event)
+			const eventHandler = this[key]
+			if (eventHandler) {
+				this.on(getEventName(key), eventHandler)
+			}
+		}
+
+		for (const key of ['onMouseMove', 'onMouseDrag']) {
+			const eventHandler = this[key]
+			if (eventHandler) {
+				this.on(getEventName(key), event => {
+					if (isCanvasEvent(event))
+						eventHandler.bind(this)(event)
+				})
+			}
+		}		
+
+		for (const key of ['onMouseDown', 'onMouseUp']) {
+			const eventHandler = this[key]
+			if (eventHandler) {
+				this.on(getEventName(key), event => {
+					if (!isRightClick(event) && isCanvasEvent(event))
+						eventHandler.bind(this)(event)
+				})
 			}
 		}
 
@@ -38,7 +66,7 @@ class BaseTool extends paper.Tool {
 
 	set cursor(cursor) {
 		this._cursor = cursor
-		this.activateCursor()
+		this.activateCursor(cursor)
 	}
 
 	get cursor() {
@@ -54,8 +82,8 @@ class BaseTool extends paper.Tool {
 		return this._tooltip
 	}
 
-	activateCursor() {
-		document.body.style.cursor = this.cursor || 'default'
+	activateCursor(cursor) {
+		document.body.style.cursor = this.cursor
 	}
 
 	onContextMenu(event) {
@@ -160,8 +188,6 @@ class BaseTool extends paper.Tool {
 		const result = target.hitTest(event.point, options)
 		if (!result)
 			return false
-
-		if (result.item && result.item.data.noSelect) return false
 
 		if (!returnType) 
 			return result

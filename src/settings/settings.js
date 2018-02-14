@@ -62,7 +62,7 @@ export default {
 		{
 			label: 'layers',
 			shortcut: {
-				key: 'y',
+				key: 'l',
 				modifier: '<default>',
 				callback: wektor => wektor.toggleShowDialog('layers')
 			},
@@ -128,11 +128,15 @@ export default {
 			tolerance: 5,
 			stroke: true,
 			fill: true,
+			match: ({item}) => item.iterable,
 		},
 		margin: 20,
 		keepAlive: true,
 	},
 	dialogs,
+	tooltips: {
+		hoverItem: `<span class="italic">Right-click</span> the path to open it's settings (or hold the <span class="italic"><span class="nobr">control</span>-key</span> while <span class="italic">clicking</span>).`,
+	},
 	scope: {
 		handleSize: 5,
 	},

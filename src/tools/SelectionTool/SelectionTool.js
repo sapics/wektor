@@ -1,6 +1,7 @@
 import paper from 'paper'
 import BaseTool from '../BaseTool.js'
 import Transformbox from './Transformbox.js'
+import wektor from '@/wektor'
 
 const {Key, Segment, Point} = paper
 
@@ -17,6 +18,7 @@ class SelectionTool extends BaseTool {
 	onActivate() {
 		this.item = this.target.getItem({
 			selected: true,
+			match: item => !item.children
 		})
 	}
 
@@ -45,10 +47,6 @@ class SelectionTool extends BaseTool {
 				this.item && this.releaseItem()
 			return
 		}
-
-		// catch right click (on macOS rightclick can be also done by mousedown + control)
-		if (event.event.button === 2 || event.modifiers.control)
-			return true
 
 		// catch double click
 		if (event.event.detail === 2) {
@@ -80,7 +78,7 @@ class SelectionTool extends BaseTool {
 			return true
 		}
 
-		this.tooltip = 'Doubleclick on the path to move or transform it.'
+		this.tooltip = '<span class="italic">Double-click</span> on the path to move or transform it.'
 
 		switch (hitResult.type) {
 			case 'stroke':
@@ -151,10 +149,16 @@ class SelectionTool extends BaseTool {
 	}
 
 	setHoverSelectItem(item) {
-		// if (item.data.iterable === false) return
-		// item.selected = true
-		// item.data.hoverSelected = true
-		// this.hoverSelectItem = item
+		if (item.iterable === false) return
+
+		if (this.hoverSelectItem) this.releaseHoverSelectItem()	
+		item.selected = true
+		item.data.hoverSelected = true
+		this.hoverSelectItem = item
+		setTimeout(() => {
+			if (item.data.hoverSelected)
+				wektor.speak(wektor.settings.tooltips.hoverItem, true)
+		}, 200)
 	}
 
 	releaseHoverSelectItem() {
