@@ -12,14 +12,15 @@ class WektorState extends EventEmitter {
 	}
 
 	createItemName(item) {
-		const type = item.constructor.name
+		return item._class + ' ' + item.id
+		// const type = item.constructor.name
 
-		// for human readability we'll start the index with 1
-		this.indexes[type] = (this.indexes[type] !== undefined)
-			? this.indexes[type] + 1
-			: 1 
+		// // for human readability we'll start the index with 1
+		// this.indexes[type] = (this.indexes[type] !== undefined)
+		// 	? this.indexes[type] + 1
+		// 	: 1 
 
-		return type + ' ' + this.indexes[type]
+		// return type + ' ' + this.indexes[type]
 	}
 
 	// todo:

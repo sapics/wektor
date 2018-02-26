@@ -70,7 +70,7 @@ class BezierTool extends SelectionTool {
 			this.segment = this.addSegment(this.path, event)
 			this.action = this.action || 'addSegment'
 			if (this.path.segments.length === 3)
-				this.tooltip = 'Press the <span class="italic">esc</span>-key if you want to finish the path.'
+				this.tooltip = 'Press the <span class="italic">esc</span> key if you want to finish the path.'
 		}
 
 		this.handle = {

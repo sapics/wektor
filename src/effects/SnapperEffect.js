@@ -40,7 +40,7 @@ class SnapperEffect extends BaseEffect {
 		super.openDialog(...args)
 		const hasGrids = wektor.project.getItem({ class: 'Grid' })
 		if (!hasGrids)
-			wektor.speak(`Snapper needs a grid. You can create one with the <span class="italic">grid-tool</span>, then select it here.`)
+			wektor.speak(`Snapper needs a grid. You can create one with the <span class="italic">grid tool</span>, then go back to Snapper's settings and select it.`)
 	}
 
 	onDialogChange(target, key, value) {

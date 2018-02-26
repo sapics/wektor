@@ -135,7 +135,7 @@ export default {
 	},
 	dialogs,
 	tooltips: {
-		hoverItem: `<span class="italic">Right-click</span> the path to open it's settings (or hold the <span class="italic"><span class="nobr">control</span>-key</span> while <span class="italic">clicking</span>).`,
+		hoverItem: `<span class="italic">Right-click</span> the path to open its settings (or hold the <span class="italic"><span class="nobr">control</span> key</span> while <span class="italic">clicking</span>).`,
 	},
 	scope: {
 		handleSize: 5,

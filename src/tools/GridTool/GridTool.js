@@ -44,7 +44,7 @@ class GridTool extends BaseTool {
 		this.newGridRect.remove()
 		this.newGridRect = null
 
-		this.tooltip = '<span class="italic">Right-click</span> on the grid to alter it.'
+		this.tooltip = '<span class="italic">Right-click</span> on the grid to open its settings.'
 		new Grid({ bounds })
 	}
 }

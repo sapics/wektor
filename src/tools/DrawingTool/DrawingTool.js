@@ -61,7 +61,6 @@ class DrawingTool extends BaseTool {
 	}
 	
 	onMouseDown(event) {
-		this.tooltip = 'fuuuu'
 		this.path = new Path()
 		this.path.add(event.point)
 		this.path.data.finished = false
